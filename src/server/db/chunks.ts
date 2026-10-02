@@ -42,3 +42,38 @@ export async function replaceSourceChunks(workspaceId: string, sourceId: string,
   await db.chunk.deleteMany({ where: { sourceId, id: { notIn: rows.map((r) => r.id) } } });
   return rows.length;
 }
+
+export type ChunkMatch = {
+  id: string;
+  content: string;
+  url: string | null;
+  sourceTitle: string;
+  /** Cosine similarity, 0..1 (higher is closer). */
+  similarity: number;
+};
+
+/**
+ * Nearest chunks to a query embedding, for ONE workspace only.
+ *
+ * The HNSW index is shared by all workspaces, so a plain index scan could
+ * return mostly other tenants' rows and then filter them away, leaving too few.
+ * Iterative scan (pgvector 0.8+) keeps scanning until enough rows of this
+ * workspace are found. SET LOCAL needs a transaction, hence $transaction.
+ */
+export async function searchChunks(workspaceId: string, embedding: number[], limit = 6): Promise<ChunkMatch[]> {
+  if (!workspaceId) throw new Error("searchChunks requires a workspaceId");
+  const vec = `[${embedding.join(",")}]`;
+
+  const [, rows] = await prisma.$transaction([
+    prisma.$executeRaw`SET LOCAL hnsw.iterative_scan = 'relaxed_order'`,
+    prisma.$queryRaw<ChunkMatch[]>`
+      SELECT c."id", c."content", c."url", s."title" AS "sourceTitle",
+             (1 - (c."embedding" <=> ${vec}::vector))::float8 AS "similarity"
+      FROM "Chunk" c
+      JOIN "KnowledgeSource" s ON s."id" = c."sourceId" AND s."workspaceId" = ${workspaceId}
+      WHERE c."workspaceId" = ${workspaceId} AND c."embedding" IS NOT NULL
+      ORDER BY c."embedding" <=> ${vec}::vector
+      LIMIT ${limit}`,
+  ]);
+  return rows;
+}

@@ -21,8 +21,8 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "signup"; go
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">{t(`auth.${mode}Title`)}</CardTitle>
-        <CardDescription>{t(`auth.${mode}Subtitle`)}</CardDescription>
+        <CardTitle className="text-2xl font-bold">{t(`auth.${mode}Title`)}</CardTitle>
+        <CardDescription className="text-[15px]">{t(`auth.${mode}Subtitle`)}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <form action={formAction} className="flex flex-col gap-4">

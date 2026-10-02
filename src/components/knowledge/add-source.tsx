@@ -1,5 +1,6 @@
 "use client";
 
+import { FileUp, Globe, MessageCircleQuestion, NotebookPen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -13,6 +14,7 @@ import { addFaqAction, addUrlAction, saveNotesAction } from "@/server/actions/kn
 
 const TABS = ["url", "file", "faq", "notes"] as const;
 type Tab = (typeof TABS)[number];
+const TAB_ICONS = { url: Globe, file: FileUp, faq: MessageCircleQuestion, notes: NotebookPen } as const;
 
 /** Shared footer: form-level error, success note, submit button. */
 function FormFooter({ state, pending, label }: { state: FormState; pending: boolean; label: string }) {
@@ -151,22 +153,26 @@ export function AddSource({ defaultUrl, notes, maxCrawlPages }: { defaultUrl: st
 
   return (
     <div className="flex flex-col gap-5">
-      <div role="tablist" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-lg bg-muted p-1">
-        {TABS.map((key) => (
-          <button
-            key={key}
-            type="button"
-            role="tab"
-            aria-selected={tab === key}
-            onClick={() => setTab(key)}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors",
-              tab === key ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {t(`tabs.${key}`)}
-          </button>
-        ))}
+      <div role="tablist" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl bg-muted p-1">
+        {TABS.map((key) => {
+          const Icon = TAB_ICONS[key];
+          return (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              aria-selected={tab === key}
+              onClick={() => setTab(key)}
+              className={cn(
+                "flex h-9 items-center gap-2 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap transition-colors",
+                tab === key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Icon className={cn("size-4", tab === key && "text-primary")} />
+              {t(`tabs.${key}`)}
+            </button>
+          );
+        })}
       </div>
 
       <div role="tabpanel">

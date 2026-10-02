@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 /** Label + control + translated validation error. `error` is a translation key. */
 export function FormField({
@@ -17,7 +18,7 @@ export function FormField({
 }) {
   const t = useTranslations();
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
       <Label htmlFor={id}>
         {label}
         {hint && <span className="font-normal text-muted-foreground">({hint})</span>}
@@ -33,11 +34,14 @@ export function FormField({
 }
 
 /** Native <select> styled to match the shadcn Input. */
-export function NativeSelect(props: React.ComponentProps<"select">) {
+export function NativeSelect({ className, ...props }: React.ComponentProps<"select">) {
   return (
     <select
       {...props}
-      className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+      className={cn(
+        "h-10 w-full rounded-lg border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-4 focus-visible:ring-ring/15",
+        className,
+      )}
     />
   );
 }

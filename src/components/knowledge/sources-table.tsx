@@ -1,11 +1,11 @@
 "use client";
 
-import { Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { BookOpen, FileText, Globe, Loader2, MessageCircleQuestion, NotebookPen, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useTransition } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { deleteSourceAction, resyncSourceAction } from "@/server/actions/knowledge";
 
 export type SourceRow = {
@@ -18,6 +18,8 @@ export type SourceRow = {
   pageCount: number;
   lastSyncedAt: Date | null;
 };
+
+const TYPE_ICONS = { url: Globe, file: FileText, faq: MessageCircleQuestion, notes: NotebookPen } as const;
 
 function SourceActions({ source }: { source: SourceRow }) {
   const t = useTranslations("knowledge");
@@ -63,49 +65,81 @@ export function SourcesTable({ sources }: { sources: SourceRow[] }) {
     return () => clearInterval(timer);
   }, [processing, router]);
 
-  if (sources.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
+  if (sources.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-10 text-center">
+        <span className="flex size-11 items-center justify-center rounded-full bg-accent text-primary">
+          <BookOpen className="size-5" />
+        </span>
+        <p className="max-w-xs text-sm text-muted-foreground">{t("empty")}</p>
+      </div>
+    );
+  }
+
+  const th = "px-3 py-2.5 text-start text-xs font-medium tracking-wide text-muted-foreground uppercase first:ps-4";
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl border border-border/70">
       <table className="w-full min-w-[40rem] text-sm">
-        <thead>
-          <tr className="border-b text-start text-muted-foreground">
-            <th className="py-2 pe-3 text-start font-medium">{t("colSource")}</th>
-            <th className="py-2 pe-3 text-start font-medium">{t("colType")}</th>
-            <th className="py-2 pe-3 text-start font-medium">{t("colStatus")}</th>
-            <th className="py-2 pe-3 text-start font-medium">{t("colPages")}</th>
-            <th className="py-2 pe-3 text-start font-medium">{t("colSynced")}</th>
-            <th className="py-2" />
+        <thead className="bg-muted/60">
+          <tr>
+            <th className={th}>{t("colSource")}</th>
+            <th className={th}>{t("colStatus")}</th>
+            <th className={th}>{t("colPages")}</th>
+            <th className={th}>{t("colSynced")}</th>
+            <th />
           </tr>
         </thead>
         <tbody>
-          {sources.map((source) => (
-            <tr key={source.id} className="border-b last:border-0">
-              <td className="max-w-[18rem] py-2.5 pe-3">
-                {/* React escapes this text, so crawled or uploaded titles cannot inject markup. */}
-                <p className="truncate font-medium" dir="auto" title={source.title}>
-                  {source.type === "notes" ? t("types.notes") : source.title}
-                </p>
-                {source.status === "failed" && source.error && (
-                  <p className="text-destructive">{t(`errors.${source.error}`)}</p>
-                )}
-              </td>
-              <td className="py-2.5 pe-3 whitespace-nowrap">{t(`types.${source.type}`)}</td>
-              <td className="py-2.5 pe-3">
-                <Badge variant={source.status === "ready" ? "secondary" : source.status === "failed" ? "destructive" : "outline"}>
-                  {source.status === "processing" && <Loader2 className="animate-spin" />}
-                  {t(`status.${source.status}`)}
-                </Badge>
-              </td>
-              <td className="py-2.5 pe-3 tabular-nums">{source.status === "ready" ? source.pageCount : "–"}</td>
-              <td className="py-2.5 pe-3 whitespace-nowrap text-muted-foreground">
-                {source.lastSyncedAt ? format.dateTime(source.lastSyncedAt, { dateStyle: "medium", timeStyle: "short" }) : t("never")}
-              </td>
-              <td className="py-2.5">
-                <SourceActions source={source} />
-              </td>
-            </tr>
-          ))}
+          {sources.map((source) => {
+            const Icon = TYPE_ICONS[source.type];
+            return (
+              <tr key={source.id} className="border-t border-border/70 transition-colors hover:bg-muted/40">
+                <td className="max-w-[20rem] py-3 ps-4 pe-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                      <Icon className="size-4" />
+                    </span>
+                    <div className="min-w-0">
+                      {/* React escapes this text, so crawled or uploaded titles cannot inject markup. */}
+                      <p className="truncate font-medium" dir="auto" title={source.title}>
+                        {source.type === "notes" ? t("types.notes") : source.title}
+                      </p>
+                      {source.status === "failed" && source.error ? (
+                        <p className="text-xs text-destructive">{t(`errors.${source.error}`)}</p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">{t(`types.${source.type}`)}</p>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="px-3 py-3">
+                  <span
+                    className={cn(
+                      "inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium whitespace-nowrap",
+                      source.status === "ready" && "bg-[#e7f8ee] text-success",
+                      source.status === "failed" && "bg-destructive/10 text-destructive",
+                      source.status === "processing" && "bg-accent text-accent-foreground",
+                    )}
+                  >
+                    {source.status === "processing" ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      <span className="size-1.5 rounded-full bg-current" />
+                    )}
+                    {t(`status.${source.status}`)}
+                  </span>
+                </td>
+                <td className="px-3 py-3 tabular-nums">{source.status === "ready" ? source.pageCount : "–"}</td>
+                <td className="px-3 py-3 whitespace-nowrap text-muted-foreground">
+                  {source.lastSyncedAt ? format.dateTime(source.lastSyncedAt, { dateStyle: "medium", timeStyle: "short" }) : t("never")}
+                </td>
+                <td className="py-3 pe-3">
+                  <SourceActions source={source} />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

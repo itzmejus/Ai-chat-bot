@@ -71,7 +71,7 @@ export function OnboardingForm() {
               defaultValue={DEFAULT_WORKING_HOURS[d].open}
               readOnly={closed[d]}
               aria-label={`${t(`onboarding.days.${d}`)} open`}
-              className={`w-28 ${closed[d] ? "opacity-40" : ""}`}
+              className={`w-36 ${closed[d] ? "opacity-40" : ""}`}
             />
             <span className="text-muted-foreground">{t("onboarding.to")}</span>
             <Input
@@ -80,7 +80,7 @@ export function OnboardingForm() {
               defaultValue={DEFAULT_WORKING_HOURS[d].close}
               readOnly={closed[d]}
               aria-label={`${t(`onboarding.days.${d}`)} close`}
-              className={`w-28 ${closed[d] ? "opacity-40" : ""}`}
+              className={`w-36 ${closed[d] ? "opacity-40" : ""}`}
             />
             <label className="flex items-center gap-1.5">
               <input

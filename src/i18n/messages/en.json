@@ -23,7 +23,11 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "signupLink": "Sign up",
-    "loginLink": "Log in"
+    "loginLink": "Log in",
+    "tagline": "AI customer support that speaks your customers' language",
+    "point1": "Answers only from your own business information",
+    "point2": "Replies in English and Arabic, around the clock",
+    "point3": "Hands over to your team when a person is needed"
   },
   "onboarding": {
     "title": "Tell us about your business",
@@ -63,12 +67,19 @@
       "fri": "Friday",
       "sat": "Saturday",
       "sun": "Sunday"
-    }
+    },
+    "step": "Step 1 of 1",
+    "contactTitle": "Contact details",
+    "basicsTitle": "Business basics"
   },
   "nav": {
     "overview": "Overview",
     "workspace": "Workspace",
-    "knowledge": "Knowledge base"
+    "knowledge": "Knowledge base",
+    "menu": "Menu",
+    "usageTitle": "AI messages",
+    "usageText": "{used} of {max} used this month",
+    "plan": "{name} plan"
   },
   "roles": {
     "owner": "Owner",
@@ -82,7 +93,24 @@
     "plan": "Plan",
     "planLimits": "{messages} AI messages per month · {pages} knowledge pages · {agents} team members",
     "embedKey": "Widget key",
-    "notSet": "Not set"
+    "notSet": "Not set",
+    "subtitle": "Here is how {business} is doing.",
+    "setupTitle": "Get your assistant ready",
+    "setupProgress": "{done} of {total} steps done",
+    "step1Title": "Add your business information",
+    "step1Text": "Read your website, upload price lists or add a few FAQs.",
+    "step2Title": "Test your assistant",
+    "step2Text": "Ask a few questions the way a customer would.",
+    "stepOpen": "Open",
+    "stepDone": "Done",
+    "statSources": "Knowledge sources",
+    "statSourcesHint": "ready to use",
+    "statPages": "Knowledge pages",
+    "statMessages": "AI messages this month",
+    "statTeam": "Team members",
+    "ofMax": "of {max}",
+    "workingHours": "Working hours",
+    "closed": "Closed"
   },
   "knowledge": {
     "title": "Knowledge base",
@@ -146,6 +174,34 @@
       "noFile": "Choose a file first."
     }
   },
+  "assistant": {
+    "testTitle": "Test your assistant",
+    "testSubtitle": "Ask what a customer would ask. Replies use only your knowledge base.",
+    "placeholder": "Type a message…",
+    "send": "Send",
+    "reset": "New chat",
+    "typing": "Typing…",
+    "empty": "Try: “What are your opening hours?” or “كم سعر تنظيف الأسنان؟”",
+    "confidence": "Confidence {percent}%",
+    "answeredFromKb": "Answered from knowledge base",
+    "notInKb": "Not in knowledge base",
+    "needsHuman": "Would be flagged “needs human”",
+    "limitReached": "Monthly AI message limit reached",
+    "sources": "Sources",
+    "settingsTitle": "Assistant settings",
+    "settingsSubtitle": "How the assistant introduces itself and speaks to customers.",
+    "name": "Assistant name",
+    "greeting": "Greeting message",
+    "tone": "Tone",
+    "tones": {
+      "friendly": "Friendly",
+      "formal": "Formal"
+    },
+    "extraInstructions": "Extra instructions",
+    "extraPlaceholder": "e.g. Always mention our free first consultation. Do not discuss competitor prices.",
+    "save": "Save settings",
+    "ownerOnlyNote": "Only the workspace owner can change these settings."
+  },
   "errors": {
     "required": "This field is required",
     "name": "Enter your name (2–80 characters)",
@@ -162,6 +218,11 @@
     "faqAnswer": "Enter an answer (up to 5,000 characters)",
     "notesLength": "Notes can be up to 20,000 characters",
     "knowledgeLimit": "Your plan's knowledge page limit has been reached. Delete a source or upgrade your plan.",
-    "unauthorized": "Please log in again."
+    "unauthorized": "Please log in again.",
+    "assistantName": "Enter a name (up to 40 characters)",
+    "greeting": "Enter a greeting (up to 300 characters)",
+    "extraInstructions": "Extra instructions can be up to 2,000 characters",
+    "ownerOnly": "Only the workspace owner can do this.",
+    "rateLimited": "Too many messages. Please wait a moment and try again."
   }
 }

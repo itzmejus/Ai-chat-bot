@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
+import { Brand } from "@/components/brand";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { OnboardingForm } from "@/components/onboarding-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_NAME } from "@/lib/config";
+import { Card, CardContent } from "@/components/ui/card";
 import { requireUser } from "@/server/auth/session";
 
 export const metadata = { title: "Set up your business" };
@@ -13,17 +13,23 @@ export default async function OnboardingPage() {
   const t = await getTranslations("onboarding");
 
   return (
-    <div className="flex min-h-screen flex-col bg-muted/40">
-      <header className="flex items-center justify-between p-4">
-        <span className="text-lg font-semibold">{APP_NAME}</span>
-        <LanguageSwitcher />
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-muted">
+      {/* Dark band behind the top of the form, echoing the dashboard sidebar */}
+      <div aria-hidden className="absolute inset-x-0 top-0 h-72 bg-sidebar">
+        <div className="absolute -top-24 start-1/4 size-80 rounded-full bg-primary/35 blur-3xl" />
+      </div>
+
+      <header className="relative flex items-center justify-between p-4 md:px-8">
+        <Brand tone="light" />
+        <LanguageSwitcher className="border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white" />
       </header>
-      <main className="mx-auto w-full max-w-2xl flex-1 p-4 pb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">{t("title")}</CardTitle>
-            <CardDescription>{t("subtitle")}</CardDescription>
-          </CardHeader>
+
+      <main className="relative mx-auto w-full max-w-2xl flex-1 p-4 pb-16">
+        <div className="mb-6 px-1 text-white">
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{t("title")}</h1>
+          <p className="mt-2 max-w-xl text-white/65">{t("subtitle")}</p>
+        </div>
+        <Card className="shadow-xl">
           <CardContent>
             <OnboardingForm />
           </CardContent>

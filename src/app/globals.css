@@ -7,7 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  /* Latin text uses Geist; Arabic text uses IBM Plex Sans Arabic. The families are named
+     directly instead of through next/font's variables, because each variable also carries an
+     Arial-based fallback, and Arial (which has Arabic glyphs) would win over the Arabic font. */
+  --font-sans: "Geist", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -27,6 +30,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -49,38 +54,43 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Palette modelled on chatbot.com: near-black ink, light grey canvas,
+     white rounded cards, blue accent. */
+  --background: #ffffff;
+  --foreground: #1b1b20;
+  --card: #ffffff;
+  --card-foreground: #1b1b20;
+  --popover: #ffffff;
+  --popover-foreground: #1b1b20;
+  --primary: #0066ff;
+  --primary-foreground: #ffffff;
+  --secondary: #eeeeef;
+  --secondary-foreground: #1b1b20;
+  --muted: #f6f6f7;
+  --muted-foreground: #62616d;
+  --accent: #e8f1ff;
+  --accent-foreground: #0050c8;
+  --destructive: #d6000a;
+  --success: #00873d;
+  --warning: #ffd000;
+  --border: #e4e4e7;
+  --input: #d4d4d7;
+  --ring: #0066ff;
+  --chart-1: #0066ff;
+  --chart-2: #00c057;
+  --chart-3: #ffd000;
+  --chart-4: #fe5100;
+  --chart-5: #767581;
+  --radius: 0.75rem;
+  /* The dashboard sidebar is dark, like the reference app. */
+  --sidebar: #1b1b20;
+  --sidebar-foreground: #f6f6f7;
+  --sidebar-primary: #0066ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #303037;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #303037;
+  --sidebar-ring: #0066ff;
 }
 
 .dark {
@@ -126,5 +136,7 @@
   }
   html {
     @apply font-sans;
+    /* Keep content clear of the sticky top bar when the browser scrolls to it. */
+    scroll-padding-top: 5rem;
   }
 }

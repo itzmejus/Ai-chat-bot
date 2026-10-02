@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { setLocaleAction } from "@/server/actions/workspace";
 
 /** Toggles the dashboard between English and Arabic (RTL). */
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ className }: { className?: string }) {
   const locale = useLocale();
   const t = useTranslations("common");
   const router = useRouter();
@@ -17,8 +17,9 @@ export function LanguageSwitcher() {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="sm"
+      className={className}
       disabled={pending}
       aria-label={t("language")}
       onClick={() =>

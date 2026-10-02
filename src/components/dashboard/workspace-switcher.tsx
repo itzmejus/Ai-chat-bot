@@ -5,7 +5,7 @@ import { useTransition } from "react";
 import { NativeSelect } from "@/components/form-field";
 import { switchWorkspaceAction } from "@/server/actions/workspace";
 
-/** Shown only when the user belongs to more than one workspace. */
+/** Shown in the top bar only when the user belongs to more than one workspace. */
 export function WorkspaceSwitcher({ current, options }: { current: string; options: { id: string; name: string }[] }) {
   const t = useTranslations("nav");
   const [pending, startTransition] = useTransition();
@@ -13,6 +13,7 @@ export function WorkspaceSwitcher({ current, options }: { current: string; optio
   return (
     <NativeSelect
       aria-label={t("workspace")}
+      className="h-9 w-56 font-semibold"
       value={current}
       disabled={pending}
       onChange={(e) => {

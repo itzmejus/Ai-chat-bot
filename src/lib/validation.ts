@@ -100,3 +100,14 @@ export const faqSchema = z.object({
 export const notesSchema = z.object({
   notes: z.string().trim().max(20_000, "errors.notesLength"),
 });
+
+// ------------------------------------------------------------ assistant
+
+export const TONES = ["friendly", "formal"] as const;
+
+export const assistantSettingsSchema = z.object({
+  assistantName: z.string().trim().min(1, "errors.assistantName").max(40, "errors.assistantName"),
+  greeting: z.string().trim().min(1, "errors.greeting").max(300, "errors.greeting"),
+  tone: z.enum(TONES, "errors.required"),
+  extraInstructions: z.string().trim().max(2000, "errors.extraInstructions"),
+});

@@ -14,8 +14,19 @@ function createClient() {
   return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
 }
 
-// Reuse one client across hot reloads in development.
+// One client per process, reused across hot reloads in development.
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? createClient();
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+/**
+ * The client is created on first use, not on import. `next build` imports every
+ * route to collect its configuration, and build environments (a Docker build on
+ * Render, CI) have no DATABASE_URL; connecting lazily lets the build succeed and
+ * still fails loudly if the variable is missing when a query actually runs.
+ */
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, property) {
+    const client = (globalForPrisma.prisma ??= createClient());
+    const value = Reflect.get(client, property);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
