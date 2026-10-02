@@ -79,7 +79,8 @@
     "menu": "Menu",
     "usageTitle": "AI messages",
     "usageText": "{used} of {max} used this month",
-    "plan": "{name} plan"
+    "plan": "{name} plan",
+    "widget": "Widget"
   },
   "roles": {
     "owner": "Owner",
@@ -110,7 +111,9 @@
     "statTeam": "Team members",
     "ofMax": "of {max}",
     "workingHours": "Working hours",
-    "closed": "Closed"
+    "closed": "Closed",
+    "step3Title": "Add the widget to your website",
+    "step3Text": "Pick your colours and copy one line of code."
   },
   "knowledge": {
     "title": "Knowledge base",
@@ -240,6 +243,48 @@
     "greeting": "Enter a greeting (up to 300 characters)",
     "extraInstructions": "Extra instructions can be up to 2,000 characters",
     "ownerOnly": "Only the workspace owner can do this.",
-    "rateLimited": "Too many messages. Please wait a moment and try again."
+    "rateLimited": "Too many messages. Please wait a moment and try again.",
+    "color": "Choose a valid colour",
+    "logoUrl": "Enter an image address starting with https://",
+    "domain": "“{value}” is not a valid website address",
+    "domainInvalid": "One of the websites is not a valid address",
+    "tooManyDomains": "You can list up to 20 websites",
+    "tooManyAttempts": "Too many attempts. Please wait a few minutes and try again."
+  },
+  "widget": {
+    "title": "Chat widget",
+    "subtitle": "Design the chat your customers see, choose where it may appear, and copy the code for your website.",
+    "appearanceTitle": "Appearance",
+    "appearanceSubtitle": "Changes show in the preview straight away. Save to publish them.",
+    "brandColor": "Brand colour",
+    "customColor": "Custom colour",
+    "position": "Position on the page",
+    "positionRight": "Bottom right",
+    "positionLeft": "Bottom left",
+    "logoUrl": "Logo image address",
+    "logoHint": "A square image works best. Leave empty to use the default icon.",
+    "assistantName": "Assistant name",
+    "greeting": "Greeting message",
+    "preChatForm": "Ask for name and phone before the chat starts",
+    "preChatHint": "Every visitor who starts a chat becomes a lead.",
+    "domainsTitle": "Allowed websites",
+    "domainsSubtitle": "The widget only appears on the websites listed here. Subdomains are included automatically.",
+    "domainPlaceholder": "yourbusiness.ae",
+    "addDomain": "Add",
+    "removeDomain": "Remove {domain}",
+    "noDomains": "No websites yet. The widget will not appear anywhere until you add one.",
+    "localhostTip": "Testing on your own computer? Add “localhost”.",
+    "embedTitle": "Add it to your website",
+    "embedSubtitle": "Paste this line just before the closing body tag on every page of your site.",
+    "copy": "Copy code",
+    "copied": "Copied",
+    "save": "Save changes",
+    "saved": "Saved and live",
+    "previewTitle": "Live preview",
+    "previewHint": "This is a working chat. Messages you send here are test chats.",
+    "ownerOnlyNote": "Only the workspace owner can change widget settings.",
+    "stepKnowledge": "Colour, position and greeting",
+    "stepDomains": "Approved websites",
+    "stepEmbed": "One line of code"
   }
 }

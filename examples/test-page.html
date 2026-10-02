@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  Sample page for trying the chat widget on a "customer website".
+
+  1. In the dashboard open Widget, add "localhost" under Allowed websites, and save.
+  2. Copy your embed code from the same page and replace the <script> line at the bottom of this file.
+  3. Serve this folder from a local web server (opening the file directly will not work,
+     because a file:// page has no domain to check against the whitelist):
+         npx serve examples -l 5500
+  4. Open http://localhost:5500/test-page.html
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bright Smile Dental Clinic</title>
+    <style>
+      body { margin: 0; font-family: Georgia, serif; color: #23312f; background: #f4faf8; }
+      header { background: #0f766e; color: #fff; padding: 48px 24px; text-align: center; }
+      header h1 { margin: 0 0 8px; font-size: 40px; }
+      main { max-width: 760px; margin: 0 auto; padding: 32px 24px 120px; line-height: 1.7; }
+      .card { background: #fff; border-radius: 12px; padding: 20px 24px; margin: 16px 0; box-shadow: 0 1px 4px rgb(0 0 0 / 0.08); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Bright Smile Dental Clinic</h1>
+      <p>Gentle dental care in the heart of Dubai</p>
+    </header>
+    <main>
+      <div class="card">
+        <h2>Our services</h2>
+        <p>Check-ups, cleaning, whitening and more. Ask our assistant in the corner of the page for prices and opening hours.</p>
+      </div>
+      <div class="card">
+        <h2>Visit us</h2>
+        <p>Sheikh Zayed Road, Dubai. Open Saturday to Thursday.</p>
+      </div>
+    </main>
+
+    <!-- Replace this line with the embed code from Dashboard > Widget -->
+    <script src="http://localhost:3000/widget.js" data-workspace="PASTE_YOUR_WIDGET_KEY" async></script>
+  </body>
+</html>

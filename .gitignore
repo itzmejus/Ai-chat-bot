@@ -47,3 +47,7 @@ next-env.d.ts
 /src/generated
 
 !.env.example
+
+# built widget bundles (see widget/build.mjs)
+/public/widget.js
+/public/widget-app.js

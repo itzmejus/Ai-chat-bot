@@ -4,7 +4,7 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 3 of 8** (setup, auth, workspaces, knowledge base ingestion, AI answering).
+> Build status: **phase 4 of 8** (setup, auth, workspaces, knowledge base ingestion, AI answering, embeddable widget).
 > This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
 
 ## Stack
@@ -42,7 +42,8 @@ In the Supabase dashboard open **Connect** and copy both pooler strings:
 | Command              | What it does                                   |
 | -------------------- | ---------------------------------------------- |
 | `npm run dev`        | Start the dev server                           |
-| `npm run build`      | Generate the Prisma client and build           |
+| `npm run build`      | Generate the Prisma client, build the widget bundles and the app |
+| `npm run build:widget` | Rebuild `public/widget.js` and `public/widget-app.js` from `/widget` |
 | `npm test`           | Run the test suite (in-memory Postgres, no setup needed) |
 | `npm run typecheck`  | TypeScript check                               |
 | `npm run lint`       | ESLint                                         |
@@ -63,6 +64,11 @@ src/server/ingest/      crawler, safe fetcher, file parsers, chunker, processSou
 src/server/ai/          OpenAI client, prompt, and the answering service (answer.ts)
 src/server/limits/      monthly usage counter and rate limiter
 src/server/realtime/    Server-Sent Events helper
+src/server/widget/      widget tokens and public chat helpers
+src/lib/widget-domains.ts  domain whitelist rules
+src/proxy.ts            keeps the app host and the widget host to their own paths
+widget/                 the embeddable widget (loader + chat app), built with esbuild
+examples/               sample page for trying the widget
 src/server/jobs/        pg-boss queue and ingestion worker
 worker/                 standalone worker entry point
 src/lib/validation.ts   Zod schemas
@@ -115,6 +121,47 @@ rather than instructions, and stripped of anything that could close that block.
 The chat model is set by `OPENAI_MODEL` (default `gpt-4.1-mini`). **Dashboard > Knowledge base**
 has the assistant settings (name, greeting, tone, extra instructions) and a "Test your assistant"
 chat that shows the confidence and sources for each reply.
+
+## Chat widget
+
+A business adds the widget to its site with one line, shown in **Dashboard > Widget**:
+
+```html
+<script src="https://chat.siteselo.com/widget.js" data-workspace="pk_..." async></script>
+```
+
+How it is put together:
+
+- `widget/loader.ts` builds to `public/widget.js` (about 0.7 kB gzipped). It adds one iframe to the
+  host page and resizes it when the chat opens or closes (full screen on phones).
+- `widget/app.ts` builds to `public/widget-app.js` (about 6 kB gzipped): the chat itself, in plain
+  TypeScript with no framework. Because it runs inside the iframe, the host site's CSS cannot
+  affect it. It streams replies, switches to Arabic and right-to-left when the customer writes
+  Arabic, offers "Talk to a human", shows the optional pre-chat form, and remembers the
+  conversation for the browser session (an anonymous visitor id in `sessionStorage`).
+- `/embed/[key]` serves the iframe page. `/api/widget/*` is the public chat API
+  (`session`, `start`, `message`, `human`), which calls the same `answerMessage()` service.
+
+**Domain whitelist.** The widget only works on the websites listed under Allowed websites:
+
+1. the iframe page is sent with `Content-Security-Policy: frame-ancestors <allowed sites>`, so
+   browsers refuse to display it anywhere else;
+2. the server refuses the iframe page when the embedding site is not on the list, when no site
+   is listed, or when the URL is opened directly;
+3. the chat API requires a signed token that is only issued by a successfully loaded iframe page.
+
+A script that fakes browser headers can still obtain a token; rate limits and the plan's monthly
+message limit cap what that can cost.
+
+**Rate limits** (per minute): 12 messages per visitor, 40 per IP address, 300 per workspace.
+Login is limited to 8 attempts per account per 15 minutes.
+
+**Two hostnames.** In production the dashboard runs on `APP_URL` (`https://app.siteselo.com`) and
+the widget on `WIDGET_URL` (`https://chat.siteselo.com`). Both point at the same deployment;
+`src/proxy.ts` makes each hostname serve only its own paths. Locally both default to
+`http://localhost:3000`.
+
+**Try it locally:** follow the steps at the top of `examples/test-page.html`.
 
 ## Database changes
 

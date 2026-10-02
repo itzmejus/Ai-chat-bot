@@ -78,17 +78,19 @@ export default async function OverviewPage() {
   const { user, workspace, db } = await requireWorkspace();
   const t = await getTranslations();
 
-  const [readySources, pagesUsed, messagesUsed, members, testChats] = await Promise.all([
+  const [readySources, pagesUsed, messagesUsed, members, testChats, widget] = await Promise.all([
     db.knowledgeSource.count({ where: { status: "ready" } }),
     knowledgePagesUsed(db),
     getAiMessagesUsed(db),
     db.membership.count(),
     db.conversation.count({ where: { isTest: true } }),
+    db.widgetSettings.findFirst({ select: { allowedDomains: true } }),
   ]);
 
   const steps = [
     { done: readySources > 0, title: t("overview.step1Title"), text: t("overview.step1Text"), href: "/dashboard/knowledge" as const },
     { done: testChats > 0, title: t("overview.step2Title"), text: t("overview.step2Text"), href: "/dashboard/knowledge" as const },
+    { done: (widget?.allowedDomains.length ?? 0) > 0, title: t("overview.step3Title"), text: t("overview.step3Text"), href: "/dashboard/widget" as const },
   ];
   const stepsDone = steps.filter((s) => s.done).length;
 

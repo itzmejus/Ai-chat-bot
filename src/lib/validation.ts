@@ -111,3 +111,29 @@ export const assistantSettingsSchema = z.object({
   tone: z.enum(TONES, "errors.required"),
   extraInstructions: z.string().trim().max(2000, "errors.extraInstructions"),
 });
+
+// ------------------------------------------------------------ widget
+
+export const WIDGET_POSITIONS = ["right", "left"] as const;
+
+export const widgetSettingsSchema = z.object({
+  brandColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, "errors.color"),
+  /** Optional logo. Must be https so it loads on secure customer sites. */
+  logoUrl: z
+    .string()
+    .trim()
+    .max(500, "errors.logoUrl")
+    .refine((v) => {
+      if (v === "") return true;
+      try {
+        return new URL(v).protocol === "https:";
+      } catch {
+        return false;
+      }
+    }, "errors.logoUrl")
+    .transform((v) => v || null),
+  position: z.enum(WIDGET_POSITIONS, "errors.required"),
+  preChatForm: z.boolean(),
+  assistantName: z.string().trim().min(1, "errors.assistantName").max(40, "errors.assistantName"),
+  greeting: z.string().trim().min(1, "errors.greeting").max(300, "errors.greeting"),
+});
