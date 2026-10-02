@@ -1,0 +1,99 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "arabic": "العربية",
+    "signOut": "Sign out",
+    "optional": "optional",
+    "saving": "Saving…"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "loginSubtitle": "Log in to your dashboard",
+    "signupTitle": "Create your account",
+    "signupSubtitle": "Set up AI customer support for your business in minutes",
+    "name": "Your name",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters",
+    "login": "Log in",
+    "signup": "Create account",
+    "google": "Continue with Google",
+    "or": "or",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "signupLink": "Sign up",
+    "loginLink": "Log in"
+  },
+  "onboarding": {
+    "title": "Tell us about your business",
+    "subtitle": "Your AI assistant uses these details when it talks to your customers. You can change them later.",
+    "name": "Business name",
+    "namePlaceholder": "e.g. Bright Smile Dental Clinic",
+    "industry": "Industry",
+    "websiteUrl": "Website",
+    "websitePlaceholder": "yourbusiness.ae",
+    "defaultLanguage": "Customer language",
+    "phone": "Contact phone",
+    "whatsapp": "WhatsApp number",
+    "phonePlaceholder": "+971 50 123 4567",
+    "workingHours": "Working hours",
+    "closed": "Closed",
+    "to": "to",
+    "submit": "Create workspace",
+    "industries": {
+      "clinic": "Clinic",
+      "real_estate": "Real estate",
+      "salon": "Salon",
+      "restaurant": "Restaurant",
+      "car_rental": "Car rental",
+      "retail": "Retail",
+      "other": "Other"
+    },
+    "languages": {
+      "en": "English",
+      "ar": "Arabic",
+      "both": "English and Arabic"
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    }
+  },
+  "nav": {
+    "overview": "Overview",
+    "workspace": "Workspace"
+  },
+  "roles": {
+    "owner": "Owner",
+    "agent": "Agent"
+  },
+  "overview": {
+    "title": "Overview",
+    "welcome": "Welcome, {name}",
+    "ready": "{business} is set up. Next, add your business information so the assistant can answer customers.",
+    "profile": "Business profile",
+    "plan": "Plan",
+    "planLimits": "{messages} AI messages per month · {pages} knowledge pages · {agents} team members",
+    "embedKey": "Widget key",
+    "notSet": "Not set"
+  },
+  "errors": {
+    "required": "This field is required",
+    "name": "Enter your name (2–80 characters)",
+    "email": "Enter a valid email address",
+    "emailTaken": "An account with this email already exists",
+    "passwordLength": "Password must be 8–72 characters",
+    "invalidCredentials": "Incorrect email or password",
+    "businessName": "Enter your business name (2–100 characters)",
+    "phone": "Enter a valid phone number, e.g. +971 50 123 4567",
+    "url": "Enter a valid website address",
+    "time": "Check the opening and closing times",
+    "generic": "Something went wrong. Please try again."
+  }
+}

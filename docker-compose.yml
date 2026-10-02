@@ -1,0 +1,37 @@
+# Optional local stack: Postgres with pgvector + the app.
+#   docker compose up --build
+# Not required if you develop against Supabase.
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mosaed
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mosaed"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      # Override the database URLs so the container talks to the `db` service.
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/mosaed
+      DIRECT_URL: postgresql://postgres:postgres@db:5432/mosaed
+    ports:
+      - "3000:3000"
+    # Apply migrations, then start the server.
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+volumes:
+  pgdata:
