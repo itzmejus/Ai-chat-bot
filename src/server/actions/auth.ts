@@ -7,8 +7,8 @@ import { googleAuthEnabled } from "@/lib/config";
 import { loginSchema, signupSchema } from "@/lib/validation";
 import { prisma } from "@/server/db/prisma";
 
-/** Form state shared by the auth forms. `error` is a translation key. */
-export type FormState = { error?: string; fieldErrors?: Record<string, string> } | undefined;
+/** Form state shared by all forms. Errors are translation keys; `ok` marks a successful save. */
+export type FormState = { ok?: boolean; error?: string; fieldErrors?: Record<string, string> } | undefined;
 
 function fieldErrors(issues: { path: PropertyKey[]; message: string }[]) {
   const out: Record<string, string> = {};

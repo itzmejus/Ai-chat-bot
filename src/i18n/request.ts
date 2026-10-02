@@ -12,6 +12,8 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
+    // One fixed zone so server and browser render the same times.
+    timeZone: "Asia/Dubai",
     messages: (await import(`./messages/${locale}.json`)).default,
   };
 });

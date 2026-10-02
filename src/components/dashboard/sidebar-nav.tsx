@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, type LucideIcon } from "lucide-react";
+import { BookOpen, LayoutDashboard, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 /** Dashboard sections. New pages are added here as each build phase lands. */
 const NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/dashboard", key: "overview", icon: LayoutDashboard },
+  { href: "/dashboard/knowledge", key: "knowledge", icon: BookOpen },
 ];
 
 export function SidebarNav() {

@@ -78,3 +78,25 @@ export type WorkspaceInput = z.infer<typeof workspaceSchema>;
 export const DEFAULT_WORKING_HOURS: WorkingHours = Object.fromEntries(
   DAYS.map((d) => [d, { closed: d === "sun", open: "09:00", close: "18:00" }]),
 ) as WorkingHours;
+
+// ------------------------------------------------------------ knowledge base
+
+/** Required website address; "example.ae" is normalised to "https://example.ae". */
+export const urlSourceSchema = z.object({
+  url: z
+    .string()
+    .trim()
+    .min(1, "errors.url")
+    .max(300, "errors.url")
+    .pipe(optionalWebsite)
+    .refine((v): v is string => v !== null, "errors.url"),
+});
+
+export const faqSchema = z.object({
+  question: z.string().trim().min(3, "errors.faqQuestion").max(300, "errors.faqQuestion"),
+  answer: z.string().trim().min(1, "errors.faqAnswer").max(5000, "errors.faqAnswer"),
+});
+
+export const notesSchema = z.object({
+  notes: z.string().trim().max(20_000, "errors.notesLength"),
+});

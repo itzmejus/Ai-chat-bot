@@ -4,17 +4,18 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 1 of 8** (project setup, database schema, auth, workspace creation).
+> Build status: **phase 2 of 8** (setup, auth, workspaces, knowledge base ingestion).
 > This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
 
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind + shadcn/ui · PostgreSQL + pgvector (Supabase) ·
-Prisma 7 · Auth.js · next-intl (English / Arabic with RTL) · Zod · Vitest
+Prisma 7 · Auth.js · next-intl (English / Arabic with RTL) · Zod · Vitest ·
+OpenAI (embeddings) · pg-boss (background jobs in Postgres)
 
 ## Run locally
 
-Requires Node.js 20.9+ and a Postgres database with the `vector` extension (a free Supabase project works).
+Requires Node.js 22.12+ and a Postgres database with the `vector` extension (a free Supabase project works).
 
 ```bash
 npm install
@@ -46,6 +47,7 @@ In the Supabase dashboard open **Connect** and copy both pooler strings:
 | `npm run typecheck`  | TypeScript check                               |
 | `npm run lint`       | ESLint                                         |
 | `npm run db:migrate` | Apply migrations to the database in `.env`     |
+| `npm run worker`     | Standalone background worker (optional, see below) |
 
 ## Project layout
 
@@ -56,6 +58,11 @@ src/auth.ts             Auth.js config (email/password + optional Google)
 src/server/db/          prisma.ts (unscoped client), tenant.ts (workspace-scoped client)
 src/server/auth/        session helpers: requireUser, requireWorkspace, requireOwner
 src/server/actions/     server actions (forms)
+src/server/knowledge.ts knowledge base operations (add, re-sync, delete, plan limit)
+src/server/ingest/      crawler, safe fetcher, file parsers, chunker, processSource
+src/server/ai/          OpenAI client and embeddings
+src/server/jobs/        pg-boss queue and ingestion worker
+worker/                 standalone worker entry point
 src/lib/validation.ts   Zod schemas
 src/i18n/               next-intl config and en/ar translation files
 tests/                  Vitest suites
@@ -68,6 +75,20 @@ with the raw Prisma client; it uses `tenantDb(workspaceId)` (`src/server/db/tena
 forces the workspace filter onto every read and write. `requireWorkspace()` verifies the
 user's membership on each request and returns a client already locked to that workspace.
 `tests/isolation.test.ts` proves one workspace cannot read or change another's data.
+
+## Knowledge base ingestion
+
+Sources (website, PDF/DOCX/TXT, FAQ, business notes) are added from **Dashboard > Knowledge base**.
+Each one is queued as a background job that extracts text, splits it into overlapping chunks of
+roughly 600 tokens (800 max), embeds them with `text-embedding-3-small` and stores them in pgvector.
+The page shows each source as processing, ready or failed, with re-sync and delete.
+
+- **Website crawl:** same domain only, up to 50 pages (or what the plan has left), obeys robots.txt.
+  All requests go through `safe-fetch.ts`, which refuses private and internal addresses.
+- **Files:** text is extracted at upload (10 MB max) and the file itself is discarded.
+- **Worker:** by default the worker runs inside the web server process, so one service is enough.
+  To run it separately, set `WORKER_MODE=external` on the web service and start `npm run worker`.
+- pg-boss keeps its tables in a `pgboss` schema that it creates on first start.
 
 ## Database changes
 

@@ -67,7 +67,8 @@
   },
   "nav": {
     "overview": "Overview",
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "knowledge": "Knowledge base"
   },
   "roles": {
     "owner": "Owner",
@@ -83,6 +84,68 @@
     "embedKey": "Widget key",
     "notSet": "Not set"
   },
+  "knowledge": {
+    "title": "Knowledge base",
+    "subtitle": "Everything your assistant knows comes from here. It answers customers only from these sources.",
+    "usage": "{used} of {max} knowledge pages used",
+    "addTitle": "Add information",
+    "tabs": {
+      "url": "Website",
+      "file": "File",
+      "faq": "FAQ",
+      "notes": "Business notes"
+    },
+    "urlLabel": "Website address",
+    "urlHelp": "We read up to {max} pages on this domain and respect robots.txt.",
+    "urlSubmit": "Crawl website",
+    "fileLabel": "PDF, DOCX or TXT (max 10 MB)",
+    "fileHelp": "Price lists, menus, policies. Only the text is kept; the file itself is not stored.",
+    "fileSubmit": "Upload",
+    "uploading": "Uploading…",
+    "question": "Question",
+    "questionPlaceholder": "e.g. Do you accept insurance?",
+    "answer": "Answer",
+    "faqSubmit": "Add FAQ",
+    "notesLabel": "Business notes",
+    "notesHelp": "Anything else customers ask about: parking, payment methods, delivery areas, offers.",
+    "notesSubmit": "Save notes",
+    "saved": "Saved",
+    "sourcesTitle": "Sources",
+    "empty": "No sources yet. Add your website or a few FAQs to get started.",
+    "colSource": "Source",
+    "colType": "Type",
+    "colStatus": "Status",
+    "colPages": "Pages",
+    "colSynced": "Last synced",
+    "types": {
+      "url": "Website",
+      "file": "File",
+      "faq": "FAQ",
+      "notes": "Notes"
+    },
+    "status": {
+      "processing": "Processing",
+      "ready": "Ready",
+      "failed": "Failed"
+    },
+    "never": "Not yet",
+    "resync": "Re-sync",
+    "delete": "Delete",
+    "confirmDelete": "Delete this source? The assistant will stop using it.",
+    "errors": {
+      "noContent": "No readable text was found.",
+      "fetchFailed": "The website could not be reached. Check the address and try again.",
+      "blockedUrl": "This address cannot be crawled.",
+      "limit": "Your plan's knowledge page limit has been reached.",
+      "openaiKey": "The AI service is not configured yet (missing OpenAI API key).",
+      "generic": "Something went wrong while processing this source.",
+      "unsupported": "Only PDF, DOCX and TXT files are supported.",
+      "tooLarge": "The file is larger than 10 MB.",
+      "noText": "No text was found in this file. Scanned documents are not supported.",
+      "unreadable": "The file could not be read. It may be damaged or password-protected.",
+      "noFile": "Choose a file first."
+    }
+  },
   "errors": {
     "required": "This field is required",
     "name": "Enter your name (2–80 characters)",
@@ -94,6 +157,11 @@
     "phone": "Enter a valid phone number, e.g. +971 50 123 4567",
     "url": "Enter a valid website address",
     "time": "Check the opening and closing times",
-    "generic": "Something went wrong. Please try again."
+    "generic": "Something went wrong. Please try again.",
+    "faqQuestion": "Enter a question (3–300 characters)",
+    "faqAnswer": "Enter an answer (up to 5,000 characters)",
+    "notesLength": "Notes can be up to 20,000 characters",
+    "knowledgeLimit": "Your plan's knowledge page limit has been reached. Delete a source or upgrade your plan.",
+    "unauthorized": "Please log in again."
   }
 }
