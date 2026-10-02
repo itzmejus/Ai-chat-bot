@@ -12,6 +12,7 @@ using only that business's information. Multi-tenant: every business is a worksp
 - [Environment variables](#environment-variables)
 - [Scripts](#scripts) and [tests](#tests)
 - [Deploy](#deploy) (full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))
+- [Public site and SEO](#public-site-and-seo)
 - How it works: [multi-tenancy](#multi-tenancy), [knowledge base](#knowledge-base-ingestion), [AI answering](#ai-answering), [widget](#chat-widget), [inbox](#inbox-realtime-and-human-takeover), [leads and analytics](#leads-and-overview-analytics), [team and plans](#team-notifications-settings-and-plans)
 - [Recommended next features](#recommended-next-features)
 
@@ -106,6 +107,8 @@ All are documented in `.env.example`. Secrets live only in the environment, neve
 | `OPENAI_MODEL` | no | chat model, default `gpt-4.1-mini` |
 | `APP_URL`, `NEXTAUTH_URL` | in production | public address of the dashboard |
 | `WIDGET_URL` | no | separate hostname for the widget; defaults to `APP_URL` |
+| `SITE_URL` | no | separate hostname for the public marketing site; defaults to `APP_URL` |
+| `CONTACT_EMAIL` | no | shown in the site footer and legal pages |
 | `APP_NAME` | no | product name shown everywhere, default "Mosaed" |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no | enables "Continue with Google" |
 | `EMAIL_SERVER_HOST`, `_PORT`, `_USER`, `_PASSWORD`, `EMAIL_FROM` | no | SMTP for invitations and notifications; without it they are written to the server log |
@@ -142,6 +145,7 @@ Postgres with pgvector (PGlite) with every migration applied, and OpenAI is mock
 | `tests/analytics.test.ts` | overview numbers, question grouping, CSV export |
 | `tests/team.test.ts` | invitations, roles, seat limit |
 | `tests/seed.test.ts` | the demo seed |
+| `tests/site.test.ts` | public site addresses, host routing, sitemap, English/Arabic content parity |
 
 ## Deploy
 
@@ -152,6 +156,29 @@ widget), email, Google login and a go-live checklist, is in **[docs/DEPLOYMENT.m
 In short: create a Supabase project, create a Render web service from this repository's
 `Dockerfile`, set the environment variables above, and add both hostnames as custom domains.
 Migrations are applied automatically each time the container starts.
+
+## Public site and SEO
+
+The marketing site is part of the same app: home, features, pricing, six industry pages, privacy
+policy and terms, each in English and Arabic (22 pages).
+
+- **Addresses.** English pages have no prefix (`/pricing`); Arabic pages live under `/ar`
+  (`/ar/pricing`). Search engines therefore see one language per address, unlike the dashboard,
+  which switches language with a cookie. `src/proxy.ts` maps both to `src/app/(site)/[lang]/...`.
+- **Text.** Everything is in `src/content/site/en.ts` and `ar.ts`, which share one type, so a missing
+  translation is a compile error. `{name}` is replaced by `APP_NAME`.
+- **Prices.** `SITE_PLANS` in `src/content/site/index.ts`. The limits are checked against the
+  database by a test; **the prices are placeholders** until billing is built.
+- **SEO.** Every page has its own title, description, canonical address, `hreflang` links between the
+  two languages, and Open Graph / Twitter tags (`src/lib/site-seo.ts`). `sitemap.xml` and `robots.txt`
+  are generated (`src/app/sitemap.ts`, `robots.ts`); the dashboard, login and APIs are marked
+  `noindex`. Structured data (schema.org JSON-LD) is included for the organisation, the product with
+  its plans, FAQs and breadcrumbs. Pages are rendered on the server, and the product pictures are
+  HTML and CSS, so there are no image downloads.
+- **Hostname.** The site is served on the app's hostname: the site at `/`, the dashboard at
+  `/dashboard` (for example `https://www.app.siteselo.com/` and `/dashboard`). `SITE_URL` is only
+  for giving the site a separate domain later.
+- **Legal pages** are a starting draft and should be reviewed for your company before launch.
 
 ## Project layout
 
@@ -177,7 +204,10 @@ src/server/email/       SMTP mailer and email layout
 src/server/billing/     plan changes; placeholder for Stripe
 src/server/widget/      widget tokens and public chat helpers
 src/lib/widget-domains.ts  domain whitelist rules
-src/proxy.ts            keeps the app host and the widget host to their own paths
+src/proxy.ts            keeps the site, app and widget hosts to their own paths; routes marketing pages
+src/app/(site)/         the public marketing site (home, features, pricing, industries, legal)
+src/content/site/       all public site text in English and Arabic, plus the plan prices
+src/components/site/    header, footer, sections and product mock-ups for the public site
 widget/                 the embeddable widget (loader + chat app), built with esbuild
 examples/               sample page for trying the widget
 src/server/jobs/        pg-boss queue and ingestion worker
@@ -267,7 +297,7 @@ message limit cap what that can cost.
 **Rate limits** (per minute): 12 messages per visitor, 40 per IP address, 300 per workspace.
 Login is limited to 8 attempts per account per 15 minutes.
 
-**Two hostnames.** In production the dashboard runs on `APP_URL` (`https://app.siteselo.com`) and
+**Hostnames.** In production the public site and the dashboard run on `APP_URL` (`https://www.app.siteselo.com`) and
 the widget on `WIDGET_URL` (`https://chat.siteselo.com`). Both point at the same deployment;
 `src/proxy.ts` makes each hostname serve only its own paths. Locally both default to
 `http://localhost:3000`.

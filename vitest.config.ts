@@ -14,6 +14,7 @@ export default defineConfig({
       NEXTAUTH_SECRET: "test-secret",
       APP_URL: "https://app.example.com",
       WIDGET_URL: "https://chat.example.com",
+      SITE_URL: "https://www.example.com",
     },
   },
 });

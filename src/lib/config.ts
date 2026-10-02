@@ -12,6 +12,15 @@ export const APP_URL = (process.env.APP_URL || "http://localhost:3000").replace(
  */
 export const WIDGET_URL = (process.env.WIDGET_URL || APP_URL).replace(/\/$/, "");
 
+/**
+ * Where the public marketing site lives, e.g. https://siteselo.com. Same deployment again.
+ * Defaults to APP_URL, in which case the site is simply the app's home page.
+ */
+export const SITE_URL = (process.env.SITE_URL || APP_URL).replace(/\/$/, "");
+
+/** Shown on the public site (footer, legal pages) when set. */
+export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "";
+
 export const googleAuthEnabled = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 
 export const LOCALES = ["en", "ar"] as const;

@@ -156,3 +156,68 @@
     radial-gradient(45% 90% at 0% 100%, rgb(255 208 0 / 0.12), transparent 65%),
     linear-gradient(135deg, #1b1b20 0%, #16161b 100%);
 }
+
+/* ---- Public site ---------------------------------------------------------------- */
+
+/* Hero background: blue and violet light over a faint grid that fades out towards the bottom. */
+@utility site-hero {
+  background-image:
+    radial-gradient(55% 45% at 50% 0%, rgb(0 102 255 / 0.2), transparent 70%),
+    radial-gradient(35% 40% at 88% 8%, rgb(122 92 255 / 0.2), transparent 70%),
+    radial-gradient(35% 40% at 10% 12%, rgb(0 200 255 / 0.14), transparent 70%),
+    linear-gradient(to bottom, transparent 45%, #ffffff 92%),
+    linear-gradient(to right, rgb(27 27 32 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(27 27 32 / 0.05) 1px, transparent 1px);
+  background-size: auto, auto, auto, auto, 48px 48px, 48px 48px;
+}
+
+/* The coloured stage behind the product picture in the hero. */
+@utility site-stage {
+  background-color: #0b5cff;
+  background-image:
+    radial-gradient(60% 80% at 0% 0%, rgb(0 200 255 / 0.55), transparent 60%),
+    radial-gradient(70% 90% at 100% 0%, rgb(140 92 255 / 0.95), transparent 62%),
+    radial-gradient(60% 80% at 50% 120%, rgb(255 255 255 / 0.25), transparent 60%),
+    linear-gradient(135deg, #0b5cff 0%, #5a4bff 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 0 0 1px rgb(255 255 255 / 0.12);
+}
+
+/* Highlighted words in the main headline. */
+@utility site-gradient-text {
+  background-image: linear-gradient(100deg, #0066ff 0%, #6a4dff 55%, #b04dff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* Arabic letters and descenders need room below the line, or the gradient is cut off. */
+  padding-block: 0.12em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Chat bubbles in the hero appear one after another. */
+@utility site-pop {
+  animation: site-pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes site-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+/* Floating notes drift gently. */
+@utility site-float {
+  animation: site-float 6s ease-in-out infinite;
+}
+@keyframes site-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-pop,
+  .site-float {
+    animation: none;
+  }
+}

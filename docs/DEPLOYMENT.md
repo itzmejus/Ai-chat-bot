@@ -1,7 +1,8 @@
 # Deployment guide: Render + Supabase
 
 This guide takes the app from a Git repository to a live service with the dashboard on
-`app.siteselo.com` and the chat widget on `chat.siteselo.com`. Replace those names with your own.
+`www.app.siteselo.com/dashboard`, the public site on the same hostname (`www.app.siteselo.com/`), and the
+chat widget on `chat.siteselo.com`. Replace those names with your own.
 
 What gets deployed:
 
@@ -49,9 +50,11 @@ the server, so new migrations are applied on every deploy.
 | `OPENAI_API_KEY` | your OpenAI key |
 | `OPENAI_MODEL` | `gpt-4.1-mini` (or another chat model) |
 | `APP_NAME` | the product name shown in the dashboard and emails |
-| `APP_URL` | `https://app.siteselo.com` |
-| `NEXTAUTH_URL` | `https://app.siteselo.com` (same as `APP_URL`) |
+| `APP_URL` | `https://www.app.siteselo.com` |
+| `NEXTAUTH_URL` | `https://www.app.siteselo.com` (same as `APP_URL`) |
 | `WIDGET_URL` | `https://chat.siteselo.com` |
+| `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
+| `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
 | `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`, `EMAIL_FROM` | see step 4; optional |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | see step 5; optional |
 
@@ -63,29 +66,43 @@ Changing `NEXTAUTH_SECRET` later logs everyone out and invalidates open widget s
 
 ## 3. Domains
 
-Both hostnames point at the **same** Render service. The app decides what to serve from the hostname.
+Every hostname points at the **same** Render service. The app decides what to serve from the hostname.
 
-1. In the Render service open **Settings > Custom Domains** and add both
-   `app.siteselo.com` and `chat.siteselo.com`.
+1. In the Render service open **Settings > Custom Domains** and add
+   `www.app.siteselo.com`, `app.siteselo.com` and `chat.siteselo.com`.
 2. At your DNS provider create a `CNAME` record for each, pointing to the service's
    `*.onrender.com` address as Render shows.
 3. Wait for Render to verify them and issue the certificates.
 
-Use exactly the hostnames you put in `APP_URL` and `WIDGET_URL`. A different spelling such as
-`www.app.siteselo.com` is treated as an unknown host: either do not create it, or redirect it to
-`app.siteselo.com` at your DNS provider.
+`APP_URL` decides which spelling is the official one. With `APP_URL=https://www.app.siteselo.com`,
+public pages opened on `app.siteselo.com` are redirected to the `www.` address, so search engines
+index each page once. Log in and use the dashboard on the `APP_URL` hostname.
 
-How the two hosts behave:
+How the hosts behave:
 
-| Host | Serves | Refuses |
+| Host | Serves | Everything else |
 | --- | --- | --- |
-| `app.` | login, dashboard, dashboard APIs | the chat iframe and public chat API |
-| `chat.` | `widget.js`, the chat iframe, the public chat API | everything else (the home page redirects to `app.`) |
+| `www.app.` | the public site in English and Arabic (`/`, `/ar/...`), `sitemap.xml`, `robots.txt`, login, and the dashboard at `/dashboard` | the chat iframe and public chat API are refused |
+| `chat.` | `widget.js`, the chat iframe, the public chat API | refused (the home page redirects to the site) |
 
 Keeping the widget on its own hostname means dashboard login cookies are never sent along with
 requests made from customers' websites.
 
-To run on a single hostname instead, leave `WIDGET_URL` unset.
+`WIDGET_URL` and `SITE_URL` both default to `APP_URL` when unset. To move the public site to a domain
+of its own later, set `SITE_URL` and add that domain to Render; the app host then keeps only the
+dashboard and redirects marketing pages to the site.
+
+### Search engines
+
+After the site is live on its final domain:
+
+1. Add the domain in [Google Search Console](https://search.google.com/search-console) and
+   [Bing Webmaster Tools](https://www.bing.com/webmasters), and submit `https://www.app.siteselo.com/sitemap.xml`.
+2. Check a page with Google's Rich Results Test to confirm the FAQ and product data are read.
+3. Share a link in WhatsApp or LinkedIn to see the preview image (`/opengraph-image`).
+
+Set the real plan prices in `src/content/site/index.ts` before launch, and have the privacy policy
+and terms in `src/content/site/en.ts` and `ar.ts` reviewed for your company.
 
 ## 4. Email (optional but recommended)
 
@@ -105,15 +122,15 @@ Verify the sending domain with the provider (SPF and DKIM records), or messages 
 ## 5. Google login (optional)
 
 1. In Google Cloud Console create an **OAuth client ID** of type *Web application*.
-2. Authorised JavaScript origin: `https://app.siteselo.com`
-3. Authorised redirect URI: `https://app.siteselo.com/api/auth/callback/google`
+2. Authorised JavaScript origin: `https://www.app.siteselo.com`
+3. Authorised redirect URI: `https://www.app.siteselo.com/api/auth/callback/google`
 4. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` on Render.
 
 The "Continue with Google" button appears only when both are set.
 
 ## 6. Check the deployment
 
-1. Open `https://app.siteselo.com`, sign up and complete onboarding.
+1. Open `https://www.app.siteselo.com`: the public site should appear. Press **Start free**, sign up and complete onboarding.
 2. **Knowledge base:** add an FAQ. It should change from *Processing* to *Ready* within seconds.
    That confirms the database, the background worker and the OpenAI key.
 3. **Test your assistant** on the same page: ask the FAQ's question.
@@ -170,7 +187,9 @@ To remove it, delete the "Bright Smile Dental Clinic" workspace and that user fr
 ## Go-live checklist
 
 - [ ] `NEXTAUTH_SECRET` is random and not the one used in development
-- [ ] `APP_URL`, `NEXTAUTH_URL`, `WIDGET_URL` use `https` and the exact custom domains
+- [ ] `APP_URL`, `NEXTAUTH_URL`, `WIDGET_URL` use `https` and the exact custom domains; `SITE_URL` is unset
+- [ ] Real prices set in `src/content/site/index.ts`; privacy policy and terms reviewed
+- [ ] Sitemap submitted to Google Search Console
 - [ ] `ALLOW_FREE_PLAN_CHANGE` is not set
 - [ ] Render instance is a paid type (does not sleep)
 - [ ] Supabase and Render are in nearby regions

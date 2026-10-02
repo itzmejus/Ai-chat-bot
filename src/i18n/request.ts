@@ -1,14 +1,19 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES, type Locale } from "@/lib/config";
 
+const isLocale = (value: string | null | undefined): value is Locale => (LOCALES as readonly string[]).includes(value ?? "");
+
 /**
- * next-intl request config. The dashboard language comes from a cookie set by
- * the language switcher (no /en or /ar URL prefixes).
+ * next-intl request config.
+ *  - Dashboard: the language comes from a cookie set by the language switcher (no URL prefix).
+ *  - Public site: the language is part of the URL ("/ar/..."), so search engines see one
+ *    language per address. The proxy passes it on in the "x-site-locale" header, which wins.
  */
 export default getRequestConfig(async () => {
+  const fromUrl = (await headers()).get("x-site-locale");
   const cookie = (await cookies()).get(LOCALE_COOKIE)?.value;
-  const locale: Locale = (LOCALES as readonly string[]).includes(cookie ?? "") ? (cookie as Locale) : DEFAULT_LOCALE;
+  const locale: Locale = isLocale(fromUrl) ? fromUrl : isLocale(cookie) ? cookie : DEFAULT_LOCALE;
 
   return {
     locale,
