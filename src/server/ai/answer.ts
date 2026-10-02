@@ -1,4 +1,5 @@
 import { searchChunks, type ChunkMatch } from "@/server/db/chunks";
+import { saveQuestionEmbedding } from "@/server/analytics";
 import { tenantDb } from "@/server/db/tenant";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
 import { publish } from "@/server/realtime/bus";
@@ -128,8 +129,18 @@ export async function* answerMessage(input: {
   try {
     // Include the previous customer message so follow-ups like "how much is it?" still retrieve well.
     const previous = [...history].reverse().find((m) => m.role === "customer")?.content;
-    const [embedding] = await embedTexts([previous ? `${previous}\n${text}` : text]);
-    chunks = (await searchChunks(workspaceId, embedding)).sort((a, b) => b.similarity - a.similarity);
+    // One API call embeds both the retrieval query and the bare question.
+    const embeddings = await embedTexts(previous ? [`${previous}\n${text}`, text] : [text]);
+    const [found] = await Promise.all([
+      searchChunks(workspaceId, embeddings[0]),
+      // Keep the question's own embedding so the overview can group similar questions. It runs
+      // alongside the search (no added wait) and, being analytics only, a failure here must
+      // never stop the customer getting an answer.
+      saveQuestionEmbedding(workspaceId, customerMessage.id, embeddings.at(-1)!).catch((err) =>
+        console.error("[ai] could not store question embedding", err),
+      ),
+    ]);
+    chunks = found.sort((a, b) => b.similarity - a.similarity);
 
     const assistant = workspace.assistantSettings ?? { assistantName: "Assistant", tone: "friendly" as const, extraInstructions: "" };
     const messages = buildMessages(buildSystemPrompt(workspace, assistant, chunks, text), history, text);
@@ -193,6 +204,8 @@ export async function* answerMessage(input: {
   const message = await db.message.create({
     data: { workspaceId, conversationId, role: "assistant", content: reply, confidence, answered: header.answered },
   });
+  // Mark the question itself too, so "unanswered questions" can be listed without pairing rows.
+  await db.message.update({ where: { id: customerMessage.id }, data: { answered: header.answered } });
 
   // Lead capture: contact details the customer has shared. One lead per conversation, updated as more arrives.
   let leadCaptured = false;

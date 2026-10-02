@@ -85,17 +85,18 @@ function UrlForm({ defaultUrl, maxPages }: { defaultUrl: string; maxPages: numbe
   );
 }
 
-function FaqForm() {
+function FaqForm({ question }: { question: string }) {
   const t = useTranslations("knowledge");
   const [state, action, pending] = useActionState<FormState, FormData>(addFaqAction, undefined);
   const ref = useResetOnSuccess(state);
   return (
     <form ref={ref} action={action} className="flex flex-col gap-4">
       <FormField id="question" label={t("question")} error={state?.fieldErrors?.question}>
-        <Input id="question" name="question" dir="auto" placeholder={t("questionPlaceholder")} required />
+        <Input id="question" name="question" dir="auto" defaultValue={question} placeholder={t("questionPlaceholder")} required />
       </FormField>
+      {question && <p className="-mt-2 text-sm text-muted-foreground">{t("faqFromQuestion")}</p>}
       <FormField id="answer" label={t("answer")} error={state?.fieldErrors?.answer}>
-        <Textarea id="answer" name="answer" dir="auto" rows={4} required />
+        <Textarea id="answer" name="answer" dir="auto" rows={4} autoFocus={Boolean(question)} required />
       </FormField>
       <FormFooter state={state} pending={pending} label={t("faqSubmit")} />
     </form>
@@ -263,9 +264,20 @@ function FileForm() {
   );
 }
 
-export function AddSource({ defaultUrl, notes, maxCrawlPages }: { defaultUrl: string; notes: string; maxCrawlPages: number }) {
+export function AddSource({
+  defaultUrl,
+  notes,
+  maxCrawlPages,
+  faqQuestion = "",
+}: {
+  defaultUrl: string;
+  notes: string;
+  maxCrawlPages: number;
+  /** A customer question to answer: opens the FAQ tab with it filled in. */
+  faqQuestion?: string;
+}) {
   const t = useTranslations("knowledge");
-  const [tab, setTab] = useState<Tab>("url");
+  const [tab, setTab] = useState<Tab>(faqQuestion ? "faq" : "url");
 
   return (
     <div className="flex flex-col gap-5">
@@ -309,7 +321,7 @@ export function AddSource({ defaultUrl, notes, maxCrawlPages }: { defaultUrl: st
       <div role="tabpanel" className="rounded-xl border border-border/70 bg-background/70 p-4 sm:p-5">
         {tab === "url" && <UrlForm defaultUrl={defaultUrl} maxPages={maxCrawlPages} />}
         {tab === "file" && <FileForm />}
-        {tab === "faq" && <FaqForm />}
+        {tab === "faq" && <FaqForm question={faqQuestion} />}
         {tab === "notes" && <NotesForm initial={notes} />}
       </div>
     </div>

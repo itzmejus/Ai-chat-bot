@@ -4,7 +4,7 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 5 of 8** (setup, auth, workspaces, knowledge base, AI answering, widget, inbox and human takeover).
+> Build status: **phase 6 of 8** (setup, auth, workspaces, knowledge base, AI answering, widget, inbox and takeover, leads and analytics).
 > This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
 
 ## Stack
@@ -65,6 +65,8 @@ src/server/ai/          OpenAI client, prompt, and the answering service (answer
 src/server/limits/      monthly usage counter and rate limiter
 src/server/realtime/    event bus (in-process + Postgres NOTIFY) and Server-Sent Events helper
 src/server/inbox.ts     inbox list, takeover, agent replies, close and reopen
+src/server/leads.ts     leads list, status, CSV export
+src/server/analytics.ts overview numbers, daily counts, question grouping
 src/server/widget/      widget tokens and public chat helpers
 src/lib/widget-domains.ts  domain whitelist rules
 src/proxy.ts            keeps the app host and the widget host to their own paths
@@ -187,6 +189,27 @@ dedicated connection (`DIRECT_URL`). Two Server-Sent Events endpoints forward ev
 | `GET /api/widget/stream` | customer widget (widget token + visitor id) | agent replies and takeover events for that one conversation |
 
 Each subscriber loads message content through its own workspace-scoped database client.
+
+## Leads and overview analytics
+
+**Leads** (`/dashboard/leads`) lists contact details captured by the assistant during a chat or by
+the pre-chat form: name, phone, email, date, status (new, contacted, converted) and a link to the
+conversation. It has status tabs, search and a CSV export (`GET /api/leads/export`). The export
+starts with a UTF-8 marker so Excel shows Arabic correctly, and defuses cells that a spreadsheet
+would run as formulas, because names are typed by anonymous visitors.
+
+**Overview** (`/dashboard`) shows total conversations, today's (UAE time), leads and needs-human
+counts; conversations per day for the last 14 days; a breakdown by status; and two lists built
+from the last 30 days of customer messages:
+
+- **Most asked questions**: similar questions grouped together.
+- **Unanswered questions**: questions the assistant could not answer from the knowledge base,
+  each with an "Add answer" button that opens the FAQ form with the question filled in.
+
+Grouping works on a compact (256-dimension) embedding stored with each customer message
+(`src/server/analytics.ts`). Messages containing a phone number or email are left out of both lists.
+The charts are plain HTML and CSS (`src/components/overview/charts.tsx`), with a hover tooltip and
+a screen-reader table for the daily chart.
 
 ## Database changes
 

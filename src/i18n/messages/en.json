@@ -81,7 +81,11 @@
     "usageText": "{used} of {max} used this month",
     "plan": "{name} plan",
     "widget": "Widget",
-    "inbox": "Inbox"
+    "inbox": "Inbox",
+    "leads": "Leads",
+    "short": {
+      "knowledge": "Knowledge"
+    }
   },
   "roles": {
     "owner": "Owner",
@@ -114,7 +118,33 @@
     "workingHours": "Working hours",
     "closed": "Closed",
     "step3Title": "Add the widget to your website",
-    "step3Text": "Pick your colours and copy one line of code."
+    "step3Text": "Pick your colours and copy one line of code.",
+    "kpiTotal": "Conversations",
+    "kpiTotalHint": "all time",
+    "kpiToday": "Today",
+    "kpiTodayHint": "new conversations",
+    "kpiLeads": "Leads captured",
+    "kpiLeadsHint": "{count} new",
+    "kpiNeedsHuman": "Needs human",
+    "kpiNeedsHumanHint": "waiting now",
+    "chartTitle": "Conversations per day",
+    "chartSubtitle": "Last 14 days",
+    "chartTooltip": "{count, plural, =0 {No conversations} one {# conversation} other {# conversations}}",
+    "handlingTitle": "How chats are handled",
+    "handlingSubtitle": "All conversations by current status",
+    "topTitle": "Most asked questions",
+    "topSubtitle": "Similar questions from the last 30 days, grouped",
+    "topEmpty": "Questions customers ask will be grouped here once chats start coming in.",
+    "timesAsked": "{count, plural, one {asked once} other {asked # times}}",
+    "unansweredTitle": "Unanswered questions",
+    "unansweredSubtitle": "The assistant could not answer these from your knowledge base",
+    "unansweredEmpty": "Nothing unanswered. Your knowledge base is covering what customers ask.",
+    "addAnswer": "Add answer",
+    "viewChat": "View chat",
+    "usageTitle": "Plan usage",
+    "usageMessages": "AI messages this month",
+    "usagePages": "Knowledge pages",
+    "usageTeam": "Team members"
   },
   "knowledge": {
     "title": "Knowledge base",
@@ -191,7 +221,8 @@
     "dropTitle": "Drag a file here, or click to browse",
     "dropActive": "Drop the file to add it",
     "maxSize": "up to 10 MB",
-    "removeFile": "Remove file"
+    "removeFile": "Remove file",
+    "faqFromQuestion": "Answer this customer question so the assistant can handle it next time."
   },
   "assistant": {
     "testTitle": "Test your assistant",
@@ -348,5 +379,27 @@
     "statTotal": "Total",
     "channelWeb": "Website chat",
     "statWaiting": "Waiting"
+  },
+  "leads": {
+    "title": "Leads",
+    "subtitle": "Customers who shared their contact details in a chat. Follow up, then mark each one as you go.",
+    "all": "All",
+    "status": {
+      "new": "New",
+      "contacted": "Contacted",
+      "converted": "Converted"
+    },
+    "search": "Search name, phone or email…",
+    "export": "Export CSV",
+    "empty": "No leads yet.",
+    "emptyHint": "When a customer shares a phone number or email in the chat, or fills in the pre-chat form, they appear here.",
+    "noResults": "No leads match this filter.",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colEmail": "Email",
+    "colDate": "Captured",
+    "colStatus": "Status",
+    "colChat": "Chat",
+    "viewChat": "Open conversation"
   }
 }

@@ -33,8 +33,11 @@ function SectionHeader({ icon: Icon, title, description, color }: { icon: Lucide
 }
 
 /** Knowledge base: add sources, watch their status, tune the assistant and test it. */
-export default async function KnowledgePage() {
+export default async function KnowledgePage({ searchParams }: PageProps<"/dashboard/knowledge">) {
   const { workspace, db, role } = await requireWorkspace();
+  // ?faq=<question> comes from "Add answer" on the overview's unanswered questions.
+  const { faq } = await searchParams;
+  const faqQuestion = typeof faq === "string" ? faq.slice(0, 300) : "";
   const t = await getTranslations();
   const [sources, notes, used, settings] = await Promise.all([
     listSources(db),
@@ -98,6 +101,7 @@ export default async function KnowledgePage() {
                 defaultUrl={alreadyCrawled ? "" : (workspace.websiteUrl ?? "")}
                 notes={notes}
                 maxCrawlPages={Math.min(MAX_CRAWL_PAGES, maxPages)}
+                faqQuestion={faqQuestion}
               />
             </CardContent>
           </Card>

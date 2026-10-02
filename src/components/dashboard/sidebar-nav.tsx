@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Inbox, LayoutDashboard, MessageSquareCode, type LucideIcon } from "lucide-react";
+import { BookOpen, Inbox, LayoutDashboard, MessageSquareCode, UserPlus, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/dashboard", key: "overview", icon: LayoutDashboard },
   { href: "/dashboard/inbox", key: "inbox", icon: Inbox },
+  { href: "/dashboard/leads", key: "leads", icon: UserPlus },
   { href: "/dashboard/knowledge", key: "knowledge", icon: BookOpen },
   { href: "/dashboard/widget", key: "widget", icon: MessageSquareCode },
 ];
@@ -45,7 +46,8 @@ export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bot
                 <span className={cn("flex h-8 w-14 items-center justify-center rounded-full transition-colors", active && "bg-accent")}>
                   <Icon className="size-5" strokeWidth={active ? 2.4 : 2} />
                 </span>
-                <span className="max-w-full truncate">{t(key)}</span>
+                {/* Shorter labels where the full one would not fit under an icon */}
+                <span className="max-w-full truncate">{t.has(`short.${key}`) ? t(`short.${key}`) : t(key)}</span>
               </Link>
             );
           })}

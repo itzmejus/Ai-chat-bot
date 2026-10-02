@@ -1,11 +1,14 @@
-import { ArrowRight, BookOpen, Check, FileText, MessagesSquare, Sparkles, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, CalendarDays, Check, CircleHelp, Headset, MessageSquarePlus, MessagesSquare, Sparkles, TrendingUp, UserPlus, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { ChatScene, DotPattern, ProgressRing } from "@/components/illustrations";
+import { getFormatter, getTranslations } from "next-intl/server";
+import { ChatScene, DotPattern } from "@/components/illustrations";
+import { Meter } from "@/components/meter";
+import { DailyColumns, HandlingBreakdown } from "@/components/overview/charts";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { DAYS, type WorkingHours } from "@/lib/validation";
+import { conversationsPerDay, overviewCounts, questionInsights, type QuestionGroup } from "@/server/analytics";
 import { requireWorkspace } from "@/server/auth/session";
 import { knowledgePagesUsed } from "@/server/knowledge";
 import { getAiMessagesUsed } from "@/server/limits/usage";
@@ -14,77 +17,113 @@ export const metadata = { title: "Overview" };
 
 const SURFACE_SHADOW = "shadow-[0_1px_2px_rgb(16_24_40/0.04),0_4px_16px_-4px_rgb(16_24_40/0.06)]";
 
-/** Ring colour for a usage figure: the tile's own colour, amber when nearly used up, red when full. */
-function usageColor(value: number, max: number, base: string) {
-  const ratio = max > 0 ? value / max : 0;
-  return ratio >= 1 ? "#d6000a" : ratio >= 0.8 ? "#d97706" : base;
-}
-
-/** One headline number. Limits get a progress ring; plain counts get an icon badge. */
-function StatTile({
-  icon: Icon,
-  label,
-  value,
-  hint,
-  max,
-  color,
-  ringColor = color,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: number;
-  hint?: string;
-  max?: number;
-  /** Accent colour: tints the tile and colours the icon. */
-  color: string;
-  ringColor?: string;
-}) {
-  return (
-    <div
-      className={cn("relative overflow-hidden rounded-2xl border border-border/70 bg-card p-4 sm:p-5", SURFACE_SHADOW)}
-      style={{
-        // Same soft surface as cards, with the corner glow in this tile's accent colour.
-        backgroundImage: `radial-gradient(110% 110% at 100% 0%, color-mix(in oklab, ${color} 13%, transparent), transparent 62%), linear-gradient(180deg, #ffffff, #fafafc)`,
-      }}
-    >
+/** One headline number with an icon. The number is the chart. */
+function StatTile({ icon: Icon, label, value, hint, color, href }: { icon: LucideIcon; label: string; value: number; hint: string; color: string; href?: string }) {
+  const body = (
+    <>
       <div className="flex items-start justify-between gap-2">
         <p className="text-[13px] leading-snug font-medium text-muted-foreground sm:text-sm">{label}</p>
-        {max !== undefined ? (
-          <ProgressRing value={value} max={max} color={ringColor} size={44}>
-            <Icon className="size-4" />
-          </ProgressRing>
-        ) : (
-          <span
-            className="flex size-11 shrink-0 items-center justify-center rounded-full"
-            style={{ color, backgroundColor: `color-mix(in oklab, ${color} 14%, white)` }}
-          >
-            <Icon className="size-[18px]" />
-          </span>
-        )}
+        <span
+          className="flex size-10 shrink-0 items-center justify-center rounded-full"
+          style={{ color, backgroundColor: `color-mix(in oklab, ${color} 14%, white)` }}
+        >
+          <Icon className="size-[18px]" />
+        </span>
       </div>
       <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
-        <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
-        {hint && <span className="text-sm text-muted-foreground">{hint}</span>}
+        <span className="text-3xl font-bold tracking-tight">{value.toLocaleString("en-US")}</span>
+        <span className="text-sm text-muted-foreground">{hint}</span>
       </p>
+    </>
+  );
+  const className = cn("relative block overflow-hidden rounded-2xl border border-border/70 bg-card p-4 sm:p-5", SURFACE_SHADOW);
+  // Same soft surface as cards, with the corner glow in this tile's accent colour.
+  const style = {
+    backgroundImage: `radial-gradient(110% 110% at 100% 0%, color-mix(in oklab, ${color} 13%, transparent), transparent 62%), linear-gradient(180deg, #ffffff, #fafafc)`,
+  };
+  return href ? (
+    <Link href={href} className={cn(className, "transition-shadow hover:shadow-lg")} style={style}>
+      {body}
+    </Link>
+  ) : (
+    <div className={className} style={style}>
+      {body}
     </div>
   );
 }
 
+/** A ranked list of question groups with a thin bar showing how often each was asked. */
+function QuestionList({
+  groups,
+  barColor,
+  timesAsked,
+  action,
+}: {
+  groups: QuestionGroup[];
+  barColor: string;
+  timesAsked: (count: number) => string;
+  action: (group: QuestionGroup) => React.ReactNode;
+}) {
+  const max = Math.max(...groups.map((g) => g.count), 1);
+  return (
+    <ol className="flex flex-col">
+      {groups.map((group, i) => (
+        <li key={`${group.conversationId}-${i}`} className="flex items-center gap-3 border-b border-border/60 py-2.5 last:border-0">
+          <span className="w-5 shrink-0 text-center text-xs font-semibold text-muted-foreground tabular-nums">{i + 1}</span>
+          <div className="min-w-0 flex-1">
+            {/* React escapes this text: it was typed by an anonymous website visitor. */}
+            <p className="truncate text-sm font-medium" dir="auto" title={group.text}>
+              {group.text}
+            </p>
+            <div className="mt-1.5 flex items-center gap-2">
+              <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                <span className="block h-full rounded-full" style={{ width: `${(group.count / max) * 100}%`, backgroundColor: barColor }} />
+              </span>
+              <span className="shrink-0 text-xs text-muted-foreground">{timesAsked(group.count)}</span>
+            </div>
+          </div>
+          {action(group)}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function CardTitleRow({ icon: Icon, title, description, color }: { icon: LucideIcon; title: string; description: string; color: string }) {
+  return (
+    <CardHeader>
+      <div className="flex items-center gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ color, backgroundColor: `color-mix(in oklab, ${color} 13%, white)` }}>
+          <Icon className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </div>
+      </div>
+    </CardHeader>
+  );
+}
+
 /**
- * Overview: setup progress, usage against the plan, and the business profile.
- * Conversation analytics are added in phase 6.
+ * Overview: setup progress, headline numbers, conversation charts, what customers
+ * ask (and what the assistant could not answer), plan usage, and the business profile.
  */
 export default async function OverviewPage() {
   const { user, workspace, db } = await requireWorkspace();
   const t = await getTranslations();
+  const format = await getFormatter();
 
-  const [readySources, pagesUsed, messagesUsed, members, testChats, widget] = await Promise.all([
+  const [readySources, pagesUsed, messagesUsed, members, testChats, widget, counts, daily, questions] = await Promise.all([
     db.knowledgeSource.count({ where: { status: "ready" } }),
     knowledgePagesUsed(db),
     getAiMessagesUsed(db),
     db.membership.count(),
     db.conversation.count({ where: { isTest: true } }),
     db.widgetSettings.findFirst({ select: { allowedDomains: true } }),
+    overviewCounts(db),
+    conversationsPerDay(workspace.id),
+    questionInsights(workspace.id),
   ]);
 
   const steps = [
@@ -103,6 +142,12 @@ export default async function OverviewPage() {
     [t("onboarding.phone"), workspace.phone ? <span dir="ltr">{workspace.phone}</span> : notSet],
     [t("onboarding.whatsapp"), workspace.whatsapp ? <span dir="ltr">{workspace.whatsapp}</span> : notSet],
   ];
+  const usage = [
+    { label: t("overview.usageMessages"), value: messagesUsed, max: workspace.plan.monthlyMessages, warn: true },
+    { label: t("overview.usagePages"), value: pagesUsed, max: workspace.plan.maxKnowledgePages, warn: true },
+    { label: t("overview.usageTeam"), value: members, max: workspace.plan.maxAgents, warn: false },
+  ];
+  const timesAsked = (count: number) => t("overview.timesAsked", { count });
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -158,39 +203,128 @@ export default async function OverviewPage() {
         )}
       </section>
 
-      {/* Usage against the plan */}
+      {/* Headline numbers */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatTile icon={MessagesSquare} label={t("overview.kpiTotal")} value={counts.total} hint={t("overview.kpiTotalHint")} color="#0066ff" href="/dashboard/inbox" />
+        <StatTile icon={CalendarDays} label={t("overview.kpiToday")} value={counts.today} hint={t("overview.kpiTodayHint")} color="#7c4dff" />
         <StatTile
-          icon={MessagesSquare}
-          label={t("overview.statMessages")}
-          value={messagesUsed}
-          hint={t("overview.ofMax", { max: workspace.plan.monthlyMessages })}
-          max={workspace.plan.monthlyMessages}
-          color="#0066ff"
-          ringColor={usageColor(messagesUsed, workspace.plan.monthlyMessages, "#0066ff")}
-        />
-        <StatTile
-          icon={FileText}
-          label={t("overview.statPages")}
-          value={pagesUsed}
-          hint={t("overview.ofMax", { max: workspace.plan.maxKnowledgePages })}
-          max={workspace.plan.maxKnowledgePages}
+          icon={UserPlus}
+          label={t("overview.kpiLeads")}
+          value={counts.leads}
+          hint={t("overview.kpiLeadsHint", { count: counts.newLeads })}
           color="#00a04a"
-          ringColor={usageColor(pagesUsed, workspace.plan.maxKnowledgePages, "#00a04a")}
+          href="/dashboard/leads"
         />
-        <StatTile icon={BookOpen} label={t("overview.statSources")} value={readySources} hint={t("overview.statSourcesHint")} color="#c99700" />
         <StatTile
-          icon={Users}
-          label={t("overview.statTeam")}
-          value={members}
-          hint={t("overview.ofMax", { max: workspace.plan.maxAgents })}
-          max={workspace.plan.maxAgents}
-          color="#7c4dff"
+          icon={Headset}
+          label={t("overview.kpiNeedsHuman")}
+          value={counts.needsHuman}
+          hint={t("overview.kpiNeedsHumanHint")}
+          color="#eb6834"
+          href="/dashboard/inbox"
         />
       </div>
 
+      {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
+          <CardTitleRow icon={TrendingUp} title={t("overview.chartTitle")} description={t("overview.chartSubtitle")} color="#0066ff" />
+          <CardContent>
+            <DailyColumns data={daily} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("overview.handlingTitle")}</CardTitle>
+            <CardDescription>{t("overview.handlingSubtitle")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HandlingBreakdown counts={counts.byStatus} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* What customers ask */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardTitleRow icon={MessagesSquare} title={t("overview.topTitle")} description={t("overview.topSubtitle")} color="#0066ff" />
+          <CardContent>
+            {questions.top.length === 0 ? (
+              <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{t("overview.topEmpty")}</p>
+            ) : (
+              <QuestionList
+                groups={questions.top}
+                barColor="#0066ff"
+                timesAsked={timesAsked}
+                action={(group) => (
+                  <Link
+                    href={`/dashboard/inbox?c=${group.conversationId}`}
+                    title={`${t("overview.viewChat")} · ${format.dateTime(group.lastAsked, { dateStyle: "medium" })}`}
+                    aria-label={t("overview.viewChat")}
+                    className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <ArrowRight className="size-4 rtl:-scale-x-100" />
+                  </Link>
+                )}
+              />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardTitleRow icon={CircleHelp} title={t("overview.unansweredTitle")} description={t("overview.unansweredSubtitle")} color="#eb6834" />
+          <CardContent>
+            {questions.unanswered.length === 0 ? (
+              <p className="flex items-center gap-2 rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+                <Check className="size-4 shrink-0 text-success" />
+                {t("overview.unansweredEmpty")}
+              </p>
+            ) : (
+              <QuestionList
+                groups={questions.unanswered}
+                barColor="#eb6834"
+                timesAsked={timesAsked}
+                action={(group) => (
+                  // Opens the FAQ form with this question filled in.
+                  <Link
+                    href={`/dashboard/knowledge?faq=${encodeURIComponent(group.text.slice(0, 300))}`}
+                    className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-border/80 bg-background px-2.5 text-xs font-medium hover:border-primary/50 hover:text-primary"
+                  >
+                    <MessageSquarePlus className="size-3.5" />
+                    {t("overview.addAnswer")}
+                  </Link>
+                )}
+              />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Plan usage, profile, hours */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle>{t("overview.usageTitle")}</CardTitle>
+              <Badge variant="secondary">{workspace.plan.name}</Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            {usage.map((u) => (
+              <div key={u.label}>
+                <div className="mb-1.5 flex items-baseline justify-between gap-2 text-sm">
+                  <span className="text-muted-foreground">{u.label}</span>
+                  <span className="font-medium tabular-nums">
+                    {u.value} <span className="font-normal text-muted-foreground">{t("overview.ofMax", { max: u.max })}</span>
+                  </span>
+                </div>
+                <Meter value={u.value} max={u.max} warn={u.warn} />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
           <CardHeader>
             <CardTitle>{t("overview.profile")}</CardTitle>
             <CardDescription dir="auto">{workspace.name}</CardDescription>
@@ -198,17 +332,11 @@ export default async function OverviewPage() {
           <CardContent>
             <dl className="flex flex-col">
               {profile.map(([label, value]) => (
-                <div key={label} className="flex items-center justify-between gap-4 border-b border-border/70 py-3 text-sm">
+                <div key={label} className="flex items-center justify-between gap-4 border-b border-border/70 py-2.5 text-sm last:border-0">
                   <dt className="text-muted-foreground">{label}</dt>
                   <dd className="min-w-0 truncate font-medium">{value}</dd>
                 </div>
               ))}
-              <div className="flex items-center justify-between gap-4 border-b border-border/70 py-3 text-sm">
-                <dt className="text-muted-foreground">{t("overview.plan")}</dt>
-                <dd>
-                  <Badge variant="secondary">{workspace.plan.name}</Badge>
-                </dd>
-              </div>
             </dl>
           </CardContent>
         </Card>
@@ -223,7 +351,7 @@ export default async function OverviewPage() {
                 const h = hours?.[day];
                 const closed = !h || h.closed;
                 return (
-                  <li key={day} className="flex items-center justify-between gap-4 border-b border-border/70 py-2.5 last:border-0">
+                  <li key={day} className="flex items-center justify-between gap-4 border-b border-border/70 py-2 last:border-0">
                     <span className="text-muted-foreground">{t(`onboarding.days.${day}`)}</span>
                     {closed ? (
                       <span className="text-muted-foreground">{t("overview.closed")}</span>

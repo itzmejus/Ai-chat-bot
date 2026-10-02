@@ -221,14 +221,14 @@ model KnowledgeSource {
 }
 
 model Chunk {
-  id          String                      @id @default(cuid())
+  id          String                       @id @default(cuid())
   workspaceId String
   sourceId    String
   content     String
   tokenCount  Int
   url         String? // page the chunk came from, for crawled sites
   embedding   Unsupported("vector(1536)")?
-  createdAt   DateTime                    @default(now())
+  createdAt   DateTime                     @default(now())
 
   workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   source    KnowledgeSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
@@ -260,15 +260,18 @@ model Conversation {
 }
 
 model Message {
-  id             String      @id @default(cuid())
-  workspaceId    String
-  conversationId String
-  role           MessageRole
-  content        String
-  authorId       String? // agent messages only: the team member who wrote it
-  confidence     Float? // assistant messages only
-  answered       Boolean? // assistant messages only: false = knowledge base had no answer
-  createdAt      DateTime    @default(now())
+  id                String                      @id @default(cuid())
+  workspaceId       String
+  conversationId    String
+  role              MessageRole
+  content           String
+  authorId          String? // agent messages only: the team member who wrote it
+  confidence        Float? // assistant messages only
+  answered          Boolean? // false = the knowledge base had no answer (set on the reply and on the question it answers)
+  // Customer messages only: a compact embedding of the question, used to group similar
+  // questions for the "most asked" and "unanswered" lists on the overview.
+  questionEmbedding Unsupported("vector(256)")?
+  createdAt         DateTime                    @default(now())
 
   workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
