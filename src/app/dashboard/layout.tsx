@@ -1,6 +1,7 @@
 import { LogOut } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Avatar, Brand } from "@/components/brand";
+import { DotPattern } from "@/components/illustrations";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { WorkspaceSwitcher } from "@/components/dashboard/workspace-switcher";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -24,16 +25,17 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
   return (
     <div className="flex min-h-screen bg-muted">
       {/* Sidebar (desktop) */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 bg-sidebar p-4 text-sidebar-foreground md:flex">
-        <Brand tone="light" className="px-2 pt-2" />
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 overflow-hidden bg-sidebar p-4 text-sidebar-foreground md:flex">
+        <DotPattern className="text-white/[0.07]" />
+        <Brand tone="light" className="relative px-2 pt-2" />
 
-        <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
+        <div className="relative flex flex-1 flex-col gap-2 overflow-y-auto">
           <p className="px-3 text-[11px] font-semibold tracking-wider text-sidebar-foreground/40 uppercase">{t("nav.menu")}</p>
           <SidebarNav />
         </div>
 
         {/* Monthly usage at a glance */}
-        <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+        <div className="relative rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-4">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium">{t("nav.usageTitle")}</p>
             <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium">{workspace.plan.name}</span>
@@ -48,7 +50,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar */}
         <header className="sticky top-0 z-20 border-b border-border/70 bg-background/95 backdrop-blur">
-          <div className="flex h-16 items-center justify-between gap-3 px-4 md:px-8">
+          <div className="flex h-14 items-center justify-between gap-3 px-4 md:h-16 md:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <Brand className="md:hidden" />
               <div className="hidden min-w-0 md:block">
@@ -68,9 +70,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             <div className="flex items-center gap-1.5">
               <LanguageSwitcher />
               <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
-              <div className="hidden items-center gap-2.5 sm:flex">
-                <Avatar name={displayName} />
-                <div className="min-w-0 leading-tight">
+              <div className="flex items-center gap-2.5">
+                <Avatar name={displayName} className="size-8 md:size-9" />
+                <div className="hidden min-w-0 leading-tight sm:block">
                   <p className="max-w-40 truncate text-sm font-medium">{displayName}</p>
                   <p className="text-xs text-muted-foreground">{t(`roles.${role}`)}</p>
                 </div>
@@ -83,13 +85,11 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             </div>
           </div>
 
-          {/* Navigation tabs (mobile) */}
-          <div className="overflow-x-auto px-1 md:hidden">
-            <SidebarNav variant="tabs" />
-          </div>
         </header>
 
-        <main className="min-w-0 flex-1 p-4 md:p-8">{children}</main>
+        {/* Extra bottom padding on mobile keeps content clear of the bottom navigation bar. */}
+        <main className="min-w-0 flex-1 p-4 pb-28 md:p-8">{children}</main>
+        <SidebarNav variant="bottom" />
       </div>
     </div>
   );

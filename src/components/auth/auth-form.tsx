@@ -19,7 +19,7 @@ export function AuthForm({ mode, googleEnabled }: { mode: "login" | "signup"; go
   const errors = state?.fieldErrors ?? {};
 
   return (
-    <Card>
+    <Card className="shadow-xl">
       <CardHeader>
         <CardTitle className="text-2xl font-bold">{t(`auth.${mode}Title`)}</CardTitle>
         <CardDescription className="text-[15px]">{t(`auth.${mode}Subtitle`)}</CardDescription>

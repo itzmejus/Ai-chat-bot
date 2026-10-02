@@ -1,10 +1,11 @@
 "use client";
 
-import { FileUp, Globe, MessageCircleQuestion, NotebookPen } from "lucide-react";
+import { CheckCircle2, FileUp, Globe, Loader2, MessageCircleQuestion, NotebookPen, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { FormField } from "@/components/form-field";
+import { UploadScene } from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,14 @@ import { addFaqAction, addUrlAction, saveNotesAction } from "@/server/actions/kn
 const TABS = ["url", "file", "faq", "notes"] as const;
 type Tab = (typeof TABS)[number];
 const TAB_ICONS = { url: Globe, file: FileUp, faq: MessageCircleQuestion, notes: NotebookPen } as const;
+
+// Keep in step with the server-side limits in src/server/ingest/parsers.ts.
+const FILE_TYPES = ["pdf", "docx", "txt"] as const;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+
+function formatBytes(bytes: number) {
+  return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 /** Shared footer: form-level error, success note, submit button. */
 function FormFooter({ state, pending, label }: { state: FormState; pending: boolean; label: string }) {
@@ -113,21 +122,51 @@ function FileForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [state, setState] = useState<FormState>(undefined);
+  const [file, setFile] = useState<File | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+
+  /** Check type and size in the browser for instant feedback; the server checks again. */
+  function choose(candidate: File | undefined) {
+    if (!candidate) return;
+    const extension = candidate.name.toLowerCase().split(".").pop() ?? "";
+    if (!FILE_TYPES.includes(extension as (typeof FILE_TYPES)[number])) {
+      setFile(null);
+      setState({ error: "knowledge.errors.unsupported" });
+    } else if (candidate.size > MAX_FILE_BYTES) {
+      setFile(null);
+      setState({ error: "knowledge.errors.tooLarge" });
+    } else {
+      setFile(candidate);
+      setState(undefined);
+    }
+  }
+
+  function clear() {
+    setFile(null);
+    if (input.current) input.current.value = "";
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
+    if (!file) {
+      setState({ error: "knowledge.errors.noFile" });
+      return;
+    }
     setPending(true);
     setState(undefined);
     try {
-      const res = await fetch("/api/sources/upload", { method: "POST", body: new FormData(form) });
-      const body = await res.json().catch(() => ({}));
+      // Built by hand because a dropped file is not in the <input>.
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/sources/upload", { method: "POST", body });
+      const json = await res.json().catch(() => ({}));
       if (res.ok) {
-        form.reset();
+        clear();
         setState({ ok: true });
         router.refresh();
       } else {
-        setState({ error: body.error ?? "errors.generic" });
+        setState({ error: json.error ?? "errors.generic" });
       }
     } catch {
       setState({ error: "errors.generic" });
@@ -138,11 +177,88 @@ function FileForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <FormField id="file" label={t("knowledge.fileLabel")}>
-        <Input id="file" name="file" type="file" accept=".pdf,.docx,.txt" required />
-      </FormField>
-      <p className="text-sm text-muted-foreground">{t("knowledge.fileHelp")}</p>
-      <FormFooter state={state} pending={pending} label={pending ? t("knowledge.uploading") : t("knowledge.fileSubmit")} />
+      {/* The whole zone is the label of the hidden file input, so clicking or pressing Enter opens the picker. */}
+      <label
+        htmlFor="file"
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          choose(e.dataTransfer.files[0]);
+        }}
+        className={cn(
+          "relative flex cursor-pointer flex-col items-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed px-4 py-8 text-center transition-all",
+          "focus-within:border-primary focus-within:ring-4 focus-within:ring-ring/15",
+          dragging
+            ? "scale-[1.01] border-primary bg-accent"
+            : "border-input bg-gradient-to-b from-accent/50 to-background hover:border-primary/60 hover:from-accent",
+        )}
+      >
+        <input
+          ref={input}
+          id="file"
+          name="file"
+          type="file"
+          accept=".pdf,.docx,.txt"
+          className="sr-only"
+          onChange={(e) => choose(e.target.files?.[0])}
+        />
+        <UploadScene className={cn("w-28 transition-transform", dragging && "-translate-y-1")} />
+        <div>
+          <p className="text-sm font-semibold">{dragging ? t("knowledge.dropActive") : t("knowledge.dropTitle")}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t("knowledge.fileHelp")}</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-1.5">
+          {FILE_TYPES.map((type) => (
+            <span key={type} className="rounded-md bg-background px-2 py-0.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase ring-1 ring-border">
+              {type}
+            </span>
+          ))}
+          <span className="text-[11px] text-muted-foreground">· {t("knowledge.maxSize")}</span>
+        </div>
+      </label>
+
+      {/* Chosen file */}
+      {file && (
+        <div className="flex items-center gap-3 rounded-xl border border-border/70 bg-background p-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-[11px] font-bold tracking-wide text-primary uppercase">
+            {file.name.split(".").pop()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium" dir="auto" title={file.name}>
+              {file.name}
+            </p>
+            <p className="text-xs text-muted-foreground" dir="ltr">
+              {formatBytes(file.size)}
+            </p>
+          </div>
+          <Button type="button" variant="ghost" size="icon-sm" onClick={clear} disabled={pending} aria-label={t("knowledge.removeFile")} title={t("knowledge.removeFile")}>
+            <X />
+          </Button>
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="submit" disabled={pending || !file}>
+          {pending ? <Loader2 className="animate-spin" /> : <FileUp />}
+          {pending ? t("knowledge.uploading") : t("knowledge.fileSubmit")}
+        </Button>
+        {state?.error && (
+          <p role="alert" className="text-sm text-destructive">
+            {t(state.error)}
+          </p>
+        )}
+        {state?.ok && !pending && (
+          <p role="status" className="flex items-center gap-1.5 text-sm text-success">
+            <CheckCircle2 className="size-4" />
+            {t("knowledge.saved")}
+          </p>
+        )}
+      </div>
     </form>
   );
 }
@@ -153,29 +269,44 @@ export function AddSource({ defaultUrl, notes, maxCrawlPages }: { defaultUrl: st
 
   return (
     <div className="flex flex-col gap-5">
-      <div role="tablist" className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-xl bg-muted p-1">
+      {/* Source types as selectable tiles */}
+      <div role="tablist" className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         {TABS.map((key) => {
           const Icon = TAB_ICONS[key];
+          const active = tab === key;
           return (
             <button
               key={key}
               type="button"
               role="tab"
-              aria-selected={tab === key}
+              aria-selected={active}
               onClick={() => setTab(key)}
               className={cn(
-                "flex h-9 items-center gap-2 rounded-lg px-3.5 text-sm font-medium whitespace-nowrap transition-colors",
-                tab === key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                "group relative flex flex-col items-start gap-2.5 rounded-xl border p-3.5 text-start transition-all outline-none focus-visible:ring-4 focus-visible:ring-ring/20",
+                active
+                  ? "border-primary bg-gradient-to-br from-accent to-white shadow-[0_4px_16px_-6px_rgb(0_102_255/0.45)]"
+                  : "border-border/80 bg-background hover:border-primary/40 hover:bg-accent/40",
               )}
             >
-              <Icon className={cn("size-4", tab === key && "text-primary")} />
-              {t(`tabs.${key}`)}
+              <span
+                className={cn(
+                  "flex size-9 items-center justify-center rounded-lg transition-colors",
+                  active ? "bg-primary text-white shadow-[0_2px_8px_rgb(0_102_255/0.4)]" : "bg-muted text-muted-foreground group-hover:text-primary",
+                )}
+              >
+                <Icon className="size-[18px]" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{t(`tabs.${key}`)}</span>
+                <span className="block text-xs leading-snug text-muted-foreground">{t(`tabHints.${key}`)}</span>
+              </span>
+              {active && <span aria-hidden className="absolute end-3 top-3 size-2 rounded-full bg-primary ring-4 ring-primary/15" />}
             </button>
           );
         })}
       </div>
 
-      <div role="tabpanel">
+      <div role="tabpanel" className="rounded-xl border border-border/70 bg-background/70 p-4 sm:p-5">
         {tab === "url" && <UrlForm defaultUrl={defaultUrl} maxPages={maxCrawlPages} />}
         {tab === "file" && <FileForm />}
         {tab === "faq" && <FaqForm />}

@@ -1,7 +1,7 @@
 import { ArrowRight, BookOpen, Check, FileText, MessagesSquare, Sparkles, Users, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Meter } from "@/components/meter";
+import { ChatScene, DotPattern, ProgressRing } from "@/components/illustrations";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -12,40 +12,61 @@ import { getAiMessagesUsed } from "@/server/limits/usage";
 
 export const metadata = { title: "Overview" };
 
-/** One headline number with an icon and, for limits, a usage bar. */
+const SURFACE_SHADOW = "shadow-[0_1px_2px_rgb(16_24_40/0.04),0_4px_16px_-4px_rgb(16_24_40/0.06)]";
+
+/** Ring colour for a usage figure: the tile's own colour, amber when nearly used up, red when full. */
+function usageColor(value: number, max: number, base: string) {
+  const ratio = max > 0 ? value / max : 0;
+  return ratio >= 1 ? "#d6000a" : ratio >= 0.8 ? "#d97706" : base;
+}
+
+/** One headline number. Limits get a progress ring; plain counts get an icon badge. */
 function StatTile({
   icon: Icon,
   label,
   value,
   hint,
   max,
-  warn,
-  tint,
+  color,
+  ringColor = color,
 }: {
   icon: LucideIcon;
   label: string;
   value: number;
   hint?: string;
   max?: number;
-  warn?: boolean;
-  tint: string;
+  /** Accent colour: tints the tile and colours the icon. */
+  color: string;
+  ringColor?: string;
 }) {
   return (
-    <Card size="sm">
-      <CardContent className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", tint)}>
+    <div
+      className={cn("relative overflow-hidden rounded-2xl border border-border/70 bg-card p-4 sm:p-5", SURFACE_SHADOW)}
+      style={{
+        // Same soft surface as cards, with the corner glow in this tile's accent colour.
+        backgroundImage: `radial-gradient(110% 110% at 100% 0%, color-mix(in oklab, ${color} 13%, transparent), transparent 62%), linear-gradient(180deg, #ffffff, #fafafc)`,
+      }}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[13px] leading-snug font-medium text-muted-foreground sm:text-sm">{label}</p>
+        {max !== undefined ? (
+          <ProgressRing value={value} max={max} color={ringColor} size={44}>
+            <Icon className="size-4" />
+          </ProgressRing>
+        ) : (
+          <span
+            className="flex size-11 shrink-0 items-center justify-center rounded-full"
+            style={{ color, backgroundColor: `color-mix(in oklab, ${color} 14%, white)` }}
+          >
             <Icon className="size-[18px]" />
           </span>
-        </div>
-        <p className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-bold tracking-tight tabular-nums sm:text-3xl">{value}</span>
-          {hint && <span className="text-sm text-muted-foreground">{hint}</span>}
-        </p>
-        {max !== undefined && <Meter value={value} max={max} warn={warn} />}
-      </CardContent>
-    </Card>
+        )}
+      </div>
+      <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5">
+        <span className="text-3xl font-bold tracking-tight tabular-nums">{value}</span>
+        {hint && <span className="text-sm text-muted-foreground">{hint}</span>}
+      </p>
+    </div>
   );
 }
 
@@ -83,49 +104,57 @@ export default async function OverviewPage() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight md:text-[28px]">{t("overview.welcome", { name: (user.name ?? user.email).split(" ")[0] })}</h1>
-        <p className="mt-1 text-muted-foreground">{t("overview.subtitle", { business: workspace.name })}</p>
-      </div>
+      {/* Welcome banner, with the setup checklist until every step is done */}
+      <section className="hero-surface relative overflow-hidden rounded-3xl p-5 text-white shadow-xl sm:p-8">
+        <DotPattern className="text-white/10" />
+        <ChatScene className="pointer-events-none absolute -end-20 -top-12 w-52 opacity-30 sm:-end-2 sm:top-1/2 sm:w-72 sm:-translate-y-1/2 sm:opacity-100 lg:end-8 lg:w-80" />
 
-      {/* Setup checklist: shown until every step is done */}
-      {stepsDone < steps.length && (
-        <Card className="relative overflow-hidden border-0 bg-sidebar text-white shadow-lg">
-          <div aria-hidden className="pointer-events-none absolute -end-20 -top-24 size-72 rounded-full bg-primary/40 blur-3xl" />
-          <CardHeader className="relative">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Sparkles className="size-5 text-[#ffd000]" />
+        <div className="relative max-w-[78%] sm:max-w-md lg:max-w-xl">
+          <p className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/80 ring-1 ring-white/15">
+            <span className="size-1.5 shrink-0 rounded-full bg-[#00c057]" />
+            <span className="truncate" dir="auto">
+              {workspace.name}
+            </span>
+          </p>
+          <h1 className="mt-4 text-[26px] leading-tight font-bold tracking-tight sm:text-4xl">
+            {t("overview.welcome", { name: (user.name ?? user.email).split(" ")[0] })}
+          </h1>
+          <p className="mt-2 text-sm text-white/65 sm:text-base">{t("overview.subtitle", { business: workspace.name })}</p>
+        </div>
+
+        {stepsDone < steps.length && (
+          <div className="relative mt-6 sm:mt-8 sm:max-w-[60%] lg:max-w-[58%]">
+            <p className="flex flex-wrap items-center gap-x-2 text-sm font-semibold">
+              <Sparkles className="size-4 text-[#ffd000]" />
               {t("overview.setupTitle")}
-            </CardTitle>
-            <CardDescription className="text-white/60">
-              {t("overview.setupProgress", { done: stepsDone, total: steps.length })}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="relative grid gap-3 md:grid-cols-2">
-            {steps.map((step, i) => (
-              <Link
-                key={step.title}
-                href={step.href}
-                className="group flex items-center gap-4 rounded-xl bg-white/[0.07] p-4 ring-1 ring-white/10 transition-colors hover:bg-white/[0.12]"
-              >
-                <span
-                  className={cn(
-                    "flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
-                    step.done ? "bg-[#00c057] text-white" : "bg-white/10 text-white",
-                  )}
+              <span className="font-normal text-white/55">· {t("overview.setupProgress", { done: stepsDone, total: steps.length })}</span>
+            </p>
+            <div className="mt-3 grid gap-2.5">
+              {steps.map((step, i) => (
+                <Link
+                  key={step.title}
+                  href={step.href}
+                  className="group flex items-center gap-3 rounded-2xl bg-white/[0.08] p-3 ring-1 ring-white/10 backdrop-blur transition-colors hover:bg-white/[0.14] sm:gap-4 sm:p-4"
                 >
-                  {step.done ? <Check className="size-4" strokeWidth={3} /> : i + 1}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-semibold">{step.title}</span>
-                  <span className="block text-sm text-white/60">{step.text}</span>
-                </span>
-                <ArrowRight className="size-4 shrink-0 text-white/50 transition-transform group-hover:translate-x-0.5 rtl:-scale-x-100" />
-              </Link>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+                  <span
+                    className={cn(
+                      "flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
+                      step.done ? "bg-[#00c057] text-white" : "bg-white/10 text-white ring-1 ring-white/20",
+                    )}
+                  >
+                    {step.done ? <Check className="size-4" strokeWidth={3} /> : i + 1}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className={cn("block text-sm font-semibold sm:text-[15px]", step.done && "text-white/60 line-through")}>{step.title}</span>
+                    <span className="block text-[13px] text-white/60 sm:text-sm">{step.text}</span>
+                  </span>
+                  <ArrowRight className="size-4 shrink-0 text-white/50 transition-transform group-hover:translate-x-0.5 rtl:-scale-x-100" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* Usage against the plan */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
@@ -135,7 +164,8 @@ export default async function OverviewPage() {
           value={messagesUsed}
           hint={t("overview.ofMax", { max: workspace.plan.monthlyMessages })}
           max={workspace.plan.monthlyMessages}
-          tint="bg-accent text-primary"
+          color="#0066ff"
+          ringColor={usageColor(messagesUsed, workspace.plan.monthlyMessages, "#0066ff")}
         />
         <StatTile
           icon={FileText}
@@ -143,23 +173,17 @@ export default async function OverviewPage() {
           value={pagesUsed}
           hint={t("overview.ofMax", { max: workspace.plan.maxKnowledgePages })}
           max={workspace.plan.maxKnowledgePages}
-          tint="bg-[#e7f8ee] text-success"
+          color="#00a04a"
+          ringColor={usageColor(pagesUsed, workspace.plan.maxKnowledgePages, "#00a04a")}
         />
-        <StatTile
-          icon={BookOpen}
-          label={t("overview.statSources")}
-          value={readySources}
-          hint={t("overview.statSourcesHint")}
-          tint="bg-[#fff6cc] text-[#8a6d00]"
-        />
+        <StatTile icon={BookOpen} label={t("overview.statSources")} value={readySources} hint={t("overview.statSourcesHint")} color="#c99700" />
         <StatTile
           icon={Users}
           label={t("overview.statTeam")}
           value={members}
           hint={t("overview.ofMax", { max: workspace.plan.maxAgents })}
           max={workspace.plan.maxAgents}
-          warn={false}
-          tint="bg-[#f1ebff] text-[#6b3fd4]"
+          color="#7c4dff"
         />
       </div>
 

@@ -172,7 +172,22 @@
       "noText": "No text was found in this file. Scanned documents are not supported.",
       "unreadable": "The file could not be read. It may be damaged or password-protected.",
       "noFile": "Choose a file first."
-    }
+    },
+    "tabHints": {
+      "url": "Read the pages of your site",
+      "file": "PDF, DOCX or TXT",
+      "faq": "A question and its answer",
+      "notes": "Anything else, in your words"
+    },
+    "heroPages": "Knowledge pages",
+    "heroSources": "Sources ready",
+    "heroProcessing": "Processing",
+    "sourcesSubtitle": "What your assistant has learned so far.",
+    "addSubtitle": "Choose a source type. Processing happens in the background.",
+    "dropTitle": "Drag a file here, or click to browse",
+    "dropActive": "Drop the file to add it",
+    "maxSize": "up to 10 MB",
+    "removeFile": "Remove file"
   },
   "assistant": {
     "testTitle": "Test your assistant",
@@ -200,7 +215,9 @@
     "extraInstructions": "Extra instructions",
     "extraPlaceholder": "e.g. Always mention our free first consultation. Do not discuss competitor prices.",
     "save": "Save settings",
-    "ownerOnlyNote": "Only the workspace owner can change these settings."
+    "ownerOnlyNote": "Only the workspace owner can change these settings.",
+    "online": "Online",
+    "preview": "Preview"
   },
   "errors": {
     "required": "This field is required",

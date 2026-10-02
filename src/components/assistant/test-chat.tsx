@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, SendHorizontal } from "lucide-react";
+import { Bot, RotateCcw, SendHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -79,18 +79,38 @@ export function TestChat({ assistantName, greeting }: { assistantName: string; g
   }
 
   return (
-    <div className="flex h-[32rem] flex-col overflow-hidden rounded-xl border bg-muted">
-      <div className="flex items-center justify-between gap-2 border-b bg-background px-4 py-2.5">
-        <p className="truncate text-sm font-semibold" dir="auto">
-          {assistantName}
-        </p>
-        <Button variant="ghost" size="sm" onClick={reset} disabled={busy || messages.length === 0}>
+    <div className="flex h-[32rem] flex-col overflow-hidden rounded-2xl border border-border/70 bg-muted shadow-[0_8px_30px_-12px_rgb(16_24_40/0.25)]">
+      {/* Header styled like the customer-facing widget */}
+      <div className="hero-surface flex items-center justify-between gap-2 px-4 py-3 text-white">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-primary shadow-[0_2px_8px_rgb(0_102_255/0.5)]">
+            <Bot className="size-[18px]" />
+            <span className="absolute -end-0.5 -bottom-0.5 size-3 rounded-full bg-[#00c057] ring-2 ring-[#1b1b20]" />
+          </span>
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-sm font-semibold" dir="auto">
+              {assistantName}
+            </p>
+            <p className="text-xs text-white/60">{t("assistant.online")}</p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-white/80 hover:bg-white/10 hover:text-white"
+          onClick={reset}
+          disabled={busy || messages.length === 0}
+        >
           <RotateCcw />
           {t("assistant.reset")}
         </Button>
       </div>
 
-      <div ref={scroller} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4" aria-live="polite">
+      <div
+        ref={scroller}
+        className="flex flex-1 flex-col gap-3 overflow-y-auto bg-[radial-gradient(circle_at_1px_1px,rgb(27_27_32/0.07)_1px,transparent_0)] bg-[length:18px_18px] p-4"
+        aria-live="polite"
+      >
         <Bubble role="assistant" text={greeting} />
         {messages.length === 0 && <p className="mt-2 text-center text-sm text-muted-foreground">{t("assistant.empty")}</p>}
         {messages.map((m) => (

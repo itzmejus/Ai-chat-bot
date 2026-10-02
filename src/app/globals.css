@@ -140,3 +140,19 @@
     scroll-padding-top: 5rem;
   }
 }
+/* Card surface: a barely-there gradient so cards read as soft material rather than flat white.
+   A cool tint falls from the top corner; the base fades from white to a very light grey. */
+@utility card-surface {
+  background-image:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 5%, transparent), transparent 55%),
+    linear-gradient(180deg, #ffffff 0%, #fafafc 100%);
+}
+
+/* Dark hero panels (welcome banner, auth and onboarding headers). */
+@utility hero-surface {
+  background-color: var(--sidebar);
+  background-image:
+    radial-gradient(60% 120% at 100% 0%, rgb(0 102 255 / 0.55), transparent 60%),
+    radial-gradient(45% 90% at 0% 100%, rgb(255 208 0 / 0.12), transparent 65%),
+    linear-gradient(135deg, #1b1b20 0%, #16161b 100%);
+}
