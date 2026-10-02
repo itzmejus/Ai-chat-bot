@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { authenticateWidget, clientIp, errorJson, visitorIdSchema } from "@/server/widget/service";
 import { rateLimit } from "@/server/limits/rate-limit";
+import { notifyLeadCaptured } from "@/server/notifications";
 
 const bodySchema = z.object({
   visitorId: visitorIdSchema,
@@ -31,7 +32,10 @@ export async function POST(request: Request) {
     select: { id: true },
   });
   // Preview chats from the dashboard are not real leads.
-  if (!preview) await db.lead.create({ data: { workspaceId, conversationId: conversation.id, name, phone } });
+  if (!preview) {
+    const lead = await db.lead.create({ data: { workspaceId, conversationId: conversation.id, name, phone }, select: { id: true } });
+    void notifyLeadCaptured(workspaceId, lead.id).catch((err) => console.error("[notify] lead email failed", err));
+  }
 
   return Response.json({ conversationId: conversation.id });
 }

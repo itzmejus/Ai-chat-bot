@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { encodeSystemEvent } from "@/lib/system-events";
 import { rateLimit } from "@/server/limits/rate-limit";
+import { notifyNeedsHuman } from "@/server/notifications";
 import { publish } from "@/server/realtime/bus";
 import { authenticateWidget, clientIp, conversationIdSchema, errorJson, findVisitorConversation, visitorIdSchema } from "@/server/widget/service";
 
@@ -49,6 +50,10 @@ export async function POST(request: Request) {
   // An agent who has already taken over stays in charge.
   if (conversation.status !== "human") {
     await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", unread: true, lastMessageAt: new Date() } });
+    // Email the team once, when the chat first starts waiting.
+    if (!preview && conversation.status !== "needs_human") {
+      void notifyNeedsHuman(workspaceId, conversationId).catch((err) => console.error("[notify] needs-human email failed", err));
+    }
   }
 
   await publish({ workspaceId, conversationId, type: "message", messageId: reply.id });

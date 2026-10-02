@@ -2,6 +2,7 @@ import { searchChunks, type ChunkMatch } from "@/server/db/chunks";
 import { saveQuestionEmbedding } from "@/server/analytics";
 import { tenantDb } from "@/server/db/tenant";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
+import { notifyLeadCaptured, notifyNeedsHuman } from "@/server/notifications";
 import { publish } from "@/server/realtime/bus";
 import { embedTexts, streamChat } from "./openai";
 import { buildMessages, buildSystemPrompt, parseHeader, type ReplyHeader } from "./prompt";
@@ -70,6 +71,14 @@ export async function* answerMessage(input: {
   const { workspaceId, conversationId } = input;
   const text = input.text.trim().slice(0, MAX_MESSAGE_CHARS);
   const db = tenantDb(workspaceId);
+  /**
+   * Email the business that this chat needs a person, once: only when the conversation
+   * was not already waiting. Not awaited, so email can never slow down or break the chat.
+   */
+  const alertTeam = () => {
+    if (!conversation || conversation.isTest || conversation.status === "needs_human") return;
+    void notifyNeedsHuman(workspaceId, conversationId).catch((err) => console.error("[notify] needs-human email failed", err));
+  };
   /** Tell the inbox (and the customer's widget) that the conversation changed. */
   const announce = async (messageId: string) => {
     await publish({ workspaceId, conversationId, type: "message", messageId });
@@ -111,6 +120,7 @@ export async function* answerMessage(input: {
       data: { workspaceId, conversationId, role: "assistant", content: reply, confidence: 0, answered: false },
     });
     await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", lastMessageAt: new Date() } });
+    alertTeam();
     await announce(message.id);
     yield { type: "token", text: reply };
     yield { type: "done", result: { ...base, reply, messageId: message.id, needsHuman: true, skipped: kind } };
@@ -188,6 +198,7 @@ export async function* answerMessage(input: {
         data: { workspaceId, conversationId, role: "assistant", content: reply.trim(), confidence: 0, answered: false },
       });
       await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", lastMessageAt: new Date() } });
+      alertTeam();
       await announce(message.id);
       yield { type: "done", result: { ...base, reply: reply.trim(), messageId: message.id, needsHuman: true, skipped: "error" } };
     } else {
@@ -213,7 +224,10 @@ export async function* answerMessage(input: {
     const details = { name: header.name ?? undefined, phone: header.phone ?? undefined, email: header.email ?? undefined };
     const existing = await db.lead.findFirst({ where: { conversationId }, select: { id: true } });
     if (existing) await db.lead.update({ where: { id: existing.id }, data: details });
-    else await db.lead.create({ data: { workspaceId, conversationId, ...details } });
+    else {
+      const lead = await db.lead.create({ data: { workspaceId, conversationId, ...details }, select: { id: true } });
+      void notifyLeadCaptured(workspaceId, lead.id).catch((err) => console.error("[notify] lead email failed", err));
+    }
     leadCaptured = !existing;
   }
 
@@ -226,6 +240,7 @@ export async function* answerMessage(input: {
       ...(header.phone ? { visitorPhone: header.phone } : {}),
     },
   });
+  if (needsHuman) alertTeam();
   await recordAiMessage(db, workspaceId);
   await announce(message.id);
 

@@ -4,7 +4,7 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 6 of 8** (setup, auth, workspaces, knowledge base, AI answering, widget, inbox and takeover, leads and analytics).
+> Build status: **phase 7 of 8** (everything except the seed data, final README and deployment guide).
 > This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
 
 ## Stack
@@ -67,6 +67,10 @@ src/server/realtime/    event bus (in-process + Postgres NOTIFY) and Server-Sent
 src/server/inbox.ts     inbox list, takeover, agent replies, close and reopen
 src/server/leads.ts     leads list, status, CSV export
 src/server/analytics.ts overview numbers, daily counts, question grouping
+src/server/team.ts      members, roles, invitations
+src/server/notifications.ts  lead and needs-human emails
+src/server/email/       SMTP mailer and email layout
+src/server/billing/     plan changes; placeholder for Stripe
 src/server/widget/      widget tokens and public chat helpers
 src/lib/widget-domains.ts  domain whitelist rules
 src/proxy.ts            keeps the app host and the widget host to their own paths
@@ -210,6 +214,36 @@ Grouping works on a compact (256-dimension) embedding stored with each customer 
 (`src/server/analytics.ts`). Messages containing a phone number or email are left out of both lists.
 The charts are plain HTML and CSS (`src/components/overview/charts.tsx`), with a hover tooltip and
 a screen-reader table for the daily chart.
+
+## Team, notifications, settings and plans
+
+**Team** (`/dashboard/team`). Owners invite people by email as an agent or an owner. The invitation
+is a link (`/invite/<token>`) valid for 7 days; only the invited email address can accept it, after
+signing up or logging in. Pending invitations hold a seat. Owners can change roles and remove
+members; a workspace always keeps at least one owner. Agents can use the inbox, leads and
+knowledge base; owners can also change settings, the widget and the team.
+
+**Email** (`src/server/email/mailer.ts`) goes out over SMTP using the `EMAIL_SERVER_*` variables.
+When no host is set, messages are printed to the server log instead, and the Team page shows the
+invitation link to copy. **Notifications** (`src/server/notifications.ts`) email the addresses listed
+in Settings when a lead is captured and when a chat starts needing a person (once per chat, not
+per message). They are written in Arabic for businesses whose customer language is Arabic.
+
+**Settings** (`/dashboard/settings`): business profile and working hours, notification switches and
+recipients, usage against the plan, and the plans.
+
+**Plans and limits.** The `Plan` table holds three limits, all enforced:
+
+| Limit | Where it is enforced |
+| --- | --- |
+| AI messages per month | `answerMessage()`: at the limit the customer gets the business's contact details instead of an AI reply, and the dashboard shows a banner |
+| Knowledge pages | adding a source, and again when a website crawl finishes |
+| Team size | inviting a member (members plus pending invitations) |
+
+Payment is not built. `src/server/billing/index.ts` is the placeholder: it documents where Stripe
+checkout and the webhook plug in, and `setWorkspacePlan()` is the one function that changes a plan.
+Until then, `ALLOW_FREE_PLAN_CHANGE=true` lets owners switch plan from Settings without paying
+(development and demos only).
 
 ## Database changes
 

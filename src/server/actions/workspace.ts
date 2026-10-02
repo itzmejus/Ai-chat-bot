@@ -3,36 +3,13 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALES, WORKSPACE_COOKIE, type Locale } from "@/lib/config";
-import { DAYS, workspaceSchema } from "@/lib/validation";
+import { parseWorkspaceForm } from "@/lib/workspace-form";
 import { requireUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
 import { createWorkspaceForUser } from "@/server/workspaces";
 import type { FormState } from "./auth";
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
-
-/** Turn the flat onboarding form fields into the shape workspaceSchema expects. */
-function parseWorkspaceForm(formData: FormData) {
-  const text = (key: string) => String(formData.get(key) ?? "");
-  return workspaceSchema.safeParse({
-    name: text("name"),
-    industry: text("industry"),
-    websiteUrl: text("websiteUrl"),
-    defaultLanguage: text("defaultLanguage"),
-    phone: text("phone"),
-    whatsapp: text("whatsapp"),
-    workingHours: Object.fromEntries(
-      DAYS.map((d) => [
-        d,
-        {
-          closed: formData.get(`hours.${d}.closed`) === "on",
-          open: text(`hours.${d}.open`) || "09:00",
-          close: text(`hours.${d}.close`) || "18:00",
-        },
-      ]),
-    ),
-  });
-}
 
 export async function createWorkspaceAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();

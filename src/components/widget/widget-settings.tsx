@@ -135,7 +135,7 @@ export function WidgetSettings({
                       {values.brandColor.toLowerCase() === color && <Check className="size-4" strokeWidth={3} />}
                     </button>
                   ))}
-                  <label className="flex h-9 cursor-pointer items-center gap-2 rounded-full border border-input bg-background ps-1.5 pe-3 text-sm">
+                  <label className="flex h-10 cursor-pointer items-center gap-2 rounded-full border border-input bg-background ps-1 pe-3 text-sm">
                     <input
                       id="brandColor"
                       name="brandColor"
@@ -143,7 +143,7 @@ export function WidgetSettings({
                       value={values.brandColor}
                       onChange={(e) => set("brandColor", e.target.value)}
                       aria-label={t("widget.customColor")}
-                      className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0"
+                      className="size-8 cursor-pointer rounded-full border-0 bg-transparent p-0"
                     />
                     <span dir="ltr" className="font-mono text-xs uppercase">
                       {values.brandColor}
@@ -262,13 +262,13 @@ export function WidgetSettings({
               {values.allowedDomains.length > 0 ? (
                 <ul className="flex flex-wrap gap-2">
                   {values.allowedDomains.map((domain) => (
-                    <li key={domain} className="flex items-center gap-1.5 rounded-full bg-[#e7f8ee] py-1 ps-3 pe-1 text-sm font-medium text-success">
+                    <li key={domain} className="flex items-center gap-1 rounded-full bg-[#e7f8ee] py-0.5 ps-3 pe-0.5 text-sm font-medium text-success">
                       <span dir="ltr">{domain}</span>
                       <button
                         type="button"
                         aria-label={t("widget.removeDomain", { domain })}
                         onClick={() => set("allowedDomains", values.allowedDomains.filter((d) => d !== domain))}
-                        className="flex size-6 items-center justify-center rounded-full hover:bg-success/15"
+                        className="flex size-8 items-center justify-center rounded-full hover:bg-success/15"
                       >
                         <X className="size-3.5" />
                       </button>

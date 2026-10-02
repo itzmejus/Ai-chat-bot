@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import { LogOut, TriangleAlert } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Avatar, Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
@@ -88,7 +89,18 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         </header>
 
         {/* Extra bottom padding on mobile keeps content clear of the bottom navigation bar. */}
-        <main className="min-w-0 flex-1 p-4 pb-28 md:p-8">{children}</main>
+        <main className="min-w-0 flex-1 p-4 pb-28 md:p-8">
+          {messagesUsed >= workspace.plan.monthlyMessages && (
+            <div role="status" className="mx-auto mb-4 flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-[#fff8e8] p-3.5 text-sm text-[#7a4700] ring-1 ring-[#f5c56b]">
+              <TriangleAlert className="size-4 shrink-0" />
+              <p className="min-w-0 flex-1">{t("nav.limitReached")}</p>
+              <Link href="/dashboard/settings" className="shrink-0 font-semibold underline underline-offset-4">
+                {t("nav.viewPlans")}
+              </Link>
+            </div>
+          )}
+          {children}
+        </main>
         <SidebarNav variant="bottom" />
       </div>
     </div>

@@ -46,7 +46,10 @@ export async function processSource(workspaceId: string, sourceId: string, deps:
       if (maxPages <= 0) throw new IngestError("limit");
 
       const pages = await crawlSite(source.url!, { maxPages, fetcher: deps.fetcher });
-      documents = pages.map((p) => ({ url: p.url, text: p.text }));
+      // Sources added while the crawl was running also count: keep only what still fits.
+      const room = workspace.plan.maxKnowledgePages - ((await knowledgePagesUsed(db)) - source.pageCount);
+      if (room <= 0) throw new IngestError("limit");
+      documents = pages.slice(0, room).map((p) => ({ url: p.url, text: p.text }));
     } else if (source.type === "faq") {
       documents = [{ url: null, text: `Question: ${source.title}\nAnswer: ${source.content ?? ""}` }];
     } else {

@@ -7,7 +7,6 @@ import { DailyColumns, HandlingBreakdown } from "@/components/overview/charts";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { DAYS, type WorkingHours } from "@/lib/validation";
 import { conversationsPerDay, overviewCounts, questionInsights, type QuestionGroup } from "@/server/analytics";
 import { requireWorkspace } from "@/server/auth/session";
 import { knowledgePagesUsed } from "@/server/knowledge";
@@ -107,7 +106,7 @@ function CardTitleRow({ icon: Icon, title, description, color }: { icon: LucideI
 
 /**
  * Overview: setup progress, headline numbers, conversation charts, what customers
- * ask (and what the assistant could not answer), plan usage, and the business profile.
+ * ask (and what the assistant could not answer), and plan usage.
  */
 export default async function OverviewPage() {
   const { user, workspace, db } = await requireWorkspace();
@@ -133,15 +132,6 @@ export default async function OverviewPage() {
   ];
   const stepsDone = steps.filter((s) => s.done).length;
 
-  const hours = workspace.workingHours as Partial<WorkingHours> | null;
-  const notSet = <span className="text-muted-foreground">{t("overview.notSet")}</span>;
-  const profile: [string, React.ReactNode][] = [
-    [t("onboarding.industry"), t(`onboarding.industries.${workspace.industry}`)],
-    [t("onboarding.defaultLanguage"), t(`onboarding.languages.${workspace.defaultLanguage}`)],
-    [t("onboarding.websiteUrl"), workspace.websiteUrl ? <span dir="ltr">{workspace.websiteUrl.replace(/^https?:\/\//, "")}</span> : notSet],
-    [t("onboarding.phone"), workspace.phone ? <span dir="ltr">{workspace.phone}</span> : notSet],
-    [t("onboarding.whatsapp"), workspace.whatsapp ? <span dir="ltr">{workspace.whatsapp}</span> : notSet],
-  ];
   const usage = [
     { label: t("overview.usageMessages"), value: messagesUsed, max: workspace.plan.monthlyMessages, warn: true },
     { label: t("overview.usagePages"), value: pagesUsed, max: workspace.plan.maxKnowledgePages, warn: true },
@@ -300,73 +290,33 @@ export default async function OverviewPage() {
         </Card>
       </div>
 
-      {/* Plan usage, profile, hours */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle>{t("overview.usageTitle")}</CardTitle>
+      {/* Plan usage */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2">
+              {t("overview.usageTitle")}
               <Badge variant="secondary">{workspace.plan.name}</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            {usage.map((u) => (
-              <div key={u.label}>
-                <div className="mb-1.5 flex items-baseline justify-between gap-2 text-sm">
-                  <span className="text-muted-foreground">{u.label}</span>
-                  <span className="font-medium tabular-nums">
-                    {u.value} <span className="font-normal text-muted-foreground">{t("overview.ofMax", { max: u.max })}</span>
-                  </span>
-                </div>
-                <Meter value={u.value} max={u.max} warn={u.warn} />
+            </CardTitle>
+            <Link href="/dashboard/settings" className="flex h-8 items-center rounded-lg px-2 text-sm font-medium text-primary hover:bg-accent">
+              {t("nav.viewPlans")}
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-5 sm:grid-cols-3">
+          {usage.map((u) => (
+            <div key={u.label}>
+              <div className="mb-1.5 flex items-baseline justify-between gap-2 text-sm">
+                <span className="text-muted-foreground">{u.label}</span>
+                <span className="font-medium tabular-nums">
+                  {u.value} <span className="font-normal text-muted-foreground">{t("overview.ofMax", { max: u.max })}</span>
+                </span>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("overview.profile")}</CardTitle>
-            <CardDescription dir="auto">{workspace.name}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <dl className="flex flex-col">
-              {profile.map(([label, value]) => (
-                <div key={label} className="flex items-center justify-between gap-4 border-b border-border/70 py-2.5 text-sm last:border-0">
-                  <dt className="text-muted-foreground">{label}</dt>
-                  <dd className="min-w-0 truncate font-medium">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("overview.workingHours")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="flex flex-col text-sm">
-              {DAYS.map((day) => {
-                const h = hours?.[day];
-                const closed = !h || h.closed;
-                return (
-                  <li key={day} className="flex items-center justify-between gap-4 border-b border-border/70 py-2 last:border-0">
-                    <span className="text-muted-foreground">{t(`onboarding.days.${day}`)}</span>
-                    {closed ? (
-                      <span className="text-muted-foreground">{t("overview.closed")}</span>
-                    ) : (
-                      <span dir="ltr" className="font-medium tabular-nums">
-                        {h.open} – {h.close}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+              <Meter value={u.value} max={u.max} warn={u.warn} />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
