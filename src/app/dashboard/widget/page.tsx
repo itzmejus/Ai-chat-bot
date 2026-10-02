@@ -1,7 +1,8 @@
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { ChatScene, DotPattern } from "@/components/illustrations";
 import { WidgetSettings } from "@/components/widget/widget-settings";
-import { WIDGET_URL } from "@/lib/config";
+import { APP_URL, WIDGET_URL } from "@/lib/config";
 import { requireWorkspace } from "@/server/auth/session";
 import { createWidgetToken } from "@/server/widget/token";
 
@@ -17,7 +18,11 @@ export default async function WidgetPage() {
   const embedCode = `<script src="${WIDGET_URL}/widget.js" data-workspace="${workspace.publicKey}" async></script>`;
   // The preview iframe is authorised by a short-lived signed token rather than the login
   // cookie, because the widget is served from a different hostname than the dashboard.
-  const previewToken = createWidgetToken(workspace.id, { preview: true, ttlSeconds: 2 * 60 * 60 });
+  // The token names the address this dashboard page is being viewed on; only that address may frame the preview.
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? new URL(APP_URL).host;
+  const protocol = requestHeaders.get("x-forwarded-proto")?.split(",")[0] ?? (host.startsWith("localhost") ? "http" : "https");
+  const previewToken = createWidgetToken(workspace.id, { preview: true, origin: `${protocol}://${host}`, ttlSeconds: 2 * 60 * 60 });
   const previewUrl = `${WIDGET_URL}/embed/${workspace.publicKey}?preview=${encodeURIComponent(previewToken)}`;
 
   return (

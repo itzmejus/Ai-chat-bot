@@ -4,7 +4,7 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 4 of 8** (setup, auth, workspaces, knowledge base ingestion, AI answering, embeddable widget).
+> Build status: **phase 5 of 8** (setup, auth, workspaces, knowledge base, AI answering, widget, inbox and human takeover).
 > This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
 
 ## Stack
@@ -63,7 +63,8 @@ src/server/knowledge.ts knowledge base operations (add, re-sync, delete, plan li
 src/server/ingest/      crawler, safe fetcher, file parsers, chunker, processSource
 src/server/ai/          OpenAI client, prompt, and the answering service (answer.ts)
 src/server/limits/      monthly usage counter and rate limiter
-src/server/realtime/    Server-Sent Events helper
+src/server/realtime/    event bus (in-process + Postgres NOTIFY) and Server-Sent Events helper
+src/server/inbox.ts     inbox list, takeover, agent replies, close and reopen
 src/server/widget/      widget tokens and public chat helpers
 src/lib/widget-domains.ts  domain whitelist rules
 src/proxy.ts            keeps the app host and the widget host to their own paths
@@ -162,6 +163,30 @@ the widget on `WIDGET_URL` (`https://chat.siteselo.com`). Both point at the same
 `http://localhost:3000`.
 
 **Try it locally:** follow the steps at the top of `examples/test-page.html`.
+
+## Inbox, realtime and human takeover
+
+**Dashboard > Inbox** lists every customer conversation (dashboard test chats are excluded) with
+filters (all, needs human, AI handled, closed), search by name, phone or message text, and unread
+markers. Opening a conversation marks it read.
+
+- **Take over** pauses the AI for that conversation: the agent's replies are delivered to the
+  customer's widget immediately, and the customer's messages go only to the agent.
+- **Return to AI** hands it back; **Close** ends the chat (the customer's next message starts a new one).
+- Timeline markers such as "Sara joined the chat" are stored as codes (`src/lib/system-events.ts`)
+  and translated where they are shown. The customer sees that a team member joined, not their name.
+
+**How realtime works.** Code that changes a conversation calls `publish()` in
+`src/server/realtime/bus.ts`. The event (ids only, never message text) is delivered to subscribers
+in the same process and, through Postgres `NOTIFY`, to other server instances, which listen on a
+dedicated connection (`DIRECT_URL`). Two Server-Sent Events endpoints forward events to browsers:
+
+| Endpoint | For | Sends |
+| --- | --- | --- |
+| `GET /api/inbox/stream` | dashboard (login cookie) | "something changed in conversation X"; the page re-fetches |
+| `GET /api/widget/stream` | customer widget (widget token + visitor id) | agent replies and takeover events for that one conversation |
+
+Each subscriber loads message content through its own workspace-scoped database client.
 
 ## Database changes
 

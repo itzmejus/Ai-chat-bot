@@ -171,6 +171,12 @@ describe("embed page (where the whitelist is enforced)", () => {
     expect(ok.config).toMatchObject({ preview: true, previewOrigin: "https://app.example.com" });
     expect(verifyWidgetToken(ok.config.token)?.preview).toBe(true);
 
+    // A preview opened from another dashboard address (www., the host's own domain) names that address.
+    const www = await loadEmbed(a.key, { preview: createWidgetToken(a.workspaceId, { preview: true, origin: "https://www.app.example.com" }) });
+    expect(www.csp).toContain("frame-ancestors https://www.app.example.com;");
+    expect(www.csp).not.toContain("https://app.example.com");
+    expect(www.config.previewOrigin).toBe("https://www.app.example.com");
+
     // Another workspace's preview token, or an ordinary chat token, does not unlock it.
     expect((await loadEmbed(a.key, { preview: createWidgetToken(b.workspaceId, { preview: true }) })).status).toBe(403);
     expect((await loadEmbed(a.key, { preview: createWidgetToken(a.workspaceId) })).status).toBe(403);

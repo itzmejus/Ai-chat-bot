@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, LayoutDashboard, MessageSquareCode, type LucideIcon } from "lucide-react";
+import { BookOpen, Inbox, LayoutDashboard, MessageSquareCode, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 /** Dashboard sections. New pages are added here as each build phase lands. */
 const NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/dashboard", key: "overview", icon: LayoutDashboard },
+  { href: "/dashboard/inbox", key: "inbox", icon: Inbox },
   { href: "/dashboard/knowledge", key: "knowledge", icon: BookOpen },
   { href: "/dashboard/widget", key: "widget", icon: MessageSquareCode },
 ];

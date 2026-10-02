@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { encodeSystemEvent } from "@/lib/system-events";
 import { rateLimit } from "@/server/limits/rate-limit";
+import { publish } from "@/server/realtime/bus";
 import { authenticateWidget, clientIp, conversationIdSchema, errorJson, findVisitorConversation, visitorIdSchema } from "@/server/widget/service";
 
 const bodySchema = z.object({
@@ -39,7 +41,7 @@ export async function POST(request: Request) {
   const conversationId = conversation.id;
 
   // The system message is for the inbox; the customer sees the confirmation.
-  await db.message.create({ data: { workspaceId, conversationId, role: "system", content: "Customer asked to talk to a human." } });
+  await db.message.create({ data: { workspaceId, conversationId, role: "system", content: encodeSystemEvent("human_requested") } });
   const reply = await db.message.create({
     data: { workspaceId, conversationId, role: "assistant", content: CONFIRMATION[locale], answered: true },
     select: { id: true, content: true },
@@ -48,6 +50,9 @@ export async function POST(request: Request) {
   if (conversation.status !== "human") {
     await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", unread: true, lastMessageAt: new Date() } });
   }
+
+  await publish({ workspaceId, conversationId, type: "message", messageId: reply.id });
+  await publish({ workspaceId, conversationId, type: "conversation" });
 
   return Response.json({ conversationId, message: reply });
 }

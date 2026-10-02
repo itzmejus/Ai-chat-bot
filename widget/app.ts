@@ -43,6 +43,9 @@ const TEXT: Record<Locale, Record<string, string>> = {
     error: "Something went wrong. Please try again.",
     rateLimited: "You're sending messages too quickly. Please wait a moment.",
     typing: "Typing",
+    agentJoined: "A team member joined the chat",
+    returnedToAi: "You are chatting with the assistant again",
+    chatClosed: "This chat has ended. Send a message to start a new one.",
   },
   ar: {
     online: "متصل الآن",
@@ -61,6 +64,9 @@ const TEXT: Record<Locale, Record<string, string>> = {
     error: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
     rateLimited: "أنت ترسل الرسائل بسرعة كبيرة. يرجى الانتظار قليلاً.",
     typing: "يكتب",
+    agentJoined: "انضم أحد أعضاء الفريق إلى المحادثة",
+    returnedToAi: "أنت تتحدث مع المساعد مرة أخرى",
+    chatClosed: "انتهت هذه المحادثة. أرسل رسالة لبدء محادثة جديدة.",
   },
 };
 
@@ -104,7 +110,7 @@ function randomId(): string {
 
 const visitorId = storage.get("visitor") ?? randomId();
 storage.set("visitor", visitorId);
-let conversationId = storage.get("conversation") ?? undefined;
+let conversationId = storage.get("conversation") || undefined;
 
 const hasArabic = (s: string) => /[؀-ۿ]/.test(s);
 let locale: Locale =
@@ -232,31 +238,109 @@ function sessionStorageFlag(name: string): boolean {
 function setConversation(id: string) {
   conversationId = id;
   storage.set("conversation", id);
+  void listen();
 }
 
 function showError(code?: string) {
   addMessage("error", code === "rate_limited" ? t("rateLimited") : t("error"));
 }
 
-async function restore() {
-  if (!conversationId) return;
+/** Message and event ids already shown, so the live stream never repeats one. */
+const seen = new Set<string>();
+
+/**
+ * Load the conversation from the server and show it. Used when the widget loads
+ * (same browser session) and again after the live connection drops, to catch up.
+ */
+async function sync() {
+  if (!conversationId || busy) return;
   try {
     const res = await api("session", {});
     if (!res.ok) return;
-    const data = (await res.json()) as { conversationId: string | null; status: string | null; messages: { role: Role; content: string }[] };
+    const data = (await res.json()) as { conversationId: string | null; status: string | null; messages: { id: string; role: Role; content: string }[] };
     if (!data.conversationId) {
       // Unknown or closed: start fresh next time.
       conversationId = undefined;
+      storage.set("conversation", "");
       needsForm = config.preChatForm;
       renderFooter();
       return;
     }
-    for (const m of data.messages) addMessage(m.role, m.content);
-    if (data.status === "needs_human" || data.status === "human") humanRequested = true;
+    // Replace what is on screen with the server's record (the greeting stays).
+    for (const node of [...messages.children]) if (node !== greetingBubble) node.remove();
+    for (const m of data.messages) {
+      seen.add(m.id);
+      addMessage(m.role, m.content);
+    }
+    humanRequested = data.status === "needs_human" || data.status === "human";
     renderFooter();
+    void listen();
   } catch {
     /* offline: the visitor can still type */
   }
+}
+
+// ---------------------------------------------------------------- live updates (agent replies)
+
+let listeningTo: string | undefined;
+let stopListening: AbortController | undefined;
+
+/**
+ * Keep a connection open for this conversation so replies typed by a team
+ * member appear immediately. Reconnects by itself if the connection drops.
+ */
+async function listen() {
+  const id = conversationId;
+  if (!id || listeningTo === id) return;
+  stopListening?.abort();
+  listeningTo = id;
+  const controller = (stopListening = new AbortController());
+  let connectedBefore = false;
+
+  while (!controller.signal.aborted && conversationId === id) {
+    try {
+      const res = await fetch(`/api/widget/stream?visitorId=${encodeURIComponent(visitorId)}&conversationId=${encodeURIComponent(id)}`, {
+        headers: { Authorization: `Bearer ${config.token}` },
+        signal: controller.signal,
+      });
+      if (res.status === 401 || res.status === 404) break; // token expired or conversation gone
+      if (res.ok) {
+        if (connectedBefore) void sync(); // catch up on anything missed while disconnected
+        connectedBefore = true;
+        for await (const { event, data } of readSse(res)) {
+          if (event === "message") {
+            const m = data as { id: string; content: string };
+            if (seen.has(m.id)) continue;
+            seen.add(m.id);
+            addMessage("agent", m.content);
+          } else if (event === "event") {
+            const e = data as { id: string; code: string };
+            if (seen.has(e.id)) continue;
+            seen.add(e.id);
+            if (e.code === "agent_joined") {
+              humanRequested = true;
+              addNote(t("agentJoined"));
+            } else if (e.code === "returned_to_ai") {
+              humanRequested = false;
+              addNote(t("returnedToAi"));
+            } else if (e.code === "closed") {
+              addNote(t("chatClosed"));
+              conversationId = undefined;
+              storage.set("conversation", "");
+              humanRequested = false;
+              needsForm = config.preChatForm;
+            }
+            renderFooter();
+          }
+        }
+      }
+    } catch {
+      /* dropped connection: retry below */
+    }
+    if (controller.signal.aborted || conversationId !== id) break;
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
+  if (listeningTo === id) listeningTo = undefined;
 }
 
 async function sendMessage(text: string) {
@@ -500,5 +584,5 @@ window.addEventListener("message", (event) => {
 });
 
 render();
-void restore();
+void sync();
 post({ type: "chat-widget:ready", position: config.position });

@@ -14,6 +14,11 @@ export type WidgetTokenPayload = {
   w: string;
   /** True for the dashboard preview: conversations are flagged as tests. */
   preview: boolean;
+  /**
+   * Preview tokens only: the origin of the dashboard page that will frame the preview.
+   * It is part of the signed payload, so it cannot be changed by whoever holds the token.
+   */
+  origin?: string;
   /** Expiry, in seconds since the epoch. */
   exp: number;
 };
@@ -28,10 +33,11 @@ function secret(): string {
 
 const sign = (body: string) => createHmac("sha256", secret()).update(`widget:${body}`).digest("base64url");
 
-export function createWidgetToken(workspaceId: string, opts: { preview?: boolean; ttlSeconds?: number } = {}): string {
+export function createWidgetToken(workspaceId: string, opts: { preview?: boolean; origin?: string; ttlSeconds?: number } = {}): string {
   const payload: WidgetTokenPayload = {
     w: workspaceId,
     preview: opts.preview ?? false,
+    ...(opts.origin ? { origin: opts.origin } : {}),
     exp: Math.floor(Date.now() / 1000) + (opts.ttlSeconds ?? TOKEN_TTL_SECONDS),
   };
   const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -52,7 +58,12 @@ export function verifyWidgetToken(token: string | null | undefined): WidgetToken
     const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8")) as WidgetTokenPayload;
     if (typeof payload.w !== "string" || typeof payload.exp !== "number") return null;
     if (payload.exp < Date.now() / 1000) return null;
-    return { w: payload.w, preview: payload.preview === true, exp: payload.exp };
+    return {
+      w: payload.w,
+      preview: payload.preview === true,
+      ...(typeof payload.origin === "string" ? { origin: payload.origin } : {}),
+      exp: payload.exp,
+    };
   } catch {
     return null;
   }

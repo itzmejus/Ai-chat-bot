@@ -80,7 +80,8 @@
     "usageTitle": "AI messages",
     "usageText": "{used} of {max} used this month",
     "plan": "{name} plan",
-    "widget": "Widget"
+    "widget": "Widget",
+    "inbox": "Inbox"
   },
   "roles": {
     "owner": "Owner",
@@ -286,5 +287,66 @@
     "stepKnowledge": "Colour, position and greeting",
     "stepDomains": "Approved websites",
     "stepEmbed": "One line of code"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "search": "Search name, phone or message…",
+    "filters": {
+      "all": "All",
+      "needs_human": "Needs human",
+      "ai": "AI handled",
+      "closed": "Closed"
+    },
+    "live": "Live",
+    "reconnecting": "Reconnecting…",
+    "emptyList": "No conversations here yet.",
+    "emptyListHint": "Chats from your website widget will appear here as they happen.",
+    "noResults": "Nothing matches your search.",
+    "selectPrompt": "Select a conversation",
+    "selectHint": "Pick a chat on the left to read it, or take it over from the AI.",
+    "visitor": "Visitor {id}",
+    "status": {
+      "ai": "AI handling",
+      "needs_human": "Needs human",
+      "human": "With agent",
+      "closed": "Closed"
+    },
+    "roles": {
+      "customer": "Customer",
+      "assistant": "AI assistant",
+      "agent": "Agent"
+    },
+    "takeOver": "Take over",
+    "returnToAi": "Return to AI",
+    "close": "Close chat",
+    "reopen": "Reopen",
+    "back": "Back to inbox",
+    "replyPlaceholder": "Type your reply…",
+    "send": "Send",
+    "hintAi": "The AI is answering this chat. Take over to reply yourself.",
+    "hintNeedsHuman": "The customer is waiting for a person. Take over to reply.",
+    "hintClosed": "This chat is closed.",
+    "handledBy": "Handled by {name}",
+    "notInKb": "Not in knowledge base",
+    "confidence": "{percent}% confident",
+    "unread": "Unread",
+    "noMessages": "No messages yet.",
+    "events": {
+      "human_requested": "The customer asked to talk to a human",
+      "agent_joined": "{name} joined the chat",
+      "returned_to_ai": "Handed back to the AI assistant",
+      "closed": "Chat closed",
+      "reopened": "Chat reopened"
+    },
+    "errors": {
+      "not_found": "This conversation no longer exists.",
+      "not_taken_over": "Take over the chat before replying.",
+      "closed": "This chat is closed. Reopen it first."
+    },
+    "subtitle": "Every customer chat, live. Step in whenever a person is needed.",
+    "statUnread": "Unread",
+    "statTotal": "Total",
+    "channelWeb": "Website chat",
+    "statWaiting": "Waiting"
   }
 }

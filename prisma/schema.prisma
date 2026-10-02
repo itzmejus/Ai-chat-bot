@@ -97,6 +97,7 @@ model User {
   createdAt    DateTime @default(now())
 
   memberships Membership[]
+  messages    Message[]
 }
 
 model Plan {
@@ -264,12 +265,14 @@ model Message {
   conversationId String
   role           MessageRole
   content        String
+  authorId       String? // agent messages only: the team member who wrote it
   confidence     Float? // assistant messages only
   answered       Boolean? // assistant messages only: false = knowledge base had no answer
   createdAt      DateTime    @default(now())
 
   workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author       User?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   @@index([conversationId, createdAt])
   @@index([workspaceId, createdAt])

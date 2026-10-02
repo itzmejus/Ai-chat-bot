@@ -1,6 +1,7 @@
 import { searchChunks, type ChunkMatch } from "@/server/db/chunks";
 import { tenantDb } from "@/server/db/tenant";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
+import { publish } from "@/server/realtime/bus";
 import { embedTexts, streamChat } from "./openai";
 import { buildMessages, buildSystemPrompt, parseHeader, type ReplyHeader } from "./prompt";
 
@@ -68,6 +69,11 @@ export async function* answerMessage(input: {
   const { workspaceId, conversationId } = input;
   const text = input.text.trim().slice(0, MAX_MESSAGE_CHARS);
   const db = tenantDb(workspaceId);
+  /** Tell the inbox (and the customer's widget) that the conversation changed. */
+  const announce = async (messageId: string) => {
+    await publish({ workspaceId, conversationId, type: "message", messageId });
+    await publish({ workspaceId, conversationId, type: "conversation" });
+  };
 
   // tenantDb guarantees the conversation belongs to this workspace.
   const conversation = await db.conversation.findUnique({ where: { id: conversationId } });
@@ -81,8 +87,9 @@ export async function* answerMessage(input: {
   });
   history.reverse();
 
-  await db.message.create({ data: { workspaceId, conversationId, role: "customer", content: text } });
+  const customerMessage = await db.message.create({ data: { workspaceId, conversationId, role: "customer", content: text } });
   await db.conversation.update({ where: { id: conversationId }, data: { lastMessageAt: new Date(), unread: true } });
+  await announce(customerMessage.id);
 
   const base: AnswerResult = {
     reply: null, messageId: null, confidence: 0, answered: false, needsHuman: false, skipped: null, leadCaptured: false, sources: [],
@@ -103,6 +110,7 @@ export async function* answerMessage(input: {
       data: { workspaceId, conversationId, role: "assistant", content: reply, confidence: 0, answered: false },
     });
     await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", lastMessageAt: new Date() } });
+    await announce(message.id);
     yield { type: "token", text: reply };
     yield { type: "done", result: { ...base, reply, messageId: message.id, needsHuman: true, skipped: kind } };
   };
@@ -169,6 +177,7 @@ export async function* answerMessage(input: {
         data: { workspaceId, conversationId, role: "assistant", content: reply.trim(), confidence: 0, answered: false },
       });
       await db.conversation.update({ where: { id: conversationId }, data: { status: "needs_human", lastMessageAt: new Date() } });
+      await announce(message.id);
       yield { type: "done", result: { ...base, reply: reply.trim(), messageId: message.id, needsHuman: true, skipped: "error" } };
     } else {
       yield* finishWithFallback("error");
@@ -205,6 +214,7 @@ export async function* answerMessage(input: {
     },
   });
   await recordAiMessage(db, workspaceId);
+  await announce(message.id);
 
   yield {
     type: "done",

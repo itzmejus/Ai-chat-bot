@@ -39,7 +39,11 @@ export async function GET(request: Request, ctx: RouteContext<"/embed/[key]">) {
   const previewToken = verifyWidgetToken(url.searchParams.get("preview"));
   const preview = previewToken?.preview === true && previewToken.w === found.workspaceId;
 
-  const ancestors = preview ? frameAncestors([], [appOrigin]) : frameAncestors(found.allowedDomains);
+  // The preview may be framed by the dashboard page that requested it. That page's origin is
+  // inside the signed token, so the preview works on whatever hostname the dashboard is opened
+  // from (app., www.app., the hosting provider's own address) without widening anything else.
+  const dashboardOrigin = previewToken?.origin ?? appOrigin;
+  const ancestors = preview ? frameAncestors([], [dashboardOrigin]) : frameAncestors(found.allowedDomains);
 
   if (!preview) {
     // A top-level visit is not an embedding on an approved website.
@@ -59,7 +63,7 @@ export async function GET(request: Request, ctx: RouteContext<"/embed/[key]">) {
     token: createWidgetToken(found.workspaceId, { preview }),
     preview,
     // In preview, the dashboard may push unsaved settings to the iframe from this origin only.
-    previewOrigin: preview ? appOrigin : null,
+    previewOrigin: preview ? dashboardOrigin : null,
   };
   // "<" is escaped so business-supplied text cannot close the JSON block.
   const json = JSON.stringify(data).replace(/</g, "\\u003c");

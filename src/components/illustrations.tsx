@@ -159,6 +159,44 @@ export function KnowledgeScene({ className }: { className?: string }) {
   );
 }
 
+/** An inbox tray with chat bubbles floating out of it. For light backgrounds (inbox empty states). */
+export function InboxScene({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 200 150" fill="none" className={className}>
+      <defs>
+        <linearGradient id="in-tray" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#eef4ff" />
+        </linearGradient>
+        <linearGradient id="in-blue" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#3b8bff" />
+          <stop offset="1" stopColor="#0055d6" />
+        </linearGradient>
+      </defs>
+      <ellipse cx="100" cy="134" rx="74" ry="8" fill="#1b1b20" fillOpacity="0.05" />
+      <circle cx="100" cy="70" r="58" fill="#e8f1ff" fillOpacity="0.7" />
+
+      {/* bubbles */}
+      <rect x="34" y="26" width="76" height="30" rx="13" fill="#fff" stroke="#d4d4d7" strokeWidth="1.500" />
+      <rect x="46" y="36" width="42" height="5" rx="2.500" fill="#1b1b20" fillOpacity="0.55" />
+      <rect x="46" y="45" width="26" height="4" rx="2" fill="#1b1b20" fillOpacity="0.2" />
+      <rect x="96" y="50" width="74" height="28" rx="13" fill="url(#in-blue)" />
+      <rect x="108" y="61" width="44" height="5" rx="2.500" fill="#fff" fillOpacity="0.9" />
+      <circle cx="166" cy="50" r="9" fill="#00c057" stroke="#fff" strokeWidth="3" />
+      <path d="m162 50 3 3 5-5.500" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* tray */}
+      <path d="M38 92h30l7 12h50l7-12h30l10 26a6 6 0 0 1-5.600 8H33.600A6 6 0 0 1 28 118Z" fill="url(#in-tray)" stroke="#b9d4ff" strokeWidth="1.500" strokeLinejoin="round" />
+      <path d="M38 92 54 70h92l16 22" stroke="#b9d4ff" strokeWidth="1.500" strokeLinejoin="round" />
+      <rect x="84" y="111" width="32" height="5" rx="2.500" fill="#0066ff" fillOpacity="0.35" />
+
+      <path d={SPARKLE} transform="translate(26 44) scale(0.7)" fill="#ffd000" />
+      <path d={SPARKLE} transform="translate(180 96) scale(0.5)" fill="#ffd000" fillOpacity="0.8" />
+      <path d={SPARKLE} transform="translate(126 22) scale(0.45)" fill="#00c057" fillOpacity="0.7" />
+    </svg>
+  );
+}
+
 /** A document rising into a cloud: the file drop zone. For light backgrounds. */
 export function UploadScene({ className }: { className?: string }) {
   return (
