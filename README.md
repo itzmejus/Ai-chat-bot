@@ -4,57 +4,161 @@ AI customer support platform for businesses in the UAE. A business signs up, add
 information, embeds a chat widget on its website, and an AI assistant answers customers
 using only that business's information. Multi-tenant: every business is a workspace.
 
-> Build status: **phase 7 of 8** (everything except the seed data, final README and deployment guide).
-> This README grows with each phase; the full setup, widget and deployment guides land in phase 8.
+## Contents
+
+- [Run locally](#run-locally)
+- [Demo data](#demo-data)
+- [Embed the widget and try it on a sample page](#embed-the-widget-and-try-it-on-a-sample-page)
+- [Environment variables](#environment-variables)
+- [Scripts](#scripts) and [tests](#tests)
+- [Deploy](#deploy) (full guide: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))
+- How it works: [multi-tenancy](#multi-tenancy), [knowledge base](#knowledge-base-ingestion), [AI answering](#ai-answering), [widget](#chat-widget), [inbox](#inbox-realtime-and-human-takeover), [leads and analytics](#leads-and-overview-analytics), [team and plans](#team-notifications-settings-and-plans)
+- [Recommended next features](#recommended-next-features)
 
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind + shadcn/ui · PostgreSQL + pgvector (Supabase) ·
-Prisma 7 · Auth.js · next-intl (English / Arabic with RTL) · Zod · Vitest ·
-OpenAI (embeddings) · pg-boss (background jobs in Postgres)
+Prisma 7 · Auth.js (email and password, optional Google) · next-intl (English / Arabic with RTL) ·
+Zod · Vitest · OpenAI (chat and embeddings) · pg-boss (background jobs in Postgres) · Server-Sent Events
 
 ## Run locally
 
-Requires Node.js 22.12+ and a Postgres database with the `vector` extension (a free Supabase project works).
+You need Node.js 22.12 or newer, a Postgres database with the `vector` extension (a free
+Supabase project works) and an OpenAI API key.
 
 ```bash
 npm install
 cp .env.example .env        # then fill in DATABASE_URL, DIRECT_URL, NEXTAUTH_SECRET, OPENAI_API_KEY
-npm run db:migrate          # creates the tables, the pgvector index and the plans
+npm run db:migrate          # creates the tables, the pgvector index and the three plans
+npm run db:seed             # optional: demo dental clinic (prints its login)
 npm run dev                 # http://localhost:3000
 ```
+
+Then sign up at http://localhost:3000/signup, or log in with the demo account the seed printed.
+
+After a new migration or any change to `prisma/schema.prisma`, restart `npm run dev`: a running
+dev server keeps the old database client.
 
 ### Supabase connection strings
 
 In the Supabase dashboard open **Connect** and copy both pooler strings:
 
-| Variable       | Supabase string                 | Used for                      |
-| -------------- | ------------------------------- | ----------------------------- |
-| `DATABASE_URL` | Transaction pooler (port 6543)  | the running app               |
-| `DIRECT_URL`   | Session pooler (port 5432)      | migrations, realtime (later)  |
+| Variable       | Supabase string                 | Used for                        |
+| -------------- | ------------------------------- | ------------------------------- |
+| `DATABASE_URL` | Transaction pooler (port 6543)  | the running app                 |
+| `DIRECT_URL`   | Session pooler (port 5432)      | migrations, job queue, realtime |
 
 ### Docker alternative
 
-`docker compose up --build` starts Postgres with pgvector and the app together.
+`docker compose up --build` starts Postgres with pgvector and the app together on
+http://localhost:3000. It reads the rest of the settings from `.env`.
+
+## Demo data
+
+`npm run db:seed` creates **Bright Smile Dental Clinic**, a dental clinic in Dubai:
+
+- an owner account, `demo@brightsmile.example`. The password is printed at the end; set
+  `SEED_PASSWORD` to choose it;
+- 18 FAQs (9 English, 9 Arabic) and business notes, embedded and ready to answer from;
+- 11 past conversations in English and Arabic covering every inbox status, and 3 leads, so the
+  overview, inbox and leads pages have something to show;
+- the widget allowed on `localhost`, with a fixed widget key so the sample page below works as is.
+
+It needs `OPENAI_API_KEY` to embed the knowledge base (well under one US cent). Without the key
+the sources are stored as failed and can be processed later with **Re-sync**. Running it again
+replaces the demo workspace; no other workspace is touched. The data lives in `prisma/demo.ts`.
+
+The seed is meant for local development and demos. On a live database it creates a real,
+loggable account, so choose a strong `SEED_PASSWORD` or do not run it there.
+
+## Embed the widget and try it on a sample page
+
+Every workspace has one line of embed code, shown in **Dashboard > Widget**:
+
+```html
+<script src="https://chat.siteselo.com/widget.js" data-workspace="pk_..." async></script>
+```
+
+Paste it before `</body>` on every page of the website. The widget only appears on websites
+listed under **Allowed websites** on the same page, so add the site's domain there first.
+
+To try it locally with `examples/test-page.html`, a stand-in for a customer's website:
+
+1. Run `npm run db:seed` and `npm run dev`.
+2. In a second terminal: `npx serve examples -l 5500`
+3. Open http://localhost:5500/test-page.html and click the chat button in the corner.
+
+The page already contains the demo clinic's embed code. To test your own workspace instead, add
+`localhost` under Allowed websites and replace the `<script>` line at the bottom of the file with
+your embed code. Opening the file directly (`file://`) does not work: a file has no domain to
+check against the whitelist.
+
+## Environment variables
+
+All are documented in `.env.example`. Secrets live only in the environment, never in the code.
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | yes | Postgres connection for the app (Supabase transaction pooler) |
+| `DIRECT_URL` | yes | Postgres session connection for migrations, jobs and realtime |
+| `NEXTAUTH_SECRET` | yes | signs login sessions and widget tokens |
+| `OPENAI_API_KEY` | yes | answers and embeddings |
+| `OPENAI_MODEL` | no | chat model, default `gpt-4.1-mini` |
+| `APP_URL`, `NEXTAUTH_URL` | in production | public address of the dashboard |
+| `WIDGET_URL` | no | separate hostname for the widget; defaults to `APP_URL` |
+| `APP_NAME` | no | product name shown everywhere, default "Mosaed" |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no | enables "Continue with Google" |
+| `EMAIL_SERVER_HOST`, `_PORT`, `_USER`, `_PASSWORD`, `EMAIL_FROM` | no | SMTP for invitations and notifications; without it they are written to the server log |
+| `WORKER_MODE` | no | `external` when the background worker runs as its own service |
+| `ALLOW_FREE_PLAN_CHANGE` | no | `true` lets owners switch plan without paying (demos only) |
 
 ## Scripts
 
 | Command              | What it does                                   |
 | -------------------- | ---------------------------------------------- |
-| `npm run dev`        | Start the dev server                           |
+| `npm run dev`        | Build the widget, then start the dev server    |
 | `npm run build`      | Generate the Prisma client, build the widget bundles and the app |
+| `npm start`          | Run the production build                       |
 | `npm run build:widget` | Rebuild `public/widget.js` and `public/widget-app.js` from `/widget` |
 | `npm test`           | Run the test suite (in-memory Postgres, no setup needed) |
 | `npm run typecheck`  | TypeScript check                               |
 | `npm run lint`       | ESLint                                         |
 | `npm run db:migrate` | Apply migrations to the database in `.env`     |
-| `npm run worker`     | Standalone background worker (optional, see below) |
+| `npm run db:seed`    | Create or replace the demo workspace           |
+| `npm run worker`     | Standalone background worker (optional)        |
+
+## Tests
+
+`npm test` needs no database, no network and no API key: each test file gets its own in-memory
+Postgres with pgvector (PGlite) with every migration applied, and OpenAI is mocked.
+
+| File | Covers |
+| --- | --- |
+| `tests/isolation.test.ts` | one workspace cannot read or change another's data |
+| `tests/answer.test.ts` | answering from the workspace's own knowledge only, with OpenAI mocked; usage limits |
+| `tests/widget.test.ts` | domain whitelisting, widget tokens, the public chat API |
+| `tests/ingest.test.ts` | crawler, blocked internal addresses, chunking |
+| `tests/inbox.test.ts` | human takeover, agent replies, realtime events |
+| `tests/analytics.test.ts` | overview numbers, question grouping, CSV export |
+| `tests/team.test.ts` | invitations, roles, seat limit |
+| `tests/seed.test.ts` | the demo seed |
+
+## Deploy
+
+The app is one Docker web service plus a Postgres database. The step-by-step guide for
+**Render + Supabase**, including the two hostnames (`app.` for the dashboard, `chat.` for the
+widget), email, Google login and a go-live checklist, is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+
+In short: create a Supabase project, create a Render web service from this repository's
+`Dockerfile`, set the environment variables above, and add both hostnames as custom domains.
+Migrations are applied automatically each time the container starts.
 
 ## Project layout
 
 ```
-prisma/                 schema + SQL migrations
-src/app/                routes: (auth) login & signup, onboarding, dashboard, api/auth
+prisma/                 schema, SQL migrations, demo seed (seed.ts, demo.ts)
+docs/                   deployment guide
+src/app/                routes: (auth) login & signup, onboarding, invite, dashboard, embed, api
 src/auth.ts             Auth.js config (email/password + optional Google)
 src/server/db/          prisma.ts (unscoped client), tenant.ts (workspace-scoped client)
 src/server/auth/        session helpers: requireUser, requireWorkspace, requireOwner
@@ -108,7 +212,7 @@ The page shows each source as processing, ready or failed, with re-sync and dele
 ## AI answering
 
 `answerMessage()` in `src/server/ai/answer.ts` is the single entry point for every channel
-(the dashboard test chat today; the web widget, WhatsApp and Instagram later). For each customer
+(the web widget and the dashboard test chat today; WhatsApp and Instagram later). For each customer
 message it:
 
 1. stores the message, and stays silent if an agent has taken the conversation over
@@ -168,7 +272,7 @@ the widget on `WIDGET_URL` (`https://chat.siteselo.com`). Both point at the same
 `src/proxy.ts` makes each hostname serve only its own paths. Locally both default to
 `http://localhost:3000`.
 
-**Try it locally:** follow the steps at the top of `examples/test-page.html`.
+**Try it locally:** see [Embed the widget and try it on a sample page](#embed-the-widget-and-try-it-on-a-sample-page).
 
 ## Inbox, realtime and human takeover
 
@@ -254,3 +358,33 @@ so migrations are written as SQL files under `prisma/migrations` and applied wit
 ```bash
 npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --script
 ```
+
+## Adding a channel later (WhatsApp, Instagram)
+
+The data model and the answering service are already channel-neutral, so a new channel is an
+adapter, not a rewrite:
+
+- `Conversation.channel` is `web`, `whatsapp` or `instagram`; `visitorId` holds the phone number or handle.
+- A webhook route receives the provider's message, finds or creates the conversation for that
+  workspace and sender, and calls `answerMessage()`, as `/api/widget/message` does.
+- It sends the reply back through the provider's API instead of streaming it.
+- Agent replies from the inbox need one hook in `src/server/inbox.ts` to send through the same API.
+
+The inbox, takeover, leads, limits and analytics then apply to that channel without changes.
+
+## Recommended next features
+
+1. **WhatsApp Business integration.** The channel UAE customers use most. Connect through the
+   WhatsApp Cloud API as described above; conversations land in the same inbox.
+2. **Stripe billing.** Checkout, the customer portal and a webhook that calls `setWorkspacePlan()`
+   (`src/server/billing/index.ts` marks the spots), then turn off `ALLOW_FREE_PLAN_CHANGE`.
+3. **Appointment booking.** Let the assistant offer real time slots and book them (Google
+   Calendar or Calendly first, clinic and salon systems later) instead of only taking a callback request.
+4. **Email verification and password reset.** Sign-up accepts an email address without
+   confirming it, and there is no "forgot password" flow yet. Do this before opening sign-up to the public.
+5. **Instagram and Messenger** through the same channel adapter.
+6. **Lead quality.** Normalise UAE phone numbers to one format, merge repeat leads from the same
+   person, and push new leads to a CRM or a webhook (Zapier, Make).
+7. **Logo upload.** The widget logo is a URL today; add file upload with Supabase Storage.
+8. **Monitoring.** Error tracking (Sentry), a health-check endpoint and uptime alerts.
+9. **Scheduled re-sync** of website sources, so the knowledge base follows changes to the site.

@@ -2,12 +2,17 @@
 <!--
   Sample page for trying the chat widget on a "customer website".
 
-  1. In the dashboard open Widget, add "localhost" under Allowed websites, and save.
-  2. Copy your embed code from the same page and replace the <script> line at the bottom of this file.
-  3. Serve this folder from a local web server (opening the file directly will not work,
-     because a file:// page has no domain to check against the whitelist):
-         npx serve examples -l 5500
-  4. Open http://localhost:5500/test-page.html
+  With the demo data (quickest):
+    1. npm run db:seed      (creates the demo clinic this page is wired to)
+    2. npm run dev
+    3. npx serve examples -l 5500
+    4. Open http://localhost:5500/test-page.html
+
+  With your own workspace: in the dashboard open Widget, add "localhost" under Allowed
+  websites and save, then replace the <script> line at the bottom of this file with your embed code.
+
+  Opening this file directly (file://) will not work: a file has no domain to check
+  against the whitelist.
 -->
 <html lang="en">
   <head>
@@ -34,11 +39,11 @@
       </div>
       <div class="card">
         <h2>Visit us</h2>
-        <p>Sheikh Zayed Road, Dubai. Open Saturday to Thursday.</p>
+        <p>Al Wasl Tower, Sheikh Zayed Road, Dubai. Open Saturday to Thursday, 9 am to 9 pm.</p>
       </div>
     </main>
 
-    <!-- Replace this line with the embed code from Dashboard > Widget -->
-    <script src="http://localhost:3000/widget.js" data-workspace="PASTE_YOUR_WIDGET_KEY" async></script>
+    <!-- The demo clinic's embed code (from npm run db:seed). Replace it with yours from Dashboard > Widget. -->
+    <script src="http://localhost:3000/widget.js" data-workspace="pk_de30de30de30de30de30de30de30de30" async></script>
   </body>
 </html>
