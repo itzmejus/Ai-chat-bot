@@ -1,13 +1,14 @@
-import { MessageCircleQuestion } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { INDUSTRY_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
 import { Bubble } from "@/components/site/mockups";
-import { CtaBand, Eyebrow, INDUSTRY_ICONS, IndustryCards, Section, SectionHeading } from "@/components/site/sections";
+import { CtaBand, Eyebrow, IndustryCards, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent } from "@/content/site";
 import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
-import { appLink, breadcrumbJsonLd, siteMetadata } from "@/lib/site-seo";
+import { APP_NAME, SITE_URL } from "@/lib/config";
+import { appLink, breadcrumbJsonLd, siteMetadata, siteUrl } from "@/lib/site-seo";
 
 const asLang = (lang: string): SiteLang => (lang === "ar" ? "ar" : "en");
 const isIndustry = (slug: string): slug is IndustrySlug => (INDUSTRY_SLUGS as readonly string[]).includes(slug);
@@ -25,18 +26,36 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
   const t = getSiteContent(lang);
   const industry = t.industries[slug];
   const page = `/industries/${slug}`;
-  const Icon = INDUSTRY_ICONS[slug];
+  const Art = INDUSTRY_ART[slug];
 
   return (
     <SiteShell lang={lang} page={page}>
-      <JsonLd data={breadcrumbJsonLd(lang, t.breadcrumbHome, [{ name: industry.name, page }])} />
+      <JsonLd
+        data={breadcrumbJsonLd(lang, t.breadcrumbHome, [
+          { name: t.nav.industries, page: "/industries" },
+          { name: industry.name, page },
+        ])}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: industry.meta.title,
+          description: industry.meta.description,
+          serviceType: "AI customer support chatbot",
+          url: siteUrl(lang, page),
+          inLanguage: lang,
+          areaServed: { "@type": "Country", name: "United Arab Emirates" },
+          provider: { "@type": "Organization", name: APP_NAME, url: SITE_URL },
+        }}
+      />
 
       {/* ---- Hero */}
       <section className="site-hero relative overflow-hidden border-b border-border/60">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <div className="flex flex-col items-start gap-6">
+            <Art className="-mb-1" />
             <Eyebrow>
-              <Icon className="size-4" />
               {t.industryPage.eyebrow} · {industry.name}
             </Eyebrow>
             <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-balance sm:text-5xl">{industry.h1}</h1>
@@ -68,7 +87,7 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
         <ul className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-3">
           {industry.questions.map((question) => (
             <li key={question} dir="auto" className="flex items-center gap-2.5 rounded-full border border-border bg-white px-4 py-2.5 text-[15px] font-medium shadow-[0_1px_2px_rgb(27_27_32/0.05)]">
-              <MessageCircleQuestion className="size-4 shrink-0 text-primary" />
+              <span className="size-2 shrink-0 rounded-full bg-primary" />
               {question}
             </li>
           ))}

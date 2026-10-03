@@ -1,4 +1,4 @@
-# Mosaed
+# Selo Assist
 
 AI customer support platform for businesses in the UAE. A business signs up, adds its
 information, embeds a chat widget on its website, and an AI assistant answers customers
@@ -109,9 +109,10 @@ All are documented in `.env.example`. Secrets live only in the environment, neve
 | `WIDGET_URL` | no | separate hostname for the widget; defaults to `APP_URL` |
 | `SITE_URL` | no | separate hostname for the public marketing site; defaults to `APP_URL` |
 | `CONTACT_EMAIL` | no | shown in the site footer and legal pages |
-| `APP_NAME` | no | product name shown everywhere, default "Mosaed" |
+| `APP_NAME` | no | product name shown everywhere, default "Selo Assist" |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no | enables "Continue with Google" |
 | `EMAIL_SERVER_HOST`, `_PORT`, `_USER`, `_PASSWORD`, `EMAIL_FROM` | no | SMTP for invitations and notifications; without it they are written to the server log |
+| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | no | WhatsApp Business Cloud API, for WhatsApp alerts when a customer needs a person; see docs/DEPLOYMENT.md |
 | `WORKER_MODE` | no | `external` when the background worker runs as its own service |
 | `ALLOW_FREE_PLAN_CHANGE` | no | `true` lets owners switch plan without paying (demos only) |
 
@@ -274,7 +275,7 @@ A business adds the widget to its site with one line, shown in **Dashboard > Wid
 How it is put together:
 
 - `widget/loader.ts` builds to `public/widget.js` (about 0.7 kB gzipped). It adds one iframe to the
-  host page and resizes it when the chat opens or closes (full screen on phones).
+  host page and resizes it when the chat opens or closes (on phones, a sheet over the lower part of the page that stays above the keyboard).
 - `widget/app.ts` builds to `public/widget-app.js` (about 6 kB gzipped): the chat itself, in plain
   TypeScript with no framework. Because it runs inside the iframe, the host site's CSS cannot
   affect it. It streams replies, switches to Arabic and right-to-left when the customer writes

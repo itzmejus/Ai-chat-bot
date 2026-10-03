@@ -1,5 +1,5 @@
 /** Platform-wide settings. Rename the product by changing APP_NAME in the environment. */
-export const APP_NAME = process.env.APP_NAME || "Mosaed";
+export const APP_NAME = process.env.APP_NAME || "Selo Assist";
 
 /** Where the dashboard lives, e.g. https://app.siteselo.com */
 export const APP_URL = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");

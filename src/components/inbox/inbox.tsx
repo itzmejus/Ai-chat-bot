@@ -62,11 +62,13 @@ const FILTERS: Filter[] = ["all", "needs_human", "ai", "closed"];
 
 /** Colour language used everywhere a status appears: pill, avatar ring, filter dot. */
 const STATUS: Record<Status, { pill: string; avatar: string; dot: string }> = {
-  ai: { pill: "bg-accent text-accent-foreground", avatar: "from-[#dbe9ff] to-[#f3f8ff] text-primary", dot: "bg-primary" },
+  ai: { pill: "bg-accent text-accent-foreground", avatar: "from-[#dbeafe] to-[#f5f8ff] text-primary", dot: "bg-primary" },
   needs_human: { pill: "bg-[#fff1d6] text-[#9a5b00]", avatar: "from-[#ffe2a8] to-[#fff6e3] text-[#9a5b00]", dot: "bg-[#f59e0b]" },
   human: { pill: "bg-[#e7f8ee] text-success", avatar: "from-[#c4f0d6] to-[#effbf4] text-success", dot: "bg-[#00c057]" },
   closed: { pill: "bg-secondary text-muted-foreground", avatar: "from-[#e4e4e7] to-[#f6f6f7] text-muted-foreground", dot: "bg-[#a1a1aa]" },
 };
+/** Header action buttons: square icon buttons on phones, normal labelled buttons from tablets up. */
+const ACTION = "max-md:size-10 max-md:px-0 max-md:[&_svg]:size-[18px]";
 const FILTER_DOT: Record<Filter, string> = { all: "bg-foreground", needs_human: STATUS.needs_human.dot, ai: STATUS.ai.dot, closed: STATUS.closed.dot };
 
 function StatusPill({ status }: { status: Status }) {
@@ -105,7 +107,7 @@ function VisitorAvatar({ label, status, anonymous, className }: { label: string;
 function HeroStat({ icon: Icon, label, value, highlight }: { icon: LucideIcon; label: string; value: number | null; highlight?: boolean }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5 rounded-2xl bg-white/[0.08] px-3 py-2 ring-1 ring-white/10 backdrop-blur sm:px-3.5 sm:py-2.5">
-      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", highlight && value ? "bg-[#ffd000] text-[#1b1b20]" : "bg-white/10 text-white")}>
+      <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-full", highlight && value ? "bg-[#fbbf24] text-[#1b1b20]" : "bg-white/10 text-white")}>
         <Icon className="size-4" />
       </span>
       <div className="min-w-0 leading-tight">
@@ -118,6 +120,8 @@ function HeroStat({ icon: Icon, label, value, highlight }: { icon: LucideIcon; l
 
 /**
  * The inbox: conversation list, the selected conversation, and agent actions.
+ * On phones an open conversation takes the whole screen, like a messaging app: a one-line
+ * header with the actions as icons, the messages, and the reply box at the bottom edge.
  * It keeps itself current through a Server-Sent Events connection: whenever the
  * server reports a change it re-fetches the list and the open conversation.
  */
@@ -378,7 +382,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
                         className={cn(
                           "flex w-full min-w-0 items-start gap-3 rounded-xl border p-3 text-start transition-all outline-none focus-visible:ring-4 focus-visible:ring-ring/15",
                           selected
-                            ? "border-primary/30 bg-gradient-to-br from-accent to-white shadow-[0_4px_14px_-6px_rgb(0_102_255/0.35)]"
+                            ? "border-primary/30 bg-gradient-to-br from-accent to-white shadow-[0_4px_14px_-6px_rgb(37_99_235/0.35)]"
                             : "border-transparent hover:border-border/80 hover:bg-background",
                         )}
                       >
@@ -417,7 +421,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
         </aside>
 
         {/* conversation */}
-        <section className={cn("flex min-h-0 min-w-0 flex-col", !selectedId && "hidden md:flex")}>
+        <section className={cn("min-h-0 min-w-0 flex-col", selectedId ? "flex max-md:fixed max-md:inset-0 max-md:z-40 max-md:bg-background" : "hidden md:flex")}>
           {!selectedId ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-1.5 bg-muted/40 p-8 text-center">
               <InboxScene className="w-56" />
@@ -426,48 +430,69 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
             </div>
           ) : (
             <>
-              <header className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/70 bg-background/80 p-3 backdrop-blur md:px-5">
-                <Button variant="ghost" size="icon" className="shrink-0 md:hidden" onClick={() => select(null)} aria-label={t("inbox.back")}>
-                  <ArrowLeft className="rtl:-scale-x-100" />
+              <header className="flex min-w-0 items-center gap-2 border-b border-border/70 bg-background/95 px-2 pt-[calc(0.5rem+env(safe-area-inset-top))] pb-2 backdrop-blur md:flex-wrap md:gap-x-3 md:gap-y-2 md:bg-background/80 md:p-3 md:px-5">
+                <Button variant="ghost" size="icon" className="size-10 shrink-0 md:hidden" onClick={() => select(null)} aria-label={t("inbox.back")}>
+                  <ArrowLeft className="size-5 rtl:-scale-x-100" />
                 </Button>
                 {current ? (
                   <>
-                    <VisitorAvatar label={visitorLabel(current)} status={current.status} anonymous={!current.visitorName} />
+                    <VisitorAvatar label={visitorLabel(current)} status={current.status} anonymous={!current.visitorName} className="max-md:size-9" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold" dir="auto">
                         {visitorLabel(current)}
                       </p>
-                      <p className="flex min-w-0 flex-wrap items-center gap-x-3 text-xs text-muted-foreground">
+                      <p className="flex min-w-0 items-center gap-x-3 text-xs text-muted-foreground md:flex-wrap">
+                        {/* Phones: the status sits under the name instead of in its own pill. */}
+                        <span className="flex min-w-0 items-center gap-1.5 font-medium md:hidden">
+                          <span className={cn("size-1.5 shrink-0 rounded-full", STATUS[current.status].dot, current.status === "needs_human" && "animate-pulse")} />
+                          <span className="truncate">
+                            {current.status === "human" && current.assignedAgent
+                              ? t("inbox.handledBy", { name: current.assignedAgent.name ?? current.assignedAgent.email })
+                              : t(`inbox.status.${current.status}`)}
+                          </span>
+                        </span>
                         {current.visitorPhone && (
-                          <a href={`tel:${current.visitorPhone}`} dir="ltr" className="inline-flex items-center gap-1 hover:text-foreground">
+                          <a href={`tel:${current.visitorPhone}`} dir="ltr" className="hidden items-center gap-1 hover:text-foreground md:inline-flex">
                             <Phone className="size-3" />
                             {current.visitorPhone}
                           </a>
                         )}
                         {current.status === "human" && current.assignedAgent ? (
-                          <span className="truncate">{t("inbox.handledBy", { name: current.assignedAgent.name ?? current.assignedAgent.email })}</span>
+                          <span className="hidden truncate md:inline">{t("inbox.handledBy", { name: current.assignedAgent.name ?? current.assignedAgent.email })}</span>
                         ) : (
-                          !current.visitorPhone && <span>{t("inbox.channelWeb")}</span>
+                          !current.visitorPhone && <span className="hidden md:inline">{t("inbox.channelWeb")}</span>
                         )}
                       </p>
                     </div>
-                    <StatusPill status={current.status} />
-                    <div className="flex w-full flex-wrap gap-2 lg:w-auto">
+                    <span className="hidden md:inline-flex">
+                      <StatusPill status={current.status} />
+                    </span>
+                    {/* Actions: icons on phones (with their names for screen readers), labelled buttons from tablets up. */}
+                    <div className="flex shrink-0 gap-1 md:w-full md:flex-wrap md:gap-2 lg:w-auto">
+                      {current.visitorPhone && (
+                        <a
+                          href={`tel:${current.visitorPhone}`}
+                          aria-label={current.visitorPhone}
+                          className="flex size-10 items-center justify-center rounded-lg text-foreground hover:bg-muted md:hidden"
+                        >
+                          <Phone className="size-[18px]" />
+                        </a>
+                      )}
                       {current.status === "human" && (
-                        <Button size="sm" variant="outline" disabled={busy} onClick={() => act("return")}>
+                        <Button size="sm" variant="outline" className={ACTION} disabled={busy} onClick={() => act("return")} aria-label={t("inbox.returnToAi")} title={t("inbox.returnToAi")}>
                           <Sparkles />
-                          {t("inbox.returnToAi")}
+                          <span className="max-md:hidden">{t("inbox.returnToAi")}</span>
                         </Button>
                       )}
                       {current.status === "closed" ? (
-                        <Button size="sm" variant="outline" disabled={busy} onClick={() => act("reopen")}>
+                        <Button size="sm" variant="outline" className={ACTION} disabled={busy} onClick={() => act("reopen")} aria-label={t("inbox.reopen")} title={t("inbox.reopen")}>
                           <RotateCcw />
-                          {t("inbox.reopen")}
+                          <span className="max-md:hidden">{t("inbox.reopen")}</span>
                         </Button>
                       ) : (
-                        <Button size="sm" variant="ghost" disabled={busy} onClick={() => act("close")}>
+                        <Button size="sm" variant="ghost" className={ACTION} disabled={busy} onClick={() => act("close")} aria-label={t("inbox.close")} title={t("inbox.close")}>
                           <CheckCircle2 />
-                          {t("inbox.close")}
+                          <span className="max-md:hidden">{t("inbox.close")}</span>
                         </Button>
                       )}
                     </div>
@@ -479,7 +504,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
 
               <div
                 ref={scroller}
-                className="flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto bg-muted/50 bg-[radial-gradient(circle_at_1px_1px,rgb(27_27_32/0.06)_1px,transparent_0)] bg-[length:18px_18px] p-4 md:p-6"
+                className="flex min-h-0 flex-1 flex-col gap-3 overflow-x-hidden overflow-y-auto overscroll-contain bg-muted/50 bg-[radial-gradient(circle_at_1px_1px,rgb(27_27_32/0.06)_1px,transparent_0)] bg-[length:18px_18px] p-4 md:p-6"
                 aria-live="polite"
               >
                 {!current && !error && (
@@ -492,7 +517,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
                 ))}
               </div>
 
-              <footer className="border-t border-border/70 bg-background p-3 md:px-5 md:py-4">
+              <footer className="border-t border-border/70 bg-background p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:px-5 md:py-4">
                 {error && (
                   <p role="alert" className="mb-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                     {t(error)}
@@ -549,7 +574,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
                       {current.status === "needs_human" ? <Headset className="size-[18px]" /> : <Bot className="size-[18px]" />}
                     </span>
                     <p className="min-w-40 flex-1 text-sm">{t(current.status === "needs_human" ? "inbox.hintNeedsHuman" : "inbox.hintAi")}</p>
-                    <Button disabled={busy} onClick={() => act("takeover")}>
+                    <Button size="lg" className="max-sm:w-full" disabled={busy} onClick={() => act("takeover")}>
                       <Hand />
                       {t("inbox.takeOver")}
                     </Button>
@@ -599,7 +624,7 @@ function MessageRow({ message, time }: { message: Message; time: string }) {
           "max-w-full rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]",
           message.role === "customer" && "rounded-ss-md bg-background shadow-[0_1px_2px_rgb(16_24_40/0.08)] ring-1 ring-black/5",
           message.role === "assistant" && "rounded-se-md bg-gradient-to-br from-[#2a2a31] to-[#1b1b20] text-white shadow-sm",
-          message.role === "agent" && "rounded-se-md bg-gradient-to-br from-[#2f7dff] to-[#0055d6] text-white shadow-[0_4px_12px_-4px_rgb(0_102_255/0.5)]",
+          message.role === "agent" && "rounded-se-md bg-gradient-to-br from-[#2f7dff] to-[#1d4ed8] text-white shadow-[0_4px_12px_-4px_rgb(37_99_235/0.5)]",
         )}
       >
         {message.content}

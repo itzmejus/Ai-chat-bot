@@ -124,7 +124,7 @@ describe("site content", () => {
 
   it("keeps titles and descriptions within what search results show", () => {
     for (const content of [en, ar]) {
-      const metas = [content.home.meta, content.featuresPage.meta, content.pricingPage.meta, ...Object.values(content.industries).map((i) => i.meta)];
+      const metas = [content.home.meta, content.featuresPage.meta, content.pricingPage.meta, content.industriesPage.meta, ...Object.values(content.industries).map((i) => i.meta)];
       for (const meta of metas) {
         expect(meta.title.length, meta.title).toBeLessThanOrEqual(90);
         expect(meta.description.length, meta.description).toBeGreaterThanOrEqual(70);

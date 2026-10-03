@@ -26,7 +26,7 @@
     "loginLink": "Log in",
     "tagline": "AI customer support that speaks your customers' language",
     "point1": "Answers only from your own business information",
-    "point2": "Replies in English and Arabic, around the clock",
+    "point2": "Replies in your customers' language, around the clock",
     "point3": "Hands over to your team when a person is needed",
     "inviteSubtitle": "Sign in to accept your team invitation"
   },
@@ -58,7 +58,7 @@
     "languages": {
       "en": "English",
       "ar": "Arabic",
-      "both": "English and Arabic"
+      "both": "Any language (follows the customer)"
     },
     "days": {
       "mon": "Monday",
@@ -292,7 +292,9 @@
     "tooManyDomains": "You can list up to 20 websites",
     "tooManyAttempts": "Too many attempts. Please wait a few minutes and try again.",
     "notificationEmail": "One of the addresses is not a valid email",
-    "tooManyEmails": "You can list up to 5 addresses"
+    "tooManyEmails": "You can list up to 5 addresses",
+    "whatsappNumber": "Enter each number in international format, e.g. +971 50 123 4567",
+    "tooManyNumbers": "You can list up to 3 numbers"
   },
   "widget": {
     "title": "Chat widget",
@@ -323,6 +325,11 @@
     "copied": "Copied",
     "save": "Save changes",
     "saved": "Saved and live",
+    "tabEdit": "Settings",
+    "tabPreview": "Preview",
+    "unsaved": "You have unsaved changes",
+    "discard": "Discard",
+    "fixErrors": "Some fields need attention. Check the settings and try again.",
     "previewTitle": "Live preview",
     "previewHint": "This is a working chat. Messages you send here are test chats.",
     "ownerOnlyNote": "Only the workspace owner can change widget settings.",
@@ -465,14 +472,17 @@
     "profileSubtitle": "The assistant uses these details when it talks to customers.",
     "save": "Save changes",
     "ownerOnlyNote": "Only the workspace owner can change these settings.",
-    "notificationsTitle": "Email notifications",
-    "notificationsSubtitle": "Get an email when something needs your attention.",
+    "notificationsTitle": "Notifications",
+    "notificationsSubtitle": "Hear about it when something needs your attention.",
     "notifyLead": "A lead is captured",
     "notifyLeadHint": "A customer shared a phone number or email.",
     "notifyHuman": "A customer needs a person",
     "notifyHumanHint": "The assistant could not answer, or the customer asked for a human.",
     "notifyEmails": "Send to",
     "notifyEmailsHint": "One address per line, up to 5.",
+    "notifyWhatsapp": "WhatsApp alert when a customer needs a person",
+    "notifyWhatsappHint": "One number per line with the country code, up to 3. Each gets a WhatsApp message the moment a chat is waiting.",
+    "whatsappNotConfigured": "WhatsApp alerts are not connected on this server yet. Numbers you add are saved and will start receiving alerts once it is.",
     "emailNotConfigured": "Email is not set up on this server yet, so notifications are only written to the server log.",
     "usageSubtitle": "This month, against your plan's limits.",
     "planTitle": "Plan",

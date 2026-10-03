@@ -9,7 +9,7 @@ export const siteUrl = (lang: SiteLang, page: string) => SITE_URL + (sitePath(la
 export const appLink = (path: string) => (APP_URL === SITE_URL ? path : APP_URL + path);
 
 /** The shared preview picture (src/app/opengraph-image.tsx). Listed explicitly: a page's own openGraph block replaces the inherited one. */
-const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${APP_NAME}: AI customer support in English and Arabic` };
+const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${APP_NAME}: AI customer support in your customers' language` };
 
 const OG_LOCALE: Record<SiteLang, string> = { en: "en_AE", ar: "ar_AE" };
 
@@ -43,6 +43,27 @@ export function siteMetadata(lang: SiteLang, page: string, meta: { title: string
     },
     twitter: { card: "summary_large_image", title: fullTitle, description: meta.description, images: [OG_IMAGE.url] },
     robots: { index: true, follow: true },
+  };
+}
+
+/** schema.org description of the product and its plans, for the home and pricing pages. */
+export function softwareJsonLd(lang: SiteLang, description: string, plans: { name: string; priceAed: number }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: APP_NAME,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description,
+    url: siteUrl(lang, ""),
+    inLanguage: ["en", "ar"],
+    offers: plans.map((plan) => ({
+      "@type": "Offer",
+      name: plan.name,
+      price: plan.priceAed,
+      priceCurrency: "AED",
+      url: siteUrl(lang, "/pricing"),
+    })),
   };
 }
 

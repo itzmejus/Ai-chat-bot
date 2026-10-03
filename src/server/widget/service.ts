@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { APP_NAME, SITE_URL } from "@/lib/config";
 import { prisma } from "@/server/db/prisma";
 import { tenantDb, type TenantDb } from "@/server/db/tenant";
 import { rateLimit } from "@/server/limits/rate-limit";
@@ -16,6 +17,8 @@ export type WidgetConfig = {
   preChatForm: boolean;
   /** Language the business serves customers in: decides the widget's starting language. */
   language: "en" | "ar" | "both";
+  /** Shown as a small "Powered by" line under the chat. */
+  poweredBy: { name: string; url: string };
 };
 
 /**
@@ -41,6 +44,7 @@ export async function getWidgetWorkspace(publicKey: string) {
     position: workspace.widgetSettings?.position ?? "right",
     preChatForm: workspace.widgetSettings?.preChatForm ?? false,
     language: workspace.defaultLanguage,
+    poweredBy: { name: APP_NAME, url: SITE_URL },
   };
   return { workspaceId: workspace.id, allowedDomains: workspace.widgetSettings?.allowedDomains ?? [], config };
 }

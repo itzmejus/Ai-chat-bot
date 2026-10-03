@@ -119,6 +119,33 @@ written to the server log. Any SMTP provider works (Resend, Brevo, Amazon SES, P
 
 Verify the sending domain with the provider (SPF and DKIM records), or messages will land in spam.
 
+### WhatsApp alerts (optional)
+
+A business can list up to three WhatsApp numbers under **Settings → Notifications**. Each gets a
+WhatsApp message the moment a chat needs a person. This uses Meta's WhatsApp Business Cloud API
+with one sender number that belongs to the platform (not one per business):
+
+1. In [Meta for Developers](https://developers.facebook.com) create a Business app, add the
+   **WhatsApp** product, and register the phone number that will send the alerts.
+2. Create a **System User** access token with the `whatsapp_business_messaging` permission
+   (a permanent token; the temporary one from the setup page expires after a day).
+3. In WhatsApp Manager create a message template named `needs_human_alert`, category *Utility*,
+   in English (`en`) and Arabic (`ar`), with three body variables, for example:
+   `A customer is waiting for {{1}}. Customer: {{2}}. Last message: {{3}}`. Wait for Meta to approve it.
+4. Set the environment variables:
+
+| Variable | Value |
+| --- | --- |
+| `WHATSAPP_ACCESS_TOKEN` | the System User token |
+| `WHATSAPP_PHONE_NUMBER_ID` | the sender's *Phone number ID* (not the phone number itself) |
+| `WHATSAPP_TEMPLATE_NEEDS_HUMAN` | only if the template has a different name |
+| `WHATSAPP_API_VERSION` | only to pin a Graph API version, e.g. `v21.0` |
+
+Without the first two, nothing is sent and each alert is written to the server log instead. The
+template language follows the business's customer language: Arabic for Arabic-only workspaces,
+English otherwise. This has been tested against a mocked API only; send yourself a test alert
+after setting it up.
+
 ## 5. Google login (optional)
 
 1. In Google Cloud Console create an **OAuth client ID** of type *Web application*.

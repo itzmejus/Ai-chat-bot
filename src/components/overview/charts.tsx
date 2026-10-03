@@ -70,7 +70,7 @@ export function DailyColumns({ data }: { data: { day: string; conversations: num
                 {active === i && <span className="absolute inset-y-0 w-full rounded-md bg-foreground/[0.04]" aria-hidden />}
                 <span
                   className={cn(
-                    "relative w-full max-w-6 rounded-t-[4px] bg-[#0066ff] transition-[height,filter] duration-300 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
+                    "relative w-full max-w-6 rounded-t-[4px] bg-[#2563eb] transition-[height,filter] duration-300 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2",
                     active !== null && active !== i && "opacity-45",
                   )}
                   style={{ height: `${(d.conversations / max) * 100}%`, minHeight: d.conversations > 0 ? 3 : 0, marginInline: 2 }}
@@ -127,7 +127,7 @@ export function DailyColumns({ data }: { data: { day: string; conversations: num
  * identity never depends on colour alone.
  */
 const SEGMENTS = [
-  { key: "ai", color: "#0066ff" },
+  { key: "ai", color: "#2563eb" },
   { key: "needs_human", color: "#eb6834" },
   { key: "human", color: "#1baf7a" },
   { key: "closed", color: "#4a3aa7" },

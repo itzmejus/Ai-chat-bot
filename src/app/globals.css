@@ -54,43 +54,45 @@
 }
 
 :root {
-  /* Palette modelled on chatbot.com: near-black ink, light grey canvas,
-     white rounded cards, blue accent. */
+  /* One brand blue (the same blue the chat widget starts with), near-black ink, a light grey
+     canvas and white rounded cards. Amber is the only warm accent; green means "live" or "done".
+     Blues elsewhere in the code are steps of this scale: #eff4ff, #dbeafe, #bfdbfe, #93c5fd,
+     #3b82f6, #2563eb (primary), #1d4ed8 (hover and text on tints), #1e3a8a (deep). */
   --background: #ffffff;
   --foreground: #1b1b20;
   --card: #ffffff;
   --card-foreground: #1b1b20;
   --popover: #ffffff;
   --popover-foreground: #1b1b20;
-  --primary: #0066ff;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --secondary: #eeeeef;
   --secondary-foreground: #1b1b20;
   --muted: #f6f6f7;
   --muted-foreground: #62616d;
-  --accent: #e8f1ff;
-  --accent-foreground: #0050c8;
+  --accent: #eff4ff;
+  --accent-foreground: #1d4ed8;
   --destructive: #d6000a;
   --success: #00873d;
-  --warning: #ffd000;
+  --warning: #fbbf24;
   --border: #e4e4e7;
   --input: #d4d4d7;
-  --ring: #0066ff;
-  --chart-1: #0066ff;
+  --ring: #2563eb;
+  --chart-1: #2563eb;
   --chart-2: #00c057;
-  --chart-3: #ffd000;
-  --chart-4: #fe5100;
+  --chart-3: #fbbf24;
+  --chart-4: #f97316;
   --chart-5: #767581;
   --radius: 0.75rem;
   /* The dashboard sidebar is dark, like the reference app. */
   --sidebar: #1b1b20;
   --sidebar-foreground: #f6f6f7;
-  --sidebar-primary: #0066ff;
+  --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #303037;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #303037;
-  --sidebar-ring: #0066ff;
+  --sidebar-ring: #2563eb;
 }
 
 .dark {
@@ -152,19 +154,19 @@
 @utility hero-surface {
   background-color: var(--sidebar);
   background-image:
-    radial-gradient(60% 120% at 100% 0%, rgb(0 102 255 / 0.55), transparent 60%),
-    radial-gradient(45% 90% at 0% 100%, rgb(255 208 0 / 0.12), transparent 65%),
+    radial-gradient(60% 120% at 100% 0%, rgb(37 99 235 / 0.55), transparent 60%),
+    radial-gradient(45% 90% at 0% 100%, rgb(251 191 36 / 0.12), transparent 65%),
     linear-gradient(135deg, #1b1b20 0%, #16161b 100%);
 }
 
 /* ---- Public site ---------------------------------------------------------------- */
 
-/* Hero background: blue and violet light over a faint grid that fades out towards the bottom. */
+/* Hero background: brand-blue light, with a touch of amber, over a faint grid that fades out towards the bottom. */
 @utility site-hero {
   background-image:
-    radial-gradient(55% 45% at 50% 0%, rgb(0 102 255 / 0.2), transparent 70%),
-    radial-gradient(35% 40% at 88% 8%, rgb(122 92 255 / 0.2), transparent 70%),
-    radial-gradient(35% 40% at 10% 12%, rgb(0 200 255 / 0.14), transparent 70%),
+    radial-gradient(55% 45% at 50% 0%, rgb(37 99 235 / 0.16), transparent 70%),
+    radial-gradient(35% 40% at 88% 8%, rgb(96 165 250 / 0.2), transparent 70%),
+    radial-gradient(35% 40% at 10% 12%, rgb(251 191 36 / 0.06), transparent 70%),
     linear-gradient(to bottom, transparent 45%, #ffffff 92%),
     linear-gradient(to right, rgb(27 27 32 / 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(27 27 32 / 0.05) 1px, transparent 1px);
@@ -173,18 +175,18 @@
 
 /* The coloured stage behind the product picture in the hero. */
 @utility site-stage {
-  background-color: #0b5cff;
+  background-color: #2563eb;
   background-image:
-    radial-gradient(60% 80% at 0% 0%, rgb(0 200 255 / 0.55), transparent 60%),
-    radial-gradient(70% 90% at 100% 0%, rgb(140 92 255 / 0.95), transparent 62%),
-    radial-gradient(60% 80% at 50% 120%, rgb(255 255 255 / 0.25), transparent 60%),
-    linear-gradient(135deg, #0b5cff 0%, #5a4bff 100%);
+    radial-gradient(60% 80% at 0% 0%, rgb(147 197 253 / 0.5), transparent 60%),
+    radial-gradient(70% 90% at 100% 0%, rgb(30 58 138 / 0.85), transparent 62%),
+    radial-gradient(60% 80% at 50% 120%, rgb(255 255 255 / 0.22), transparent 60%),
+    linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 0 0 1px rgb(255 255 255 / 0.12);
 }
 
 /* Highlighted words in the main headline. */
 @utility site-gradient-text {
-  background-image: linear-gradient(100deg, #0066ff 0%, #6a4dff 55%, #b04dff 100%);
+  background-image: linear-gradient(100deg, #1d4ed8 0%, #2563eb 45%, #3b82f6 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -212,6 +214,17 @@
 @keyframes site-float {
   50% {
     transform: translateY(-8px);
+  }
+}
+
+/* Phones zoom the whole page when a focused field's text is smaller than 16px, and do not
+   zoom back out. On touch screens every field is therefore at least 16px. Unlayered and
+   !important so it wins over Tailwind's text-size utilities. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"], [type="radio"], [type="color"], [type="range"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
   }
 }
 

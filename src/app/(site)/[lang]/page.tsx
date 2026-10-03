@@ -2,18 +2,19 @@ import { ArrowRight, Check } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DotPattern } from "@/components/illustrations";
+import { FEATURE_ART, STEP_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
-import { HeroStage, InboxMock, TickList } from "@/components/site/mockups";
+import { HeroStage } from "@/components/site/mockups";
 import {
+  ArrowLink,
   BilingualVisual,
   CtaBand,
   Eyebrow,
   FaqList,
-  FEATURE_ICONS,
-  FEATURE_TINT,
   GroundedVisual,
-  INDUSTRY_ICONS,
-  IndustryCards,
+  HandoverSection,
+  IncludedInEveryPlan,
+  IndustryShowcase,
   PricingCards,
   Section,
   SectionHeading,
@@ -22,7 +23,7 @@ import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, SITE_PLANS, type FeatureKey } from "@/content/site";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
-import { appLink, faqJsonLd, siteMetadata, siteUrl } from "@/lib/site-seo";
+import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 
 const asLang = (lang: string): SiteLang => (lang === "ar" ? "ar" : "en");
@@ -55,27 +56,12 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       "@type": "Organization",
       name: APP_NAME,
       url: SITE_URL,
+      logo: `${SITE_URL}/apple-icon.png`,
       description: t.footer.tagline,
       areaServed: { "@type": "Country", name: "United Arab Emirates" },
     },
     { "@context": "https://schema.org", "@type": "WebSite", name: APP_NAME, url: siteUrl(lang, ""), inLanguage: lang },
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      name: APP_NAME,
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      description: home.meta.description,
-      url: siteUrl(lang, ""),
-      inLanguage: ["en", "ar"],
-      offers: SITE_PLANS.map((plan) => ({
-        "@type": "Offer",
-        name: t.pricingPage.plans[plan.id].name,
-        price: plan.priceAed,
-        priceCurrency: "AED",
-        url: siteUrl(lang, "/pricing"),
-      })),
-    },
+    softwareJsonLd(lang, home.meta.description, SITE_PLANS.map((plan) => ({ name: t.pricingPage.plans[plan.id].name, priceAed: plan.priceAed }))),
     faqJsonLd(home.faq.items),
   ];
 
@@ -126,19 +112,15 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <div className="border-y border-border/60 bg-white/70">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-3 px-4 py-5 sm:px-6">
             <span className="text-sm font-medium text-muted-foreground">{home.madeFor}</span>
-            {INDUSTRY_SLUGS.map((slug) => {
-              const Icon = INDUSTRY_ICONS[slug];
-              return (
-                <Link
-                  key={slug}
-                  href={sitePath(lang, `/industries/${slug}`)}
-                  className="flex items-center gap-2 rounded-full border border-border bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary"
-                >
-                  <Icon className="size-4 text-primary" />
-                  {t.industries[slug].name}
-                </Link>
-              );
-            })}
+            {INDUSTRY_SLUGS.map((slug) => (
+              <Link
+                key={slug}
+                href={sitePath(lang, `/industries/${slug}`)}
+                className="rounded-full border border-border bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary"
+              >
+                {t.industries[slug].name}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -147,14 +129,20 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       <Section id="how-it-works">
         <SectionHeading eyebrow={home.steps.eyebrow} title={home.steps.title} sub={home.steps.sub} />
         <ol className="mt-12 grid gap-5 lg:grid-cols-3">
-          {home.steps.items.map((step, i) => (
-            <li key={step.title} className="card-surface relative flex flex-col gap-3 rounded-3xl border border-border/80 p-7">
-              <span className="flex size-11 items-center justify-center rounded-2xl bg-foreground text-lg font-bold text-white">{i + 1}</span>
-              <h3 className="text-xl font-semibold">{step.title}</h3>
-              <p className="text-[15px] leading-relaxed text-muted-foreground">{step.text}</p>
-              {i < 2 && <ArrowRight className="absolute -end-[1.15rem] top-10 z-10 hidden size-6 rounded-full bg-white p-1 text-muted-foreground ring-1 ring-border lg:block rtl:rotate-180" />}
-            </li>
-          ))}
+          {home.steps.items.map((step, i) => {
+            const Art = STEP_ART[i];
+            return (
+              <li key={step.title} className="relative flex flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 sm:p-7">
+                <div className="flex items-start justify-between gap-3">
+                  <Art />
+                  <span className="text-5xl leading-none font-bold text-primary/15">{i + 1}</span>
+                </div>
+                <h3 className="text-xl font-semibold">{step.title}</h3>
+                <p className="text-[15px] leading-relaxed text-muted-foreground">{step.text}</p>
+                {i < 2 && <ArrowRight className="absolute -end-[1.15rem] top-14 z-10 hidden size-6 rounded-full bg-white p-1 text-muted-foreground ring-1 ring-border lg:block rtl:rotate-180" />}
+              </li>
+            );
+          })}
         </ol>
       </Section>
 
@@ -163,12 +151,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <SectionHeading eyebrow={home.features.eyebrow} title={home.features.title} sub={home.features.sub} />
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURE_ORDER.map(({ key, wide }) => {
-            const Icon = FEATURE_ICONS[key];
+            const Art = FEATURE_ART[key];
             return (
               <li key={key} className={cn("flex flex-col gap-3 rounded-3xl border border-border/70 bg-white p-6", wide && "sm:col-span-2 sm:p-7")}>
-                <span className={cn("flex size-11 items-center justify-center rounded-xl", FEATURE_TINT[key])}>
-                  <Icon className="size-5" />
-                </span>
+                <Art className="-ms-1 h-20 w-[6.25rem]" />
                 <h3 className={cn("font-semibold", wide ? "text-xl" : "text-lg")}>{home.features.items[key].title}</h3>
                 <p className="text-[15px] leading-relaxed text-muted-foreground">{home.features.items[key].text}</p>
                 {key === "grounded" && (
@@ -186,65 +172,52 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           })}
         </ul>
         <div className="mt-10 flex justify-center">
-          <Link href={sitePath(lang, "/features")} className="group flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-primary hover:bg-accent">
-            {home.features.more}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
-          </Link>
+          <ArrowLink href={sitePath(lang, "/features")}>{home.features.more}</ArrowLink>
         </div>
       </Section>
 
-      {/* ---- Human takeover */}
-      <section className="hero-surface relative overflow-hidden py-16 sm:py-24">
-        <DotPattern className="text-white/10" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2">
-          <div className="flex flex-col items-start gap-5">
-            <Eyebrow tone="dark">{home.handover.eyebrow}</Eyebrow>
-            <h2 className="text-3xl leading-tight font-bold tracking-tight text-balance text-white sm:text-[2.5rem]">{home.handover.title}</h2>
-            <p className="text-lg leading-relaxed text-white/75">{home.handover.text}</p>
-            <TickList items={home.handover.points} tone="dark" />
-          </div>
-          <InboxMock t={home.handover} />
-        </div>
-      </section>
+      {/* ---- AI and people, together */}
+      <HandoverSection lang={lang} />
 
       {/* ---- Numbers */}
-      <Section className="!py-14 sm:!py-16">
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+        <dl className="hero-surface relative grid grid-cols-2 gap-x-6 gap-y-8 overflow-hidden rounded-[2rem] p-7 text-white sm:p-10 lg:grid-cols-4">
+          <DotPattern className="text-white/10" />
           {home.stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col-reverse gap-2 border-s-2 border-primary/25 ps-5">
-              <dt className="text-[15px] leading-snug text-muted-foreground">{stat.label}</dt>
+            <div key={stat.label} className="relative flex flex-col-reverse justify-end gap-2">
+              <dt className="text-sm leading-snug text-white/65 sm:text-[15px]">{stat.label}</dt>
               <dd dir="ltr" className="text-4xl font-bold tracking-tight sm:text-5xl rtl:text-end">
                 {stat.value}
               </dd>
             </div>
           ))}
         </dl>
-      </Section>
+      </section>
 
       {/* ---- Industries */}
-      <Section tone="muted" id="industries">
+      <Section id="industries">
         <SectionHeading eyebrow={home.industries.eyebrow} title={home.industries.title} sub={home.industries.sub} />
-        <div className="mt-12">
-          <IndustryCards lang={lang} />
+        <div className="mt-10 sm:mt-12">
+          <IndustryShowcase lang={lang} />
         </div>
       </Section>
 
       {/* ---- Pricing */}
-      <Section id="pricing">
+      <Section tone="muted" id="pricing">
         <SectionHeading eyebrow={home.pricing.eyebrow} title={home.pricing.title} sub={home.pricing.sub} />
-        <div className="mt-14">
+        <div className="mt-12 lg:mt-16">
           <PricingCards lang={lang} />
         </div>
-        <div className="mt-8 flex justify-center">
-          <Link href={sitePath(lang, "/pricing")} className="group flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-primary hover:bg-accent">
-            {home.pricing.link}
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
-          </Link>
+        <div className="mt-8 lg:mt-12">
+          <IncludedInEveryPlan lang={lang} />
+        </div>
+        <div className="mt-6 flex justify-center">
+          <ArrowLink href={sitePath(lang, "/pricing")}>{home.pricing.link}</ArrowLink>
         </div>
       </Section>
 
       {/* ---- FAQ */}
-      <Section tone="muted" id="faq">
+      <Section id="faq">
         <SectionHeading eyebrow={home.faq.eyebrow} title={home.faq.title} sub={home.faq.sub} />
         <div className="mt-12">
           <FaqList items={home.faq.items} />

@@ -296,7 +296,12 @@ describe("prompt", () => {
   });
 
   it("tells the model which language to reply in", () => {
-    expect(languageHint("How much is cleaning?")).toMatch(/Reply in English/);
+    expect(languageHint("How much is cleaning?")).toMatch(/English if it is English/);
+    expect(languageHint("Quels sont vos horaires ?")).toMatch(/Reply in that same language/);
+    expect(languageHint("दाँतों की सफ़ाई कितने की है?")).toMatch(/Reply in Hindi/);
+    expect(languageHint("آپ کے اوقات کیا ہیں؟")).toMatch(/Reply in Urdu/);
+    expect(languageHint("Сколько стоит чистка?")).toMatch(/Russian/);
+    expect(languageHint("营业时间是几点？")).toMatch(/same language as the customer's latest message/);
     expect(languageHint("كم سعر تنظيف الأسنان؟")).toMatch(/Reply in Arabic/);
     expect(languageHint("ابغى appointment بكرة please")).toMatch(/mixes Arabic and English/);
     expect(languageHint("👍")).toMatch(/has been using/);

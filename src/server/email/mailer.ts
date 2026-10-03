@@ -53,7 +53,7 @@ export function renderEmail(content: EmailContent): { html: string; text: string
         .join("")}</table>`
     : "";
   const action = content.action
-    ? `<p style="margin:24px 0"><a href="${escapeHtml(content.action.url)}" style="background:#0066ff;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:600;display:inline-block">${escapeHtml(content.action.label)}</a></p>`
+    ? `<p style="margin:24px 0"><a href="${escapeHtml(content.action.url)}" style="background:#2563eb;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:600;display:inline-block">${escapeHtml(content.action.label)}</a></p>`
     : "";
 
   const html = `<!doctype html><html dir="${dir}"><body style="margin:0;background:#f6f6f7;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#1b1b20">

@@ -1,64 +1,14 @@
-import {
-  ArrowRight,
-  BarChart3,
-  Building2,
-  Car,
-  Check,
-  ChevronDown,
-  FileText,
-  Globe,
-  Headset,
-  Inbox,
-  Languages,
-  MessageCircleQuestion,
-  Palette,
-  Scissors,
-  ShieldCheck,
-  ShoppingBag,
-  Stethoscope,
-  UserPlus,
-  UtensilsCrossed,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, Check, ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { LogoMark } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
-import { getSiteContent, SITE_PLANS, type Faq, type FeatureKey } from "@/content/site";
+import { getSiteContent, SITE_PLANS, type Faq, type SiteContent } from "@/content/site";
 import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
+import { INDUSTRY_ART, PlanArt, RELAY_ART } from "./art";
+import { IndustryTabs } from "./industry-tabs";
 import { CtaLink } from "./shell";
-
-export const FEATURE_ICONS: Record<FeatureKey, LucideIcon> = {
-  grounded: MessageCircleQuestion,
-  bilingual: Languages,
-  leads: UserPlus,
-  handover: Headset,
-  inbox: Inbox,
-  insights: BarChart3,
-  widget: Palette,
-  security: ShieldCheck,
-};
-
-/** Icon colours, one per feature, so the grid is not a wall of blue. */
-export const FEATURE_TINT: Record<FeatureKey, string> = {
-  grounded: "bg-[#e8f1ff] text-[#0055d6]",
-  bilingual: "bg-[#f1ebff] text-[#5b34c4]",
-  leads: "bg-[#e7f8ee] text-[#00873d]",
-  handover: "bg-[#fff0e8] text-[#c2410c]",
-  inbox: "bg-[#e8f1ff] text-[#0055d6]",
-  insights: "bg-[#fff6d6] text-[#8a6100]",
-  widget: "bg-[#ffe9f1] text-[#be185d]",
-  security: "bg-[#e6f7f6] text-[#0f766e]",
-};
-
-export const INDUSTRY_ICONS: Record<IndustrySlug, LucideIcon> = {
-  clinics: Stethoscope,
-  "real-estate": Building2,
-  salons: Scissors,
-  restaurants: UtensilsCrossed,
-  "car-rental": Car,
-  retail: ShoppingBag,
-};
 
 /** Page-width wrapper with consistent vertical rhythm. */
 export function Section({ children, className, id, tone = "white" }: { children: React.ReactNode; className?: string; id?: string; tone?: "white" | "muted" }) {
@@ -99,23 +49,52 @@ export function PageHero({ eyebrow, title, sub, children }: { eyebrow: string; t
   );
 }
 
-/** Six industry cards linking to their pages. */
+/** "Learn more"-style text link with an arrow. */
+export function ArrowLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="group flex h-11 items-center gap-2 rounded-lg px-3 text-[15px] font-semibold text-primary hover:bg-accent">
+      {children}
+      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
+    </Link>
+  );
+}
+
+// ---------------------------------------------------------------- industries
+
+/**
+ * The industries as tabs: pick one to see what customers ask and a sample exchange.
+ * Every panel is in the HTML (the hidden ones too), so search engines read all six.
+ */
+export function IndustryShowcase({ lang }: { lang: SiteLang }) {
+  const t = getSiteContent(lang);
+  return (
+    <IndustryTabs
+      label={t.nav.industries}
+      asks={t.industryPage.asks}
+      more={t.home.industries.link}
+      items={INDUSTRY_SLUGS.map((slug) => {
+        const industry = t.industries[slug];
+        return { slug, name: industry.name, short: industry.short, title: industry.h1, questions: industry.questions.slice(0, 4), chat: industry.chat, href: sitePath(lang, `/industries/${slug}`) };
+      })}
+    />
+  );
+}
+
+/** Industry cards linking to their pages, each with its illustration. */
 export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: IndustrySlug }) {
   const t = getSiteContent(lang);
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {INDUSTRY_SLUGS.filter((slug) => slug !== exclude).map((slug) => {
-        const Icon = INDUSTRY_ICONS[slug];
+        const Art = INDUSTRY_ART[slug];
         const industry = t.industries[slug];
         return (
           <li key={slug}>
             <Link
               href={sitePath(lang, `/industries/${slug}`)}
-              className="card-surface group flex h-full flex-col gap-3 rounded-2xl border border-border/80 p-6 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(0_102_255/0.5)]"
+              className="group flex h-full flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(37_99_235/0.5)]"
             >
-              <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-primary">
-                <Icon className="size-5" />
-              </span>
+              <Art className="-ms-1 h-20 w-[6.25rem]" />
               <h3 className="text-lg font-semibold">{industry.name}</h3>
               <p className="text-[15px] leading-relaxed text-muted-foreground">{industry.short}</p>
               <span className="mt-auto flex items-center gap-1.5 pt-2 text-sm font-semibold text-primary">
@@ -130,63 +109,277 @@ export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: Ind
   );
 }
 
-/** The three plans. Prices and limits come from SITE_PLANS. */
+// ---------------------------------------------------------------- pricing
+
+const planNumber = (lang: SiteLang) => new Intl.NumberFormat(lang === "ar" ? "ar-AE-u-nu-latn" : "en-AE");
+
+function Tick({ tone = "light" }: { tone?: "light" | "dark" }) {
+  return (
+    <span className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full", tone === "dark" ? "bg-white/15 text-white" : "bg-accent text-primary")}>
+      <Check className="size-3" strokeWidth={3} />
+    </span>
+  );
+}
+
+/**
+ * The three plans side by side, the recommended one on a dark raised card.
+ * Prices and limits come from SITE_PLANS.
+ */
 export function PricingCards({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).pricingPage;
-  const number = new Intl.NumberFormat(lang === "ar" ? "ar-AE-u-nu-latn" : "en-AE");
+  const number = planNumber(lang);
   return (
-    <ul className="grid items-stretch gap-5 lg:grid-cols-3">
-      {SITE_PLANS.map((plan) => (
-        <li
-          key={plan.id}
-          className={cn(
-            "relative flex flex-col gap-6 rounded-3xl border p-7",
-            plan.popular ? "border-primary bg-white shadow-[0_30px_60px_-30px_rgb(0_102_255/0.55)] ring-4 ring-primary/10" : "card-surface border-border/80",
-          )}
-        >
-          {plan.popular && <span className="absolute -top-3.5 start-7 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white">{t.popular}</span>}
-          <div className="flex flex-col gap-1">
-            <h3 className="text-xl font-bold">{t.plans[plan.id].name}</h3>
-            <p className="text-[15px] text-muted-foreground">{t.plans[plan.id].tagline}</p>
-          </div>
-          <p className="flex items-baseline gap-2">
-            {plan.priceAed === 0 ? (
-              <span className="text-4xl font-bold tracking-tight">{t.free}</span>
-            ) : (
-              <>
-                <span className="text-4xl font-bold tracking-tight" dir="ltr">
-                  AED {number.format(plan.priceAed)}
-                </span>
-                <span className="text-sm text-muted-foreground">{t.perMonth}</span>
-              </>
+    <ul className="mx-auto grid max-w-md items-stretch gap-5 lg:max-w-none lg:grid-cols-3 lg:gap-6">
+      {SITE_PLANS.map((plan, i) => {
+        const dark = Boolean(plan.popular);
+        return (
+          <li
+            key={plan.id}
+            className={cn(
+              "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7 sm:p-8",
+              dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(37_99_235/0.7)] lg:-my-3" : "border border-border/80 bg-white",
             )}
-          </p>
-          <ul className="flex flex-col gap-3 text-[15px]">
-            {(
-              [
-                [plan.messages, t.limits.messages],
-                [plan.pages, t.limits.pages],
-                [plan.seats, t.limits.seats],
-              ] as const
-            ).map(([value, label]) => (
-              <li key={label} className="flex items-start gap-3">
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
-                  <Check className="size-3" strokeWidth={3} />
-                </span>
-                <span>
-                  <strong className="font-semibold">{number.format(value)}</strong> {label}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <CtaLink href={appLink("/signup")} variant={plan.popular ? "primary" : "outline"} className="mt-auto w-full">
-            {t.plans[plan.id].cta}
-          </CtaLink>
-        </li>
-      ))}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <PlanArt level={(i + 1) as 1 | 2 | 3} className={dark ? "text-white" : "text-primary"} />
+              {plan.popular && <span className="rounded-full bg-[#fbbf24] px-3 py-1 text-xs font-bold text-[#1b1b20]">{t.popular}</span>}
+            </div>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-bold">{t.plans[plan.id].name}</h3>
+              <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
+            </div>
+            <p className="flex items-baseline gap-2">
+              {plan.priceAed === 0 ? (
+                <span className="text-5xl font-bold tracking-tight">{t.free}</span>
+              ) : (
+                <>
+                  <span dir="ltr" className="flex items-baseline gap-1.5">
+                    <span className={cn("text-base font-semibold", dark ? "text-white/70" : "text-muted-foreground")}>AED</span>
+                    <span className="text-5xl font-bold tracking-tight">{number.format(plan.priceAed)}</span>
+                  </span>
+                  <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
+                </>
+              )}
+            </p>
+            <CtaLink href={appLink("/signup")} variant={dark ? "light" : "outline"} className="w-full">
+              {t.plans[plan.id].cta}
+            </CtaLink>
+            <ul className={cn("flex flex-col gap-3 border-t pt-6 text-[15px]", dark ? "border-white/15" : "border-border")}>
+              {(
+                [
+                  [plan.messages, t.limits.messages],
+                  [plan.pages, t.limits.pages],
+                  [plan.seats, t.limits.seats],
+                ] as const
+              ).map(([value, label]) => (
+                <li key={label} className="flex items-start gap-3">
+                  <Tick tone={dark ? "dark" : "light"} />
+                  <span>
+                    <strong className="font-semibold">{number.format(value)}</strong> {label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        );
+      })}
     </ul>
   );
 }
+
+/** Everything every plan includes, as a strip under the plan cards. */
+export function IncludedInEveryPlan({ lang }: { lang: SiteLang }) {
+  const t = getSiteContent(lang).pricingPage.included;
+  return (
+    <div className="rounded-[1.75rem] bg-accent p-6 sm:p-8">
+      <h3 className="text-lg font-bold">{t.title}</h3>
+      <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+        {t.items.map((item) => (
+          <li key={item} className="flex items-start gap-3 text-[15px]">
+            <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-white">
+              <Check className="size-3" strokeWidth={3} />
+            </span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** The plans as a table: price and limits first, then what all of them include. */
+export function PlanComparison({ lang }: { lang: SiteLang }) {
+  const t = getSiteContent(lang).pricingPage;
+  const number = planNumber(lang);
+  const limit = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
+  const rows: { label: string; cells: React.ReactNode[] }[] = [
+    { label: t.compare.price, cells: SITE_PLANS.map((p) => (p.priceAed === 0 ? t.free : `AED ${number.format(p.priceAed)}`)) },
+    { label: limit(t.limits.messages), cells: SITE_PLANS.map((p) => number.format(p.messages)) },
+    { label: limit(t.limits.pages), cells: SITE_PLANS.map((p) => number.format(p.pages)) },
+    { label: limit(t.limits.seats), cells: SITE_PLANS.map((p) => number.format(p.seats)) },
+  ];
+  return (
+    <div className="overflow-x-auto rounded-[1.75rem] border border-border/80 bg-white">
+      <table className="w-full min-w-[34rem] border-collapse text-[15px]">
+        <caption className="sr-only">{t.compare.title}</caption>
+        <thead>
+          <tr className="border-b border-border">
+            <th scope="col" className="p-4 text-start text-sm font-semibold text-muted-foreground sm:px-6">
+              {t.compare.feature}
+            </th>
+            {SITE_PLANS.map((plan) => (
+              <th key={plan.id} scope="col" className={cn("p-4 text-center text-base font-bold", plan.popular && "bg-accent text-accent-foreground")}>
+                {t.plans[plan.id].name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.label} className="border-b border-border/70">
+              <th scope="row" className="p-4 text-start font-medium sm:px-6">
+                {row.label}
+              </th>
+              {row.cells.map((cell, i) => (
+                <td key={i} dir="ltr" className={cn("p-4 text-center font-semibold tabular-nums", SITE_PLANS[i].popular && "bg-accent/60")}>
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+          {t.included.items.map((item) => (
+            <tr key={item} className="border-b border-border/70 last:border-0">
+              <th scope="row" className="p-4 text-start font-medium sm:px-6">
+                {item}
+              </th>
+              {SITE_PLANS.map((plan) => (
+                <td key={plan.id} className={cn("p-4", plan.popular && "bg-accent/60")}>
+                  <span className="mx-auto flex size-5 items-center justify-center rounded-full bg-[#e7f8ee] text-success">
+                    <Check className="size-3" strokeWidth={3} />
+                    <span className="sr-only">{t.compare.yes}</span>
+                  </span>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- AI and people, together
+
+/**
+ * A conversation that changes hands: the customer asks for a person, the assistant
+ * passes it on, a team member answers. Shown as it looks in the team's inbox.
+ */
+function HandoverChat({ t }: { t: SiteContent["home"]["handover"] }) {
+  return (
+    <div aria-hidden className="flex flex-col rounded-[1.75rem] bg-accent p-3 sm:p-5">
+      <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_48px_-28px_rgb(37_99_235/0.55)] ring-1 ring-black/5">
+        <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
+          <span className="flex min-w-0 items-center gap-2.5">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">{t.names[0].slice(0, 1)}</span>
+            <span dir="auto" className="truncate text-sm font-semibold">
+              {t.names[0]}
+            </span>
+          </span>
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#fff1d6] px-2.5 py-1 text-[11px] font-semibold text-[#9a5b00]">
+            <span className="size-1.5 rounded-full bg-current" />
+            {t.filters[1]}
+          </span>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-3 bg-muted/60 p-4 sm:p-5">
+          {t.chat.map((line, i) => {
+            if (line.from === "note") {
+              return (
+                <p key={i} className="flex items-center gap-3 py-1 text-[11px] font-semibold text-[#9a5b00]">
+                  <span className="h-px flex-1 bg-[#f5c56b]" />
+                  <span dir="auto" className="rounded-full bg-[#fff1d6] px-3 py-1">
+                    {line.text}
+                  </span>
+                  <span className="h-px flex-1 bg-[#f5c56b]" />
+                </p>
+              );
+            }
+            if (line.from === "customer") {
+              return (
+                <p key={i} dir="auto" className="max-w-[85%] self-start rounded-2xl rounded-es-md bg-white px-3.5 py-2.5 text-[13px] leading-relaxed shadow-[0_1px_3px_rgb(27_27_32/0.1)]">
+                  {line.text}
+                </p>
+              );
+            }
+            const agent = line.from === "agent";
+            return (
+              <div key={i} className="flex max-w-[88%] items-end gap-2 self-end">
+                <p dir="auto" className={cn("rounded-2xl rounded-ee-md px-3.5 py-2.5 text-[13px] leading-relaxed text-white", agent ? "bg-foreground" : "bg-primary")}>
+                  {line.text}
+                </p>
+                {agent ? (
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fbbf24]">
+                    <svg viewBox="0 0 16 16" className="size-4" fill="#1b1b20">
+                      <circle cx="8" cy="5.5" r="3" />
+                      <path d="M2.500 14a5.500 5.500 0 0 1 11 0Z" />
+                    </svg>
+                  </span>
+                ) : (
+                  <LogoMark className="size-7" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-3 border-t border-border/70 px-4 py-3 sm:px-5">
+          <span className="h-9 flex-1 rounded-full border border-border bg-muted/60" />
+          <span className="flex h-9 items-center rounded-full bg-foreground px-4 text-xs font-semibold text-white">{t.takeover}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** How the assistant and the team share a conversation: a three-stage relay beside a chat that changes hands. */
+export function HandoverSection({ lang }: { lang: SiteLang }) {
+  const t = getSiteContent(lang).home.handover;
+  return (
+    <Section id="handover">
+      <SectionHeading eyebrow={t.eyebrow} title={t.title} sub={t.text} />
+      <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-2">
+        <ol className="relative flex flex-col gap-4">
+          {t.flow.map((stage, i) => {
+            const Art = RELAY_ART[i];
+            return (
+              <li key={stage.title} className="relative flex flex-1 items-center gap-4 rounded-3xl border border-border/80 bg-white p-4 sm:gap-6 sm:p-6">
+                <Art className="h-20 w-[6.25rem] sm:h-24 sm:w-[7.5rem]" />
+                <div className="flex min-w-0 flex-col gap-1.5">
+                  <p className="text-xs font-bold tracking-wide text-primary uppercase">
+                    {i + 1} / {t.flow.length}
+                  </p>
+                  <h3 className="text-lg font-semibold sm:text-xl">{stage.title}</h3>
+                  <p className="text-[15px] leading-relaxed text-muted-foreground">{stage.text}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+        <HandoverChat t={t} />
+      </div>
+      <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {t.points.map((point) => (
+          <li key={point} className="flex items-start gap-3 rounded-2xl bg-muted p-4 text-[15px] leading-snug font-medium">
+            <Tick />
+            {point}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+// ---------------------------------------------------------------- FAQ and closing band
 
 /** Questions and answers. Native <details>, so it works without JavaScript and the answers are in the HTML. */
 export function FaqList({ items }: { items: Faq[] }) {
@@ -214,7 +407,7 @@ export function CtaBand({ lang }: { lang: SiteLang }) {
         <DotPattern className="text-white/10" />
         <h2 className="relative max-w-2xl text-3xl leading-tight font-bold tracking-tight text-balance text-white sm:text-[2.5rem]">{t.title}</h2>
         <p className="relative max-w-xl text-lg leading-relaxed text-white/75">{t.sub}</p>
-        <CtaLink href={appLink("/signup")} variant="light" size="lg" arrow className="relative">
+        <CtaLink href={appLink("/signup")} variant="light" size="lg" arrow className="relative w-full sm:w-auto">
           {t.button}
         </CtaLink>
         <p className="relative text-sm text-white/60">{t.note}</p>
@@ -225,16 +418,11 @@ export function CtaBand({ lang }: { lang: SiteLang }) {
 
 /** Small decorative pictures inside the two wide feature cards. */
 export function GroundedVisual() {
-  const sources: [LucideIcon, string][] = [
-    [Globe, "brightsmile.ae"],
-    [FileText, "price-list.pdf"],
-    [MessageCircleQuestion, "FAQ"],
-  ];
   return (
     <div aria-hidden dir="ltr" className="flex flex-wrap items-center gap-2">
-      {sources.map(([Icon, label]) => (
-        <span key={label} className="flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-foreground/80">
-          <Icon className="size-3.5 text-primary" />
+      {["brightsmile.ae", "price-list.pdf", "FAQ"].map((label, i) => (
+        <span key={label} className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-foreground/80">
+          <span className={cn("size-2 rounded-full", ["bg-primary", "bg-[#fbbf24]", "bg-[#00c057]"][i])} />
           {label}
         </span>
       ))}
@@ -250,6 +438,9 @@ export function BilingualVisual() {
       </p>
       <p dir="rtl" className="w-fit self-end rounded-2xl rounded-es-md bg-white px-3.5 py-2 text-[13px] shadow-[0_1px_3px_rgb(27_27_32/0.12)]">
         نعم، نفتح اليوم حتى الساعة 9 مساءً.
+      </p>
+      <p dir="ltr" className="w-fit rounded-2xl rounded-es-md bg-white px-3.5 py-2 text-[13px] shadow-[0_1px_3px_rgb(27_27_32/0.12)]">
+        जी हाँ, हम आज रात 9 बजे तक खुले हैं।
       </p>
     </div>
   );

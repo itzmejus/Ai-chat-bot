@@ -21,15 +21,17 @@ function Toggle({ name, label, hint, defaultChecked }: { name: string; label: st
   );
 }
 
-/** Which email notifications are sent, and to which addresses. */
+/** Which notifications are sent, to which email addresses, and which WhatsApp numbers are alerted when a customer needs a person. */
 export function NotificationForm({
   initial,
   canEdit,
   emailConfigured,
+  whatsappConfigured,
 }: {
-  initial: { notifyOnLead: boolean; notifyOnNeedsHuman: boolean; emails: string[] };
+  initial: { notifyOnLead: boolean; notifyOnNeedsHuman: boolean; emails: string[]; whatsappNumbers: string[] };
   canEdit: boolean;
   emailConfigured: boolean;
+  whatsappConfigured: boolean;
 }) {
   const t = useTranslations();
   const [state, action, pending] = useActionState<FormState, FormData>(updateNotificationsAction, undefined);
@@ -46,6 +48,10 @@ export function NotificationForm({
           <Textarea id="emails" name="emails" dir="ltr" rows={3} defaultValue={initial.emails.join("\n")} placeholder="owner@yourbusiness.ae" />
         </FormField>
         <p className="-mt-1 text-xs text-muted-foreground">{t("settings.notifyEmailsHint")}</p>
+        <FormField id="whatsappNumbers" label={t("settings.notifyWhatsapp")} hint={t("common.optional")} error={state?.fieldErrors?.whatsappNumbers}>
+          <Textarea id="whatsappNumbers" name="whatsappNumbers" dir="ltr" rows={2} className="min-h-16" defaultValue={initial.whatsappNumbers.join("\n")} placeholder="+971 50 123 4567" />
+        </FormField>
+        <p className="-mt-1 text-xs text-muted-foreground">{t(whatsappConfigured ? "settings.notifyWhatsappHint" : "settings.whatsappNotConfigured")}</p>
       </fieldset>
 
       {canEdit ? (

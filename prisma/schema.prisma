@@ -1,4 +1,4 @@
-// Mosaed database schema.
+// Selo Assist database schema.
 //
 // Multi-tenancy rule: every tenant-owned model carries `workspaceId`. Application
 // code must reach those models through `tenantDb(workspaceId)` (src/server/db/tenant.ts),
@@ -197,6 +197,8 @@ model NotificationSettings {
   notifyOnLead       Boolean  @default(true)
   notifyOnNeedsHuman Boolean  @default(true)
   emails             String[] @default([])
+  // Team phone numbers that get a WhatsApp alert when a customer needs a person.
+  whatsappNumbers    String[] @default([])
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }

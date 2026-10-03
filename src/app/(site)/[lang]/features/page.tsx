@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { FEATURE_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
 import { TickList } from "@/components/site/mockups";
-import { CtaBand, FEATURE_ICONS, FEATURE_TINT, PageHero, Section } from "@/components/site/sections";
+import { CtaBand, PageHero, Section } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent } from "@/content/site";
 import type { SiteLang } from "@/lib/site-routes";
@@ -34,12 +35,10 @@ export default async function FeaturesPage({ params }: PageProps<"/[lang]/featur
       <Section>
         <div className="grid gap-5 md:grid-cols-2">
           {page.groups.map((group) => {
-            const Icon = FEATURE_ICONS[group.key];
+            const Art = FEATURE_ART[group.key];
             return (
-              <article key={group.key} id={group.key} className="card-surface flex scroll-mt-24 flex-col gap-5 rounded-3xl border border-border/80 p-7">
-                <span className={cn("flex size-12 items-center justify-center rounded-2xl", FEATURE_TINT[group.key])}>
-                  <Icon className="size-6" />
-                </span>
+              <article key={group.key} id={group.key} className="flex scroll-mt-24 flex-col gap-5 rounded-3xl border border-border/80 bg-white p-6 sm:p-7">
+                <Art className="-ms-1" />
                 <div className="flex flex-col gap-2">
                   <h2 className="text-2xl font-bold tracking-tight">{group.title}</h2>
                   <p className="text-[15px] leading-relaxed text-muted-foreground">{group.text}</p>

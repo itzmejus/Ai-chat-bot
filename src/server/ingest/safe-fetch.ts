@@ -14,7 +14,7 @@ import { Agent, fetch as undiciFetch } from "undici";
  *   - caps response size and time
  */
 
-export const CRAWLER_USER_AGENT = "MosaedBot/1.0 (+knowledge-base crawler)";
+export const CRAWLER_USER_AGENT = "SeloAssistBot/1.0 (+knowledge-base crawler)";
 
 const blocked = new net.BlockList();
 for (const [prefix, bits] of [

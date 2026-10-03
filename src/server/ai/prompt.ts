@@ -61,13 +61,23 @@ function sanitizeKnowledge(text: string): string {
  * language of the retrieved knowledge instead of the customer's.
  */
 export function languageHint(customerText: string): string {
+  // Scripts that point to one language on their own.
+  if (/[\u0900-\u097f]/.test(customerText)) return "The customer's latest message is in Hindi. Reply in Hindi.";
+  if (/[\u0400-\u04ff]/.test(customerText)) return "The customer's latest message is in Russian (or another Cyrillic-script language). Reply in that same language.";
+  if (/[\u0679\u0688\u0691\u06ba\u06be\u06c1\u06d2]/.test(customerText)) return "The customer's latest message is in Urdu. Reply in Urdu.";
+
   // Count words, not letters: Arabic words are shorter, so letters would favour English.
   const words = customerText.split(/\s+/);
   const arabic = words.filter((w) => /[؀-ۿ]/.test(w)).length;
   const latin = words.filter((w) => /[A-Za-z]/.test(w)).length;
-  if (arabic === 0 && latin === 0) return "Reply in the language the customer has been using in this conversation.";
+  if (arabic === 0 && latin === 0) {
+    // Letters from a script not handled above (Chinese, Malayalam, …): name no language, just follow it.
+    if (/\p{L}/u.test(customerText)) return "Reply in the same language as the customer's latest message.";
+    return "Reply in the language the customer has been using in this conversation.";
+  }
   if (arabic > latin * 2) return "The customer's latest message is in Arabic. Reply in Arabic.";
-  if (latin > arabic * 2) return "The customer's latest message is in English. Reply in English.";
+  // Latin letters are usually English here, but may be French, Tagalog and so on.
+  if (latin > arabic * 2) return "The customer's latest message is in English or another Latin-script language. Reply in that same language (English if it is English).";
   return "The customer's latest message mixes Arabic and English. Reply in the language they used most, in the same mixed style if natural.";
 }
 
@@ -95,7 +105,7 @@ export function buildSystemPrompt(
 1. Answer ONLY from the business profile and the <knowledge> section below. They are your only source of facts.
 2. If the answer is not there, say so politely, and offer to connect the customer with the team or to take their name and phone number so the team can get back to them. Never guess.
 3. Never invent prices, policies, availability, opening times, or medical or legal advice. For medical or legal questions, share only what the business information says and recommend speaking to the team.
-4. Reply in the language of the customer's LATEST message, whatever language the knowledge or earlier messages are in. Customers may write English, Arabic (including Gulf dialect), or a mix; answer Arabic in clear, natural Arabic and English in English. If they mix, follow the language they use most. Translate facts from the knowledge when needed.
+4. Reply in the language of the customer's LATEST message, whatever language the knowledge or earlier messages are in. Customers may write in any language: English, Arabic (including Gulf dialect), Hindi, Urdu, French, Russian, Tagalog and others, or a mix. Answer in that same language, in clear, natural wording. If they mix, follow the language they use most. Translate facts from the knowledge when needed.
 5. Be ${assistant.tone === "formal" ? "formal, polite and professional" : "friendly, warm and professional"}. Keep replies short: 1 to 4 sentences unless the customer asks for detail. No markdown headings.
 6. When the customer shows buying intent (booking, appointment, price quote, viewing, reservation, order), politely ask for their name and phone number so the team can confirm, unless they already gave them.
 7. If the customer asks for a human, or is upset, tell them a team member will take over shortly.

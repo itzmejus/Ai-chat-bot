@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
@@ -15,8 +15,19 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description: "AI customer support for businesses in the UAE",
+  applicationName: APP_NAME,
+  appleWebApp: { title: APP_NAME },
   // Only the public site is for search engines; its pages turn indexing back on (src/lib/site-seo.ts).
   robots: { index: false, follow: false },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#2563eb",
+  // On Android the on-screen keyboard shrinks the page instead of covering it, so a chat's
+  // reply box stays visible while typing.
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

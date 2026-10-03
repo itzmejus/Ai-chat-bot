@@ -38,7 +38,19 @@ export type SiteContent = {
     madeFor: string;
     steps: { eyebrow: string; title: string; sub: string; items: { title: string; text: string }[] };
     features: { eyebrow: string; title: string; sub: string; items: Record<FeatureKey, { title: string; text: string }>; more: string };
-    handover: { eyebrow: string; title: string; text: string; points: string[]; inboxTitle: string; filters: string[]; takeover: string; chat: ChatLine[]; names: string[] };
+    handover: {
+      eyebrow: string;
+      title: string;
+      text: string;
+      /** The three stages of a handover: the AI answers, the team is told, a person steps in. */
+      flow: { title: string; text: string }[];
+      points: string[];
+      inboxTitle: string;
+      filters: string[];
+      takeover: string;
+      chat: ChatLine[];
+      names: string[];
+    };
     stats: { value: string; label: string }[];
     industries: { eyebrow: string; title: string; sub: string; link: string };
     pricing: { eyebrow: string; title: string; sub: string; link: string };
@@ -64,8 +76,10 @@ export type SiteContent = {
     plans: Record<PlanId, { name: string; tagline: string; cta: string }>;
     limits: { messages: string; pages: string; seats: string };
     included: { title: string; items: string[] };
+    compare: { title: string; feature: string; price: string; yes: string };
     faq: { title: string; items: Faq[] };
   };
+  industriesPage: { meta: Meta; h1: string; sub: string; all: string };
   industryPage: { eyebrow: string; asks: string; benefits: string; other: string; cta: string };
   industries: Record<IndustrySlug, { name: string; short: string; meta: Meta; h1: string; sub: string; questions: string[]; benefits: { title: string; text: string }[]; chat: ChatLine[] }>;
   legal: {

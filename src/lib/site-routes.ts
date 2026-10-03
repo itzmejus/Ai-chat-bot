@@ -13,7 +13,7 @@ export const INDUSTRY_SLUGS = ["clinics", "real-estate", "salons", "restaurants"
 export type IndustrySlug = (typeof INDUSTRY_SLUGS)[number];
 
 /** Every page of the site, as a path without language prefix. "" is the home page. */
-export const SITE_PAGES = ["", "/features", "/pricing", ...INDUSTRY_SLUGS.map((slug) => `/industries/${slug}`), "/privacy", "/terms"] as const;
+export const SITE_PAGES = ["", "/features", "/pricing", "/industries", ...INDUSTRY_SLUGS.map((slug) => `/industries/${slug}`), "/privacy", "/terms"] as const;
 
 /** Public URL path of a page in a language: sitePath("ar", "/pricing") is "/ar/pricing". */
 export function sitePath(lang: SiteLang, page: string): string {

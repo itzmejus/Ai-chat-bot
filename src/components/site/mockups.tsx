@@ -1,5 +1,7 @@
-import { BookOpen, Bot, Check, ChevronDown, Headset, Inbox, LayoutGrid, MessageCircle, SendHorizontal, Settings, Sparkles, UserPlus } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
+import { LogoMark } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
+import { LOGO_BUBBLE, LOGO_SPARK } from "@/lib/logo";
 import type { ChatLine, SiteContent } from "@/content/site";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +13,7 @@ import { cn } from "@/lib/utils";
  */
 
 /** One chat bubble. `tone` picks colours for a light or dark surface. */
-export function Bubble({ line, tone = "light", accent = "#0066ff" }: { line: ChatLine; tone?: "light" | "dark"; accent?: string }) {
+export function Bubble({ line, tone = "light", accent = "var(--primary)" }: { line: ChatLine; tone?: "light" | "dark"; accent?: string }) {
   if (line.from === "note") {
     return (
       <p dir="auto" className={cn("self-center rounded-full px-3 py-1 text-[11px] font-medium", tone === "dark" ? "bg-white/10 text-white/70" : "bg-muted text-muted-foreground")}>
@@ -38,12 +40,16 @@ export function Bubble({ line, tone = "light", accent = "#0066ff" }: { line: Cha
 }
 
 /** The chat widget panel as customers see it. */
-export function WidgetMock({ demo, className, accent = "#0f766e" }: { demo: SiteContent["home"]["demo"]; className?: string; accent?: string }) {
+export function WidgetMock({ demo, className, accent = "var(--primary)" }: { demo: SiteContent["home"]["demo"]; className?: string; accent?: string }) {
   return (
     <div className={cn("flex flex-col overflow-hidden rounded-3xl bg-[#f4f4f6] shadow-[0_32px_64px_-24px_rgb(27_27_32/0.45)] ring-1 ring-black/5", className)}>
       <div className="flex items-center gap-3 px-4 py-3.5 text-white" style={{ backgroundColor: accent }}>
         <span className="relative flex size-9 items-center justify-center rounded-full bg-white/20">
-          <Bot className="size-5" />
+          {/* the brand mark without its tile, as the real widget draws it */}
+          <svg viewBox="5 6 22 20" className="h-5 w-[1.4rem]">
+            <path d={LOGO_BUBBLE} fill="currentColor" />
+            <path d={LOGO_SPARK} fill={accent} />
+          </svg>
           <span className="absolute -end-0.5 -bottom-0.5 size-3 rounded-full bg-[#00c057] ring-2" style={{ ["--tw-ring-color" as string]: accent }} />
         </span>
         <span className="flex min-w-0 flex-col">
@@ -62,7 +68,9 @@ export function WidgetMock({ demo, className, accent = "#0f766e" }: { demo: Site
       <div className="mt-auto flex items-center gap-2 border-t border-black/5 bg-white p-3">
         <span className="flex h-10 flex-1 items-center rounded-full border border-border px-4 text-[13px] text-muted-foreground">{demo.placeholder}</span>
         <span className="flex size-10 items-center justify-center rounded-full text-white" style={{ backgroundColor: accent }}>
-          <SendHorizontal className="size-4 rtl:-scale-x-100" />
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="size-4 rtl:-scale-x-100">
+            <path d="M4 12 20 4l-5 16-3.500-6.500L4 12Z" />
+          </svg>
         </span>
       </div>
     </div>
@@ -83,12 +91,11 @@ function DashboardMock({ home }: { home: SiteContent["home"] }) {
     <div className="flex h-full overflow-hidden rounded-t-2xl bg-white shadow-[0_40px_80px_-30px_rgb(10_20_60/0.6)] ring-1 ring-black/5">
       {/* sidebar */}
       <div className="flex w-14 shrink-0 flex-col items-center gap-3 bg-[#1b1b20] py-4">
-        <span className="flex size-8 items-center justify-center rounded-[10px] bg-primary text-white">
-          <MessageCircle className="size-4" strokeWidth={2.5} />
-        </span>
-        {[LayoutGrid, Inbox, UserPlus, BookOpen, Settings].map((Icon, i) => (
-          <span key={i} className={cn("flex size-9 items-center justify-center rounded-xl", i === 1 ? "bg-white/15 text-white" : "text-white/45")}>
-            <Icon className="size-[18px]" />
+        <LogoMark />
+        {/* menu entries, drawn as plain marks: the second (the inbox) is the open one */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <span key={i} className={cn("flex size-9 items-center justify-center rounded-xl", i === 1 && "bg-white/15")}>
+            <span className={cn("size-4 rounded-[5px]", i === 1 ? "bg-white" : "bg-white/25")} />
           </span>
         ))}
       </div>
@@ -125,10 +132,7 @@ function DashboardMock({ home }: { home: SiteContent["home"] }) {
               {demo.leadPhone}
             </span>
           </span>
-          <span className="flex shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-2.5 py-1.5 text-[11px] font-semibold text-white">
-            <Headset className="size-3.5" />
-            {handover.takeover}
-          </span>
+          <span className="flex shrink-0 items-center rounded-lg bg-foreground px-2.5 py-1.5 text-[11px] font-semibold text-white">{handover.takeover}</span>
         </div>
         <div className="flex flex-col gap-2 p-4">
           {demo.chat.map((line, i) => (
@@ -158,7 +162,7 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
   return (
     <div aria-hidden className="relative mx-auto w-full max-w-6xl text-start">
       {/* soft shadow of colour under the stage */}
-      <div className="absolute inset-x-10 -bottom-6 h-24 rounded-full bg-[#4f5dff]/40 blur-3xl" />
+      <div className="absolute inset-x-10 -bottom-6 h-24 rounded-full bg-primary/35 blur-3xl" />
 
       <div className="site-stage relative overflow-hidden rounded-[1.75rem] sm:rounded-[2.25rem]">
         <DotPattern className="text-white/25" />
@@ -168,22 +172,20 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
             <DashboardMock home={home} />
           </div>
           {/* widget, overlapping the inbox */}
-          <WidgetMock demo={demo} accent="#0066ff" className="relative z-10 w-full max-w-[21rem] rounded-b-none lg:w-[20.5rem] lg:shrink-0" />
+          <WidgetMock demo={demo} className="relative z-10 w-full max-w-[21rem] rounded-b-none lg:w-[20.5rem] lg:shrink-0" />
         </div>
       </div>
 
       {/* floating notes */}
       <FloatCard className="-start-3 bottom-20 hidden md:flex lg:-start-8">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-[#e7f8ee] text-success">
-          <UserPlus className="size-5" />
-        </span>
+        <span className="flex size-10 items-center justify-center rounded-xl bg-[#e7f8ee] text-xl leading-none font-bold text-success">+</span>
         <span className="flex flex-col">
           <span className="text-[11px] font-medium text-muted-foreground">{demo.leadTitle}</span>
           <span className="text-sm font-semibold">{demo.leadName}</span>
         </span>
       </FloatCard>
       <FloatCard className="-end-3 -top-6 hidden [animation-delay:1.5s] md:flex lg:-end-6">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-[#f1ebff] text-base font-bold text-[#5b34c4]">ع A</span>
+        <span className="flex size-10 items-center justify-center rounded-xl bg-accent text-base font-bold text-accent-foreground">ع A</span>
         <span className="flex flex-col">
           <span className="text-sm font-semibold">العربية · English</span>
           <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
@@ -193,74 +195,10 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
         </span>
       </FloatCard>
       <div className="site-float absolute start-1/2 -bottom-4 z-20 hidden -translate-x-1/2 items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-xs font-medium text-white shadow-[0_16px_32px_-12px_rgb(10_20_60/0.7)] [animation-delay:0.8s] sm:flex rtl:translate-x-1/2">
-        <Sparkles className="size-3.5 text-[#ffd000]" />
+        <svg viewBox="-10 -10 20 20" className="size-3.5" fill="#fbbf24">
+          <path d="M0-10C1.5-3 3-1.5 10 0 3 1.5 1.5 3 0 10-1.5 3-3 1.5-10 0-3-1.5-1.5-3 0-10Z" />
+        </svg>
         {demo.answered}
-      </div>
-    </div>
-  );
-}
-
-const STATUS_STYLE = ["bg-[#fe5100]/20 text-[#ffb08a]", "bg-primary/25 text-[#9cc3ff]", "bg-white/10 text-white/60"];
-
-/** The dashboard inbox during a human takeover. For dark backgrounds. */
-export function InboxMock({ t }: { t: SiteContent["home"]["handover"] }) {
-  return (
-    <div aria-hidden className="overflow-hidden rounded-3xl bg-[#22232a] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.8)] ring-1 ring-white/10">
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-        <span className="text-sm font-semibold text-white">{t.inboxTitle}</span>
-        <span className="flex gap-1.5">
-          {t.filters.slice(0, 2).map((filter, i) => (
-            <span key={filter} className={cn("rounded-full px-2.5 py-1 text-[11px] font-medium", i === 1 ? "bg-white text-foreground" : "bg-white/10 text-white/70")}>
-              {filter}
-            </span>
-          ))}
-        </span>
-      </div>
-      <div className="grid sm:grid-cols-[13rem_minmax(0,1fr)]">
-        <ul className="hidden flex-col border-e border-white/10 p-2 sm:flex">
-          {t.names.map((name, i) => (
-            <li key={name} className={cn("flex items-center gap-2.5 rounded-xl p-2.5", i === 0 && "bg-white/10")}>
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white">{name.slice(0, 1)}</span>
-              <span className="flex min-w-0 flex-col gap-1">
-                <span dir="auto" className="truncate text-xs font-medium text-white">
-                  {name}
-                </span>
-                <span className={cn("w-fit rounded-full px-1.5 py-0.5 text-[10px] font-medium", STATUS_STYLE[i])}>{t.filters[i + 1]}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-col">
-          <div className="flex flex-col gap-2.5 p-4">
-            {t.chat.map((line, i) =>
-              line.from === "note" ? (
-                <Bubble key={i} tone="dark" line={line} />
-              ) : (
-                // In the inbox the customer is the other party: their bubbles sit at the start,
-                // the assistant's (blue) and the team member's (green) at the end.
-                <p
-                  key={i}
-                  dir="auto"
-                  className={cn(
-                    "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed text-white",
-                    line.from === "customer" && "self-start rounded-es-md bg-white/10 ring-1 ring-white/10",
-                    line.from === "assistant" && "self-end rounded-ee-md bg-primary",
-                    line.from === "agent" && "self-end rounded-ee-md bg-[#00873d]",
-                  )}
-                >
-                  {line.text}
-                </p>
-              ),
-            )}
-          </div>
-          <div className="flex items-center justify-between gap-3 border-t border-white/10 px-4 py-3">
-            <span className="h-2 w-24 rounded-full bg-white/15" />
-            <span className="flex items-center gap-1.5 rounded-lg bg-[#00c057] px-3 py-1.5 text-xs font-semibold text-white">
-              <Headset className="size-3.5" />
-              {t.takeover}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export function PlanPicker({ plans, currentId, canSwitch }: { plans: PlanOption[
               key={plan.id}
               className={cn(
                 "flex flex-col gap-3 rounded-2xl border p-4",
-                current ? "border-primary bg-gradient-to-br from-accent to-white shadow-[0_4px_16px_-6px_rgb(0_102_255/0.45)]" : "border-border/80 bg-background",
+                current ? "border-primary bg-gradient-to-br from-accent to-white shadow-[0_4px_16px_-6px_rgb(37_99_235/0.45)]" : "border-border/80 bg-background",
               )}
             >
               <div className="flex items-center justify-between gap-2">

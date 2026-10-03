@@ -85,7 +85,7 @@ export default async function KnowledgePage({ searchParams }: PageProps<"/dashbo
             <dt className="text-xs text-white/60">{t("knowledge.heroProcessing")}</dt>
             <dd className="mt-1 flex items-center gap-2 text-2xl font-bold tabular-nums">
               {processing}
-              {processing > 0 && <span className="size-2 animate-pulse rounded-full bg-[#ffd000]" />}
+              {processing > 0 && <span className="size-2 animate-pulse rounded-full bg-[#fbbf24]" />}
             </dd>
           </div>
         </dl>
@@ -94,7 +94,7 @@ export default async function KnowledgePage({ searchParams }: PageProps<"/dashbo
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
-            <SectionHeader icon={PlusCircle} title={t("knowledge.addTitle")} description={t("knowledge.addSubtitle")} color="#0066ff" />
+            <SectionHeader icon={PlusCircle} title={t("knowledge.addTitle")} description={t("knowledge.addSubtitle")} color="#2563eb" />
             <CardContent>
               <AddSource
                 // Suggest the business's own website until it has been added once.

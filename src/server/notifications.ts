@@ -1,14 +1,21 @@
 import { APP_URL } from "@/lib/config";
 import { tenantDb } from "@/server/db/tenant";
 import { sendEmail, type EmailContent } from "@/server/email/mailer";
+import { sendWhatsAppTemplate } from "@/server/whatsapp/client";
 
 /**
- * Email notifications to the business: a lead was captured, or a customer
- * needs a person. Each respects the workspace's notification settings.
+ * Notifications to the business: a lead was captured (email), or a customer
+ * needs a person (email and WhatsApp). Each respects the workspace's notification settings.
  *
- * Callers do not wait for these (`void notify…`): an email must never delay or
- * break a customer's chat. Failures are logged by the mailer.
+ * Callers do not wait for these (`void notify…`): a notification must never delay or
+ * break a customer's chat. Failures are logged by the mailer and the WhatsApp client.
  */
+
+/**
+ * The approved WhatsApp template used for "a customer needs a person". Its body has three
+ * variables: {{1}} business name, {{2}} customer, {{3}} their last message. See docs/DEPLOYMENT.md.
+ */
+const WHATSAPP_NEEDS_HUMAN_TEMPLATE = () => process.env.WHATSAPP_TEMPLATE_NEEDS_HUMAN || "needs_human_alert";
 
 const TEXT = {
   en: {
@@ -50,14 +57,17 @@ async function audience(workspaceId: string, kind: "notifyOnLead" | "notifyOnNee
     db.notificationSettings.findFirst(),
     db.workspace.findFirst({ select: { name: true, defaultLanguage: true } }),
   ]);
-  if (!settings || !workspace || !settings[kind] || settings.emails.length === 0) return null;
+  if (!settings || !workspace || !settings[kind]) return null;
+  // WhatsApp alerts are sent for "needs a person" only: that is the one a team must act on at once.
+  const whatsapp = kind === "notifyOnNeedsHuman" ? settings.whatsappNumbers : [];
+  if (settings.emails.length === 0 && whatsapp.length === 0) return null;
   const locale = workspace.defaultLanguage === "ar" ? "ar" : "en";
-  return { db, to: settings.emails, business: workspace.name, t: TEXT[locale], rtl: locale === "ar" };
+  return { db, to: settings.emails, whatsapp, locale, business: workspace.name, t: TEXT[locale], rtl: locale === "ar" } as const;
 }
 
 export async function notifyLeadCaptured(workspaceId: string, leadId: string): Promise<boolean> {
   const a = await audience(workspaceId, "notifyOnLead");
-  if (!a) return false;
+  if (!a || a.to.length === 0) return false;
   const lead = await a.db.lead.findFirst({ where: { id: leadId } });
   if (!lead) return false;
 
@@ -89,17 +99,27 @@ export async function notifyNeedsHuman(workspaceId: string, conversationId: stri
   });
   if (!conversation) return false;
 
+  const customer = conversation.visitorName ?? a.t.visitor;
+  const lastMessage = conversation.messages[0]?.content.slice(0, 300);
+
   const content: EmailContent = {
     subject: a.t.humanSubject(a.business),
     heading: a.t.humanHeading,
     lines: [a.t.humanLine],
     details: [
-      [a.t.customer, conversation.visitorName ?? a.t.visitor],
+      [a.t.customer, customer],
       ...(conversation.visitorPhone ? ([[a.t.phone, conversation.visitorPhone]] as [string, string][]) : []),
-      ...(conversation.messages[0] ? ([[a.t.lastMessage, conversation.messages[0].content.slice(0, 300)]] as [string, string][]) : []),
+      ...(lastMessage ? ([[a.t.lastMessage, lastMessage]] as [string, string][]) : []),
     ],
     action: { label: a.t.openChat, url: `${APP_URL}/dashboard/inbox?c=${conversationId}` },
     rtl: a.rtl,
   };
-  return sendEmail(a.to, content);
+
+  // Email and WhatsApp go out side by side; one failing does not stop the other.
+  const who = conversation.visitorPhone ? `${customer} (${conversation.visitorPhone})` : customer;
+  const [emailed, ...messaged] = await Promise.all([
+    a.to.length > 0 ? sendEmail(a.to, content) : false,
+    ...a.whatsapp.map((number) => sendWhatsAppTemplate(number, WHATSAPP_NEEDS_HUMAN_TEMPLATE(), a.locale, [a.business, who, lastMessage ?? "–"])),
+  ]);
+  return emailed || messaged.some(Boolean);
 }

@@ -10,6 +10,7 @@ import { DEFAULT_WORKING_HOURS, type WorkingHours } from "@/lib/validation";
 import { requireWorkspace } from "@/server/auth/session";
 import { freePlanChangeAllowed, listPlans } from "@/server/billing";
 import { emailConfigured } from "@/server/email/mailer";
+import { whatsappConfigured } from "@/server/whatsapp/client";
 import { knowledgePagesUsed } from "@/server/knowledge";
 import { getAiMessagesUsed } from "@/server/limits/usage";
 
@@ -31,7 +32,7 @@ function SectionHeader({ icon: Icon, title, description, color }: { icon: Lucide
   );
 }
 
-/** Settings: business profile and hours, email notifications, plan and usage. */
+/** Settings: business profile and hours, notifications (email and WhatsApp), plan and usage. */
 export default async function SettingsPage() {
   const { db, workspace, role } = await requireWorkspace();
   const t = await getTranslations();
@@ -56,7 +57,7 @@ export default async function SettingsPage() {
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <Card>
-          <SectionHeader icon={Building2} title={t("settings.profileTitle")} description={t("settings.profileSubtitle")} color="#0066ff" />
+          <SectionHeader icon={Building2} title={t("settings.profileTitle")} description={t("settings.profileSubtitle")} color="#2563eb" />
           <CardContent>
             <OnboardingForm
               mode="edit"
@@ -81,10 +82,12 @@ export default async function SettingsPage() {
               <NotificationForm
                 canEdit={canEdit}
                 emailConfigured={emailConfigured()}
+                whatsappConfigured={whatsappConfigured()}
                 initial={{
                   notifyOnLead: notifications?.notifyOnLead ?? true,
                   notifyOnNeedsHuman: notifications?.notifyOnNeedsHuman ?? true,
                   emails: notifications?.emails ?? [],
+                  whatsappNumbers: notifications?.whatsappNumbers ?? [],
                 }}
               />
             </CardContent>

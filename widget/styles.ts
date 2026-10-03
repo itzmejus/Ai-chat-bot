@@ -16,6 +16,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   box-shadow:0 8px 24px rgb(0 0 0/.22),0 2px 6px rgb(0 0 0/.12);transition:transform .18s ease}
 .mw-launcher:hover{transform:scale(1.06)}
 .mw-launcher svg{width:28px;height:28px;grid-area:1/1;transition:opacity .15s,transform .2s}
+.mw-launcher .i-chat{width:34px;height:31px}
 .mw-launcher .i-close{opacity:0;transform:rotate(-45deg)}
 .mw[data-open="true"] .mw-launcher .i-chat{opacity:0;transform:rotate(45deg)}
 .mw[data-open="true"] .mw-launcher .i-close{opacity:1;transform:none}
@@ -30,7 +31,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   background:radial-gradient(120% 140% at 100% 0%,rgb(255 255 255/.22),transparent 60%),var(--brand)}
 .mw-avatar{position:relative;width:42px;height:42px;flex:none;border-radius:50%;background:rgb(255 255 255/.2);display:grid;place-items:center}
 .mw-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#fff}
-.mw-avatar svg{width:22px;height:22px}
+.mw-avatar svg{width:26px;height:24px}
 .mw-avatar::after{content:"";position:absolute;inset-inline-end:0;bottom:0;width:11px;height:11px;border-radius:50%;background:#00c057;border:2px solid var(--brand)}
 .mw-title{flex:1;min-width:0}
 .mw-title b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -52,6 +53,11 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 @keyframes mw-bounce{0%,60%,100%{transform:none;opacity:.6}30%{transform:translateY(-4px);opacity:1}}
 
 .mw-footer{flex:none;background:#fff;border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.mw-footer:not(:last-child){padding-bottom:8px}
+.mw-credit{flex:none;display:flex;align-items:center;justify-content:center;gap:5px;background:#fff;padding:0 12px calc(8px + env(safe-area-inset-bottom));font-size:11px;color:var(--muted);text-decoration:none}
+.mw-credit b{font-weight:600;color:var(--ink)}
+.mw-credit svg{width:14px;height:13px;color:var(--brand);--mark-spark:#fff}
+.mw-credit:hover b{text-decoration:underline}
 .mw-human{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-bottom:8px;padding:7px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted)}
 .mw-human:hover:not(:disabled){background:var(--canvas);color:var(--ink)}
 .mw-human:disabled{cursor:default;opacity:.6}
@@ -74,10 +80,12 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .mw-form button:disabled{opacity:.6}
 .mw-form .err{color:#b00008;font-weight:400}
 
-/* Phones (the host page tells us): the iframe is full screen, so the window fills it and the launcher hides while open. */
-.mw[data-mobile="true"][data-open="true"]{padding:0}
-.mw[data-mobile="true"][data-open="true"] .mw-panel{border-radius:0}
+/* Phones (the host page tells us): the chat is a sheet over the lower part of the page, not the whole
+   screen. The launcher hides while it is open (the header's arrow closes it) to leave room for the conversation. */
+.mw[data-mobile="true"][data-open="true"]{padding:8px}
 .mw[data-mobile="true"][data-open="true"] .mw-launcher{display:none}
+/* Touch screens zoom the page when a focused field's text is smaller than 16px. */
+@media (pointer:coarse){.mw-composer textarea,.mw-form input{font-size:16px}}
 /* Dashboard preview: the window is always shown inside a fixed frame. */
 .mw[data-preview="true"]{padding:14px}
 `;

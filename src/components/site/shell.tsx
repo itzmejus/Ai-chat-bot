@@ -1,11 +1,13 @@
 import { ArrowRight, Languages } from "lucide-react";
 import Link from "next/link";
 import { Brand } from "@/components/brand";
+import { DotPattern } from "@/components/illustrations";
 import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
 import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
+import { UaeFlag } from "./art";
 import { MobileMenu } from "./mobile-menu";
 
 /** Button-styled link used across the site. */
@@ -30,7 +32,7 @@ export function CtaLink({
       className={cn(
         "group inline-flex items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-[background-color,box-shadow,transform] active:translate-y-px",
         size === "lg" ? "h-13 px-7 text-base" : "h-11 px-5 text-[15px]",
-        variant === "primary" && "bg-primary text-white shadow-[0_8px_24px_-8px_rgb(0_102_255/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-[#0057db]",
+        variant === "primary" && "bg-primary text-white shadow-[0_8px_24px_-8px_rgb(37_99_235/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-[#1d4ed8]",
         variant === "outline" && "border border-border bg-white text-foreground hover:bg-muted",
         variant === "light" && "bg-white text-foreground hover:bg-white/90",
         variant === "ghost-light" && "border border-white/25 bg-white/10 text-white hover:bg-white/20",
@@ -54,7 +56,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
 
   const nav = [
     { href: href("/features"), label: t.nav.features },
-    { href: `${href("")}#industries`, label: t.nav.industries },
+    { href: href("/industries"), label: t.nav.industries },
     { href: href("/pricing"), label: t.nav.pricing },
   ];
   const login = { href: appLink("/login"), label: t.nav.login };
@@ -100,48 +102,69 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
         {children}
       </main>
 
-      <footer className="border-t border-border bg-muted">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div className="flex flex-col gap-4">
-            <Brand />
-            <p className="max-w-xs text-[15px] leading-relaxed text-muted-foreground">{t.footer.tagline}</p>
+      <footer className="relative overflow-hidden bg-sidebar text-white">
+        <DotPattern className="text-white/[0.06]" />
+        <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pt-14 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] lg:gap-16 lg:pt-20 lg:pb-16">
+          <div className="flex flex-col items-start gap-5">
+            <Link href={href("")} aria-label={APP_NAME}>
+              <Brand tone="light" className="text-xl" />
+            </Link>
+            <p className="max-w-sm text-[15px] leading-relaxed text-white/65">{t.footer.tagline}</p>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <CtaLink href={start.href} arrow>
+                {start.label}
+              </CtaLink>
+              <CtaLink href={login.href} variant="ghost-light">
+                {login.label}
+              </CtaLink>
+            </div>
           </div>
-          <FooterColumn title={t.footer.product}>
-            <FooterLink href={href("/features")}>{t.nav.features}</FooterLink>
-            <FooterLink href={href("/pricing")}>{t.nav.pricing}</FooterLink>
-            <FooterLink href={login.href} external>
-              {t.nav.login}
-            </FooterLink>
-            <FooterLink href={start.href} external>
-              {t.nav.start}
-            </FooterLink>
-          </FooterColumn>
-          <FooterColumn title={t.footer.industries}>
-            {INDUSTRY_SLUGS.map((slug) => (
-              <FooterLink key={slug} href={href(`/industries/${slug}`)}>
-                {t.industries[slug].name}
-              </FooterLink>
-            ))}
-          </FooterColumn>
-          <FooterColumn title={t.footer.company}>
-            <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
-            <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
-            {CONTACT_EMAIL && (
-              <FooterLink href={`mailto:${CONTACT_EMAIL}`} external>
-                {t.footer.contact}
-              </FooterLink>
-            )}
-            <a href={language.href} lang={other} hrefLang={other} className="text-[15px] text-muted-foreground transition-colors hover:text-foreground">
-              {language.label}
-            </a>
-          </FooterColumn>
+
+          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
+            <FooterColumn title={t.footer.product}>
+              <FooterLink href={href("/features")}>{t.nav.features}</FooterLink>
+              <FooterLink href={href("/pricing")}>{t.nav.pricing}</FooterLink>
+              <FooterLink href={href("/industries")}>{t.nav.industries}</FooterLink>
+            </FooterColumn>
+            <FooterColumn title={t.footer.industries}>
+              {INDUSTRY_SLUGS.map((slug) => (
+                <FooterLink key={slug} href={href(`/industries/${slug}`)}>
+                  {t.industries[slug].name}
+                </FooterLink>
+              ))}
+            </FooterColumn>
+            <FooterColumn title={t.footer.company}>
+              <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
+              <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
+              {CONTACT_EMAIL && (
+                <FooterLink href={`mailto:${CONTACT_EMAIL}`} external>
+                  {t.footer.contact}
+                </FooterLink>
+              )}
+            </FooterColumn>
+          </nav>
         </div>
-        <div className="border-t border-border">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-5 text-sm text-muted-foreground sm:px-6">
+
+        <div className="relative border-t border-white/10">
+          <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-6">
             <p>
               © {new Date().getFullYear()} {APP_NAME}. {t.footer.rights}
             </p>
-            <p>{t.footer.madeIn} 🇦🇪</p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <p className="flex items-center gap-2">
+                <UaeFlag />
+                {t.footer.madeIn}
+              </p>
+              <a
+                href={language.href}
+                lang={other}
+                hrefLang={other}
+                className="flex h-9 items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3.5 font-medium text-white/85 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Languages className="size-4" />
+                {language.label}
+              </a>
+            </div>
           </div>
         </div>
       </footer>
@@ -151,15 +174,15 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
 
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold tracking-wide text-foreground">{title}</h2>
+    <div className="flex flex-col gap-3.5">
+      <h2 className="text-xs font-semibold tracking-wider text-white/45 uppercase">{title}</h2>
       {children}
     </div>
   );
 }
 
 function FooterLink({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) {
-  const className = "text-[15px] text-muted-foreground transition-colors hover:text-foreground";
+  const className = "w-fit text-[15px] text-white/75 transition-colors hover:text-white";
   return external ? (
     <a href={href} className={className}>
       {children}

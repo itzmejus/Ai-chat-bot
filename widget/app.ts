@@ -5,6 +5,8 @@
  * All text from the server or the customer is inserted with `textContent`,
  * never as HTML.
  */
+import { CHAT_LOCALES, chatLocaleFromTag, detectChatLocale, isRtlLocale, type ChatLocale } from "../src/lib/chat-locales";
+import { LOGO_BUBBLE, LOGO_SPARK } from "../src/lib/logo";
 import { readSse } from "../src/lib/sse-client";
 import { STYLES } from "./styles";
 
@@ -19,11 +21,13 @@ type Config = {
   position: "left" | "right";
   preChatForm: boolean;
   language: "en" | "ar" | "both";
+  /** The platform's name and site, for the small "Powered by" line. */
+  poweredBy: { name: string; url: string } | null;
   preview: boolean;
   previewOrigin: string | null;
 };
 type Role = "customer" | "assistant" | "agent";
-type Locale = "en" | "ar";
+type Locale = ChatLocale;
 
 const TEXT: Record<Locale, Record<string, string>> = {
   en: {
@@ -46,6 +50,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     agentJoined: "A team member joined the chat",
     returnedToAi: "You are chatting with the assistant again",
     chatClosed: "This chat has ended. Send a message to start a new one.",
+    poweredBy: "Powered by",
   },
   ar: {
     online: "متصل الآن",
@@ -67,15 +72,108 @@ const TEXT: Record<Locale, Record<string, string>> = {
     agentJoined: "انضم أحد أعضاء الفريق إلى المحادثة",
     returnedToAi: "أنت تتحدث مع المساعد مرة أخرى",
     chatClosed: "انتهت هذه المحادثة. أرسل رسالة لبدء محادثة جديدة.",
+    poweredBy: "بدعم من",
+  },
+  fr: {
+    online: "En ligne",
+    placeholder: "Écrivez un message…",
+    send: "Envoyer",
+    open: "Ouvrir le chat",
+    close: "Fermer le chat",
+    human: "Parler à un conseiller",
+    humanRequested: "Un membre de l'équipe a été prévenu",
+    paused: "Un membre de l'équipe s'occupe de cette conversation et vous répondra ici.",
+    formIntro: "Dites-nous qui vous êtes pour que nous puissions mieux vous aider.",
+    name: "Nom",
+    phone: "Numéro de téléphone",
+    start: "Démarrer le chat",
+    formError: "Veuillez saisir votre nom et un numéro de téléphone valide.",
+    error: "Une erreur s'est produite. Veuillez réessayer.",
+    rateLimited: "Vous envoyez des messages trop rapidement. Veuillez patienter un instant.",
+    typing: "Écrit",
+    agentJoined: "Un membre de l'équipe a rejoint la conversation",
+    returnedToAi: "Vous discutez de nouveau avec l'assistant",
+    chatClosed: "Cette conversation est terminée. Envoyez un message pour en commencer une nouvelle.",
+    poweredBy: "Propulsé par",
+  },
+  hi: {
+    online: "ऑनलाइन",
+    placeholder: "संदेश लिखें…",
+    send: "भेजें",
+    open: "चैट खोलें",
+    close: "चैट बंद करें",
+    human: "किसी व्यक्ति से बात करें",
+    humanRequested: "टीम के एक सदस्य को सूचित कर दिया गया है",
+    paused: "टीम का एक सदस्य यह चैट संभाल रहा है और यहीं जवाब देगा।",
+    formIntro: "कृपया अपना परिचय दें ताकि हम आपकी बेहतर मदद कर सकें।",
+    name: "नाम",
+    phone: "फ़ोन नंबर",
+    start: "चैट शुरू करें",
+    formError: "कृपया अपना नाम और सही फ़ोन नंबर दर्ज करें।",
+    error: "कुछ गड़बड़ हो गई। कृपया फिर से कोशिश करें।",
+    rateLimited: "आप बहुत तेज़ी से संदेश भेज रहे हैं। कृपया थोड़ा रुकें।",
+    typing: "लिख रहा है",
+    agentJoined: "टीम का एक सदस्य चैट में शामिल हुआ",
+    returnedToAi: "आप फिर से सहायक से बात कर रहे हैं",
+    chatClosed: "यह चैट समाप्त हो गई है। नई चैट शुरू करने के लिए संदेश भेजें।",
+    poweredBy: "द्वारा संचालित",
+  },
+  ur: {
+    online: "آن لائن",
+    placeholder: "پیغام لکھیں…",
+    send: "بھیجیں",
+    open: "چیٹ کھولیں",
+    close: "چیٹ بند کریں",
+    human: "کسی نمائندے سے بات کریں",
+    humanRequested: "ٹیم کے ایک رکن کو اطلاع دے دی گئی ہے",
+    paused: "ٹیم کا ایک رکن یہ چیٹ دیکھ رہا ہے اور یہیں جواب دے گا۔",
+    formIntro: "براہِ کرم اپنا تعارف کرائیں تاکہ ہم آپ کی بہتر مدد کر سکیں۔",
+    name: "نام",
+    phone: "فون نمبر",
+    start: "چیٹ شروع کریں",
+    formError: "براہِ کرم اپنا نام اور درست فون نمبر درج کریں۔",
+    error: "کچھ غلط ہو گیا۔ براہِ کرم دوبارہ کوشش کریں۔",
+    rateLimited: "آپ بہت تیزی سے پیغامات بھیج رہے ہیں۔ براہِ کرم تھوڑا انتظار کریں۔",
+    typing: "لکھ رہا ہے",
+    agentJoined: "ٹیم کا ایک رکن چیٹ میں شامل ہو گیا",
+    returnedToAi: "آپ دوبارہ معاون سے بات کر رہے ہیں",
+    chatClosed: "یہ چیٹ ختم ہو گئی ہے۔ نئی چیٹ شروع کرنے کے لیے پیغام بھیجیں۔",
+    poweredBy: "پیشکش",
+  },
+  ru: {
+    online: "В сети",
+    placeholder: "Введите сообщение…",
+    send: "Отправить",
+    open: "Открыть чат",
+    close: "Закрыть чат",
+    human: "Связаться с сотрудником",
+    humanRequested: "Сотрудник уведомлён",
+    paused: "Этим чатом занимается сотрудник, он ответит вам здесь.",
+    formIntro: "Представьтесь, пожалуйста, чтобы мы могли лучше вам помочь.",
+    name: "Имя",
+    phone: "Номер телефона",
+    start: "Начать чат",
+    formError: "Введите имя и корректный номер телефона.",
+    error: "Что-то пошло не так. Попробуйте ещё раз.",
+    rateLimited: "Вы отправляете сообщения слишком быстро. Подождите немного.",
+    typing: "Печатает",
+    agentJoined: "К чату подключился сотрудник",
+    returnedToAi: "Вы снова общаетесь с ассистентом",
+    chatClosed: "Этот чат завершён. Отправьте сообщение, чтобы начать новый.",
+    poweredBy: "Работает на",
   },
 };
 
+/** The brand mark without its tile: the bubble takes the text colour, the spark the colour behind it. */
+const mark = (className: string) =>
+  `<svg class="${className}" viewBox="5 6 22 20"><path fill="currentColor" d="${LOGO_BUBBLE}"/><path fill="var(--mark-spark,var(--brand))" d="${LOGO_SPARK}"/></svg>`;
+
 const ICONS = {
-  chat: '<svg class="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.300 7.400L3 21l2.100-5.700A8.400 8.400 0 1 1 21 11.500Z"/></svg>',
+  chat: mark("i-chat"),
   close: '<svg class="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
   send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 20 4l-5 16-3.500-6.500L4 12Z"/></svg>',
-  bot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4M9 13v2M15 13v2"/></svg>',
+  bot: mark("i-mark"),
   person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
 };
 
@@ -112,10 +210,14 @@ const visitorId = storage.get("visitor") ?? randomId();
 storage.set("visitor", visitorId);
 let conversationId = storage.get("conversation") || undefined;
 
-const hasArabic = (s: string) => /[؀-ۿ]/.test(s);
+// A business that serves one language starts in it. Otherwise start in the visitor's own
+// language when the widget has it, trying each of the browser's preferred languages in turn.
 let locale: Locale =
-  config.language === "ar" || (config.language === "both" && navigator.language.toLowerCase().startsWith("ar")) ? "ar" : "en";
-const t = (key: string) => TEXT[locale][key];
+  config.language !== "both"
+    ? config.language
+    : ((navigator.languages?.length ? navigator.languages : [navigator.language]).map(chatLocaleFromTag).find(Boolean) ?? "en");
+if (!CHAT_LOCALES.includes(locale)) locale = "en";
+const t = (key: string) => TEXT[locale][key] ?? TEXT.en[key];
 
 let open = config.preview; // the dashboard preview shows the window straight away
 let busy = false;
@@ -143,6 +245,7 @@ const titleStatus = el("span");
 const closeButton = el("button", "mw-close");
 const messages = el("div", "mw-messages");
 const footer = el("div", "mw-footer");
+const credit = el("a", "mw-credit");
 const launcher = el("button", "mw-launcher");
 
 closeButton.type = "button";
@@ -153,6 +256,12 @@ messages.setAttribute("aria-live", "polite");
 title.append(titleName, titleStatus);
 header.append(avatar, title, closeButton);
 panel.append(header, messages, footer);
+if (config.poweredBy) {
+  credit.href = config.poweredBy.url;
+  credit.target = "_blank";
+  credit.rel = "noopener";
+  panel.appendChild(credit);
+}
 root.append(panel, launcher);
 document.body.appendChild(root);
 
@@ -170,7 +279,7 @@ function render() {
   // Text direction applies inside the window only. The outer layout stays left-to-right so that
   // "left" and "right" keep their physical meaning for the bubble position.
   root.dir = "ltr";
-  panel.dir = locale === "ar" ? "rtl" : "ltr";
+  panel.dir = isRtlLocale(locale) ? "rtl" : "ltr";
   root.dataset.side = config.position;
   root.dataset.open = String(open);
   root.dataset.preview = String(config.preview);
@@ -194,6 +303,11 @@ function render() {
   launcher.setAttribute("aria-label", open ? t("close") : t("open"));
   greetingBubble.textContent = config.greeting;
   greetingBubble.hidden = !config.greeting;
+  if (config.poweredBy) {
+    credit.innerHTML = mark("i-mark");
+    credit.prepend(el("span", undefined, t("poweredBy")));
+    credit.appendChild(el("b", undefined, config.poweredBy.name));
+  }
   renderFooter();
 }
 
@@ -349,7 +463,7 @@ async function sendMessage(text: string) {
   renderFooter();
 
   // Follow the customer's language: an Arabic message switches the widget to Arabic, and back.
-  const next: Locale = hasArabic(text) ? "ar" : /[A-Za-z]{2,}/.test(text) ? "en" : locale;
+  const next = detectChatLocale(text, locale);
   if (next !== locale) {
     locale = next;
     render();

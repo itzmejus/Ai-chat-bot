@@ -162,7 +162,7 @@ export default async function OverviewPage() {
         {stepsDone < steps.length && (
           <div className="relative mt-6 sm:mt-8 sm:max-w-[60%] lg:max-w-[58%]">
             <p className="flex flex-wrap items-center gap-x-2 text-sm font-semibold">
-              <Sparkles className="size-4 text-[#ffd000]" />
+              <Sparkles className="size-4 text-[#fbbf24]" />
               {t("overview.setupTitle")}
               <span className="font-normal text-white/55">· {t("overview.setupProgress", { done: stepsDone, total: steps.length })}</span>
             </p>
@@ -195,7 +195,7 @@ export default async function OverviewPage() {
 
       {/* Headline numbers */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatTile icon={MessagesSquare} label={t("overview.kpiTotal")} value={counts.total} hint={t("overview.kpiTotalHint")} color="#0066ff" href="/dashboard/inbox" />
+        <StatTile icon={MessagesSquare} label={t("overview.kpiTotal")} value={counts.total} hint={t("overview.kpiTotalHint")} color="#2563eb" href="/dashboard/inbox" />
         <StatTile icon={CalendarDays} label={t("overview.kpiToday")} value={counts.today} hint={t("overview.kpiTodayHint")} color="#7c4dff" />
         <StatTile
           icon={UserPlus}
@@ -218,7 +218,7 @@ export default async function OverviewPage() {
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardTitleRow icon={TrendingUp} title={t("overview.chartTitle")} description={t("overview.chartSubtitle")} color="#0066ff" />
+          <CardTitleRow icon={TrendingUp} title={t("overview.chartTitle")} description={t("overview.chartSubtitle")} color="#2563eb" />
           <CardContent>
             <DailyColumns data={daily} />
           </CardContent>
@@ -237,14 +237,14 @@ export default async function OverviewPage() {
       {/* What customers ask */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardTitleRow icon={MessagesSquare} title={t("overview.topTitle")} description={t("overview.topSubtitle")} color="#0066ff" />
+          <CardTitleRow icon={MessagesSquare} title={t("overview.topTitle")} description={t("overview.topSubtitle")} color="#2563eb" />
           <CardContent>
             {questions.top.length === 0 ? (
               <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{t("overview.topEmpty")}</p>
             ) : (
               <QuestionList
                 groups={questions.top}
-                barColor="#0066ff"
+                barColor="#2563eb"
                 timesAsked={timesAsked}
                 action={(group) => (
                   <Link

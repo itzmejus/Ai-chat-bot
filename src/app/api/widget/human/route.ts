@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CHAT_LOCALES, type ChatLocale } from "@/lib/chat-locales";
 import { encodeSystemEvent } from "@/lib/system-events";
 import { rateLimit } from "@/server/limits/rate-limit";
 import { notifyNeedsHuman } from "@/server/notifications";
@@ -9,12 +10,16 @@ const bodySchema = z.object({
   visitorId: visitorIdSchema,
   conversationId: conversationIdSchema.optional(),
   /** Language the widget is currently showing, for the confirmation message. */
-  locale: z.enum(["en", "ar"]).default("en"),
+  locale: z.enum(CHAT_LOCALES).default("en"),
 });
 
-const CONFIRMATION = {
+const CONFIRMATION: Record<ChatLocale, string> = {
   en: "I've let the team know. Someone will join this chat as soon as possible. You can leave your name and phone number here in case we miss you.",
   ar: "تم إبلاغ الفريق، وسينضم أحد الموظفين إلى المحادثة في أقرب وقت. يمكنك ترك اسمك ورقم هاتفك هنا لنتواصل معك.",
+  fr: "J'ai prévenu l'équipe. Quelqu'un rejoindra cette conversation dès que possible. Vous pouvez laisser votre nom et votre numéro de téléphone ici pour que nous puissions vous recontacter.",
+  hi: "मैंने टीम को सूचित कर दिया है। कोई जल्द से जल्द इस चैट में शामिल होगा। आप अपना नाम और फ़ोन नंबर यहाँ छोड़ सकते हैं ताकि हम आपसे संपर्क कर सकें।",
+  ur: "میں نے ٹیم کو اطلاع دے دی ہے۔ کوئی جلد از جلد اس چیٹ میں شامل ہوگا۔ آپ اپنا نام اور فون نمبر یہاں چھوڑ سکتے ہیں تاکہ ہم آپ سے رابطہ کر سکیں۔",
+  ru: "Я сообщил команде. Сотрудник подключится к чату как можно скорее. Вы можете оставить здесь своё имя и номер телефона, чтобы мы могли с вами связаться.",
 };
 
 /**

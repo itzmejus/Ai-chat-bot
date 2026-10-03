@@ -14,6 +14,16 @@ vi.mock("@/server/email/mailer", async (original) => {
   };
 });
 
+// Capture outgoing WhatsApp alerts too.
+const whatsapp = vi.hoisted(() => [] as { to: string; template: string; language: string; params: string[] }[]);
+vi.mock("@/server/whatsapp/client", async (original) => ({
+  ...(await original<typeof import("@/server/whatsapp/client")>()),
+  sendWhatsAppTemplate: vi.fn(async (to: string, template: string, language: string, params: string[]) => {
+    whatsapp.push({ to, template, language, params });
+    return true;
+  }),
+}));
+
 const mocks = vi.hoisted(() => ({ embedTexts: vi.fn(), streamChat: vi.fn(), header: {} as Record<string, unknown> }));
 vi.mock("@/server/ai/openai", async (original) => ({
   ...(await original<typeof import("@/server/ai/openai")>()),
@@ -35,6 +45,7 @@ import { createTenant } from "./helpers";
 
 beforeEach(() => {
   sent.length = 0;
+  whatsapp.length = 0;
   mocks.header = { answered: true, wants_human: false, name: null, phone: null, email: null };
   mocks.embedTexts.mockReset().mockImplementation(async (texts: string[]) => texts.map(() => Array(1536).fill(0.01)));
   mocks.streamChat.mockReset().mockImplementation(async function* () {
@@ -203,6 +214,38 @@ describe("email notifications", () => {
 
     await chat(t, "Hello? Anyone?", { conversationId });
     expect(sent).toHaveLength(1);
+  });
+
+  it("also alerts the team's WhatsApp numbers when a chat needs a person, but not for leads", async () => {
+    const t = await setup("Notify WhatsApp");
+    await t.db.notificationSettings.updateMany({ data: { whatsappNumbers: ["+971501112222", "+971503334444"] } });
+
+    // A lead on its own is an email only.
+    mocks.header = { answered: true, wants_human: false, name: "Omar", phone: "+971501234567", email: null };
+    const conversationId = await chat(t, "I'm Omar, call me on 0501234567");
+    expect(sent).toHaveLength(1);
+    expect(whatsapp).toHaveLength(0);
+
+    mocks.header = { answered: false, wants_human: true, name: "Omar", phone: "+971501234567", email: null };
+    await chat(t, "I want to talk\nto a person", { conversationId });
+    expect(whatsapp.map((m) => m.to)).toEqual(["+971501112222", "+971503334444"]);
+    expect(whatsapp[0]).toMatchObject({ template: "needs_human_alert", language: "en" });
+    expect(whatsapp[0].params[0]).toBe("Notify WhatsApp");
+    expect(whatsapp[0].params[2]).toContain("I want to talk");
+
+    // Still waiting: no second alert.
+    await chat(t, "Hello?", { conversationId });
+    expect(whatsapp).toHaveLength(2);
+
+    // WhatsApp alone is enough: no email addresses, the alert still goes out.
+    const solo = await setup("Notify WhatsApp Only");
+    await solo.db.notificationSettings.updateMany({ data: { emails: [], whatsappNumbers: ["+971505556666"] } });
+    sent.length = 0;
+    whatsapp.length = 0;
+    mocks.header = { answered: false, wants_human: false, name: null, phone: null, email: null };
+    await chat(solo, "Do you have parking?");
+    expect(sent).toHaveLength(0);
+    expect(whatsapp.map((m) => m.to)).toEqual(["+971505556666"]);
   });
 
   it("covers the Talk-to-a-human button and the pre-chat form", async () => {

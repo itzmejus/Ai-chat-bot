@@ -14,16 +14,16 @@ export const en: SiteContent = {
 
   home: {
     meta: {
-      title: "{name}: AI customer support chatbot for UAE businesses, in English and Arabic",
+      title: "{name}: AI customer support chatbot for UAE businesses, in your customers' language",
       description:
-        "Add an AI assistant to your website in minutes. It answers customers 24/7 in English and Arabic using only your business information, captures leads, and hands over to your team when needed.",
+        "Add an AI assistant to your website in minutes. It answers customers 24/7 in their own language using only your business information, captures leads, and hands over to your team when needed.",
     },
     badge: "Built for businesses in the UAE",
-    h1: ["AI customer support that speaks ", "English and Arabic", ""],
+    h1: ["AI customer support that speaks ", "your customers' language", ""],
     sub: "An assistant for your website that answers customers day and night using only your business information, collects their contact details, and calls in your team when a person is needed.",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
-    assurances: ["Free plan, no card needed", "Live on your site in minutes", "English and Arabic, right to left"],
+    assurances: ["Free plan, no card needed", "Live on your site in minutes", "Replies in the language customers write"],
     demo: {
       site: "brightsmile.ae",
       assistant: "Noor",
@@ -57,7 +57,7 @@ export const en: SiteContent = {
       sub: "One assistant, one inbox, one place for your leads.",
       items: {
         grounded: { title: "Answers only from your information", text: "The assistant replies using what you gave it and nothing else. When it does not know, it says so and offers to connect the customer with your team instead of guessing." },
-        bilingual: { title: "English and Arabic, including Gulf dialect", text: "It replies in the language the customer writes in, and the chat window switches to right-to-left for Arabic automatically." },
+        bilingual: { title: "Replies in your customers' language", text: "It replies in the language the customer writes in, from Gulf Arabic to Hindi, Urdu, French or Russian, and the chat window switches to right-to-left when the language needs it." },
         leads: { title: "Turns chats into leads", text: "When a customer wants to book or buy, the assistant asks for their name and phone number and saves them to your leads list. Export to CSV any time." },
         handover: { title: "Human takeover in one click", text: "Jump into any conversation. The AI pauses, your reply appears in the customer's chat instantly, and you can hand it back when you are done." },
         inbox: { title: "A live inbox for your team", text: "Every conversation in one place, updated as it happens, with filters for chats that need a person and search by name or phone." },
@@ -71,6 +71,11 @@ export const en: SiteContent = {
       eyebrow: "AI and people, together",
       title: "The assistant knows when to call a human",
       text: "Some conversations need a person: a complaint, an unusual request, a customer who simply asks. The assistant flags those chats, emails your team, and steps aside the moment someone takes over.",
+      flow: [
+        { title: "The AI answers first", text: "Prices, opening hours, policies: routine questions get an instant answer from your own information, day and night." },
+        { title: "It knows when to stop", text: "A complaint, an unusual request, or a customer who asks for a person. The chat is flagged and your team is told straight away." },
+        { title: "Your team steps in", text: "One click to take over. The AI goes quiet while you reply, and picks the chat up again when you hand it back." },
+      ],
       points: ["Flags chats it cannot answer with confidence", "\"Talk to a human\" button always available to customers", "Email alert the moment a chat needs you", "Hand the chat back to the AI when you are done"],
       inboxTitle: "Inbox",
       filters: ["All", "Needs human", "AI handled", "Closed"],
@@ -85,7 +90,7 @@ export const en: SiteContent = {
     },
     stats: [
       { value: "24/7", label: "Answers day and night, weekends and holidays" },
-      { value: "2", label: "Languages: English and Arabic, with Gulf dialect" },
+      { value: "Any", label: "Language your customer writes in: the assistant replies in the same one" },
       { value: "1", label: "Line of code to add the widget to your site" },
       { value: "50", label: "Pages of your website it reads to build its knowledge" },
     ],
@@ -98,7 +103,7 @@ export const en: SiteContent = {
     pricing: {
       eyebrow: "Pricing",
       title: "Start free. Upgrade when your chats grow",
-      sub: "Simple monthly plans in dirhams. Every plan includes Arabic, lead capture and human takeover.",
+      sub: "Simple monthly plans in dirhams. Every plan includes multilingual answers, lead capture and human takeover.",
       link: "Compare plans",
     },
     faq: {
@@ -106,9 +111,9 @@ export const en: SiteContent = {
       title: "Frequently asked questions",
       sub: "What business owners ask us before they start.",
       items: [
-        { q: "What is {name}?", a: "{name} is an AI customer support assistant for your website. You give it your business information, add a chat widget to your site with one line of code, and it answers your customers' questions around the clock in English and Arabic." },
+        { q: "What is {name}?", a: "{name} is an AI customer support assistant for your website. You give it your business information, add a chat widget to your site with one line of code, and it answers your customers' questions around the clock in their own language." },
         { q: "Will the AI make up answers?", a: "It is built not to. The assistant answers only from the information you provide: your website pages, files, FAQs and notes. If the answer is not there, it tells the customer it does not have that information and offers to connect them with your team." },
-        { q: "Does it really understand Arabic?", a: "Yes. It replies in the language the customer uses, including Gulf dialect, and the chat window switches to a right-to-left layout for Arabic. Your knowledge can be in English, Arabic or both." },
+        { q: "Does it really understand Arabic?", a: "Yes. It replies in the language the customer uses, including Gulf dialect, and the chat window switches to a right-to-left layout for Arabic. Your knowledge can be in English, Arabic or both. It also answers customers who write in other languages, such as Hindi, Urdu, French or Russian." },
         { q: "How long does setup take?", a: "You can be live in a few minutes. Enter your website address so the assistant can read it, review the answers in the test chat, then paste the embed code into your website." },
         { q: "Do I need a developer?", a: "No. Adding the widget is a single line of code pasted before the closing body tag, or into the custom code box of WordPress, Shopify, Wix or Webflow." },
         { q: "What happens when a customer wants to talk to a person?", a: "Customers can press \"Talk to a human\" at any time. The chat is flagged in your inbox, your team gets an email, and any team member can take over. While a person is replying, the AI stays silent." },
@@ -122,7 +127,7 @@ export const en: SiteContent = {
       title: "Give your customers an answer in seconds, not hours",
       sub: "Create your assistant now. It takes a few minutes and the free plan needs no card.",
       button: "Start free",
-      note: "Free plan · English and Arabic · Cancel any time",
+      note: "Free plan · Multilingual · Cancel any time",
     },
   },
 
@@ -130,7 +135,7 @@ export const en: SiteContent = {
     meta: {
       title: "Features: AI chatbot, live inbox, lead capture and human takeover",
       description:
-        "Everything in {name}: an AI assistant trained on your business information, a bilingual chat widget, a live team inbox, human takeover, lead capture with CSV export, and analytics on what customers ask.",
+        "Everything in {name}: an AI assistant trained on your business information, a multilingual chat widget, a live team inbox, human takeover, lead capture with CSV export, and analytics on what customers ask.",
     },
     eyebrow: "Features",
     h1: "One assistant, one inbox, every customer answered",
@@ -144,15 +149,15 @@ export const en: SiteContent = {
       },
       {
         key: "bilingual",
-        title: "Bilingual by design",
-        text: "Made for a market where one customer writes in English and the next in Arabic.",
-        points: ["Replies in the customer's language, including Gulf dialect", "Chat window switches to right-to-left automatically", "Dashboard available in English and Arabic", "Knowledge base can mix both languages", "Formal or friendly tone, your choice"],
+        title: "Multilingual by design",
+        text: "Made for a market where one customer writes in English, the next in Arabic, and the one after in Hindi.",
+        points: ["Replies in the customer's language, including Gulf dialect", "Also answers in Hindi, Urdu, French, Russian and other languages customers write", "Chat window in a growing list of languages, switching to right-to-left automatically", "Dashboard in English and Arabic, with more languages on the way", "Knowledge base can mix languages", "Formal or friendly tone, your choice"],
       },
       {
         key: "widget",
         title: "A chat widget your customers will use",
         text: "Fast, small and styled to match your site.",
-        points: ["One line of code to install", "Your brand colour, logo, position and greeting", "Optional pre-chat form for name and phone", "Typing indicator and replies that appear word by word", "Remembers the conversation while the customer browses", "Full-screen layout on phones", "Only loads on the websites you approve"],
+        points: ["One line of code to install", "Your brand colour, logo, position and greeting", "Optional pre-chat form for name and phone", "Typing indicator and replies that appear word by word", "Remembers the conversation while the customer browses", "A compact sheet on phones that never covers the whole page", "Only loads on the websites you approve"],
       },
       {
         key: "handover",
@@ -205,7 +210,7 @@ export const en: SiteContent = {
     },
     eyebrow: "Pricing",
     h1: "Simple plans that grow with your business",
-    sub: "Start free. Every plan includes English and Arabic, lead capture, human takeover and the live inbox.",
+    sub: "Start free. Every plan includes multilingual answers, lead capture, human takeover and the live inbox.",
     perMonth: "per month",
     free: "Free",
     popular: "Most popular",
@@ -217,8 +222,9 @@ export const en: SiteContent = {
     limits: { messages: "AI messages per month", pages: "knowledge pages", seats: "team members" },
     included: {
       title: "Included in every plan",
-      items: ["English and Arabic answers", "Customisable chat widget", "Lead capture and CSV export", "Human takeover and live inbox", "Email notifications", "Most asked and unanswered questions"],
+      items: ["Answers in your customers' language", "Customisable chat widget", "Lead capture and CSV export", "Human takeover and live inbox", "Email notifications", "Most asked and unanswered questions"],
     },
+    compare: { title: "Compare plans", feature: "What you get", price: "Monthly price", yes: "Included" },
     faq: {
       title: "Pricing questions",
       items: [
@@ -231,6 +237,16 @@ export const en: SiteContent = {
     },
   },
 
+  industriesPage: {
+    meta: {
+      title: "AI chatbot by industry: clinics, real estate, salons, restaurants, car rental, retail",
+      description: "See how {name} answers customers in your industry. Sample questions and conversations for clinics, real estate agencies, salons, restaurants, car rental companies and shops in the UAE.",
+    },
+    h1: "An assistant that already knows your kind of business",
+    sub: "Pick your industry to see the questions it answers and how a conversation goes.",
+    all: "All industries",
+  },
+
   industryPage: { eyebrow: "Industries", asks: "Questions it answers for you", benefits: "Why it fits", other: "Other industries", cta: "Start free" },
 
   industries: {
@@ -239,9 +255,9 @@ export const en: SiteContent = {
       short: "Prices, insurance, doctors and appointment requests.",
       meta: {
         title: "AI chatbot for clinics in Dubai and the UAE",
-        description: "An AI assistant for dental and medical clinics. It answers questions about prices, insurance, doctors and opening hours in English and Arabic, and collects appointment requests around the clock.",
+        description: "An AI assistant for dental and medical clinics. It answers questions about prices, insurance, doctors and opening hours in your customers' language, and collects appointment requests around the clock.",
       },
-      h1: "An AI receptionist for your clinic, in English and Arabic",
+      h1: "An AI receptionist for your clinic, in your patients' language",
       sub: "Patients ask the same questions every day: prices, insurance, opening hours, which doctor. Let the assistant answer them instantly and pass appointment requests to your reception.",
       questions: ["How much is a check-up?", "Do you accept Daman insurance?", "هل عندكم طبيب أسنان للأطفال؟", "Are you open on Friday?", "Can I get an appointment today?"],
       benefits: [
@@ -259,7 +275,7 @@ export const en: SiteContent = {
       short: "Listings, viewings and payment plans, with every enquiry saved.",
       meta: {
         title: "AI chatbot for real estate agencies in Dubai and the UAE",
-        description: "An AI assistant for real estate brokers and developers. It answers questions about listings, payment plans and viewings in English and Arabic, and captures every buyer and tenant enquiry as a lead.",
+        description: "An AI assistant for real estate brokers and developers. It answers questions about listings, payment plans and viewings in your customers' language, and captures every buyer and tenant enquiry as a lead.",
       },
       h1: "Capture every property enquiry, even at midnight",
       sub: "Buyers and tenants browse at all hours and from every time zone. The assistant answers their first questions and gives your agents a name and number to call.",
@@ -279,7 +295,7 @@ export const en: SiteContent = {
       short: "Services, prices, availability and booking requests.",
       meta: {
         title: "AI chatbot for salons and spas in Dubai and the UAE",
-        description: "An AI assistant for beauty salons, barbers and spas. It answers questions about services, prices and opening hours in English and Arabic and collects booking requests while you work.",
+        description: "An AI assistant for beauty salons, barbers and spas. It answers questions about services, prices and opening hours in your customers' language and collects booking requests while you work.",
       },
       h1: "Answer booking questions while your hands are busy",
       sub: "Your team is with clients, not on the phone. The assistant replies to price and availability questions instantly and collects booking requests for you to confirm.",
@@ -299,7 +315,7 @@ export const en: SiteContent = {
       short: "Menus, hours, location, reservations and catering enquiries.",
       meta: {
         title: "AI chatbot for restaurants and cafes in Dubai and the UAE",
-        description: "An AI assistant for restaurants and cafes. It answers questions about the menu, opening hours, location, parking and catering in English and Arabic, and takes reservation requests.",
+        description: "An AI assistant for restaurants and cafes. It answers questions about the menu, opening hours, location, parking and catering in your customers' language, and takes reservation requests.",
       },
       h1: "Answer every \"are you open?\" without picking up the phone",
       sub: "Menu, hours, location, parking, allergens, group bookings. The assistant handles the questions that interrupt service and collects reservation and catering requests.",
@@ -319,7 +335,7 @@ export const en: SiteContent = {
       short: "Rates, requirements, deposits and delivery, any time of day.",
       meta: {
         title: "AI chatbot for car rental companies in Dubai and the UAE",
-        description: "An AI assistant for car rental companies. It answers questions about daily and monthly rates, deposits, required documents and delivery in English and Arabic, and captures booking enquiries around the clock.",
+        description: "An AI assistant for car rental companies. It answers questions about daily and monthly rates, deposits, required documents and delivery in your customers' language, and captures booking enquiries around the clock.",
       },
       h1: "Quote rates and requirements the moment a customer asks",
       sub: "Tourists and residents compare several rental companies at once. The first clear answer usually wins the booking.",
@@ -339,7 +355,7 @@ export const en: SiteContent = {
       short: "Products, delivery, returns and stock questions.",
       meta: {
         title: "AI chatbot for retail and online shops in the UAE",
-        description: "An AI assistant for shops and online stores. It answers questions about products, delivery, returns and payment in English and Arabic, and captures customers who are ready to buy.",
+        description: "An AI assistant for shops and online stores. It answers questions about products, delivery, returns and payment in your customers' language, and captures customers who are ready to buy.",
       },
       h1: "Answer product and delivery questions before the customer leaves",
       sub: "Shoppers with an unanswered question abandon the page. The assistant replies in seconds with your delivery times, return policy and product details.",
@@ -366,7 +382,7 @@ export const en: SiteContent = {
         { h: "Information from businesses", p: ["When you create an account we collect your name, email address and a password (stored only in hashed form), or your Google account's name and email if you sign in with Google.", "You also give us information about your business: its name, industry, website, phone numbers, working hours, and the content you add to your knowledge base such as website pages, files, FAQs and notes."] },
         { h: "Information from chat visitors", p: ["When someone chats through a widget, we store the messages they send and the replies they receive, together with an anonymous visitor identifier kept in their browser for the length of the session.", "If the visitor chooses to share a name, phone number or email address, it is saved as a lead for the business they are talking to. The business is responsible for how it uses those details."] },
         { h: "How information is used", p: ["To provide the service: answering visitors' questions using the business's own knowledge base, showing conversations and leads to the business, and sending notification emails.", "To keep the service secure and within fair use, for example rate limiting and counting messages against a plan.", "We do not sell personal information, and one business's content is never used to answer another business's customers."] },
-        { h: "Service providers", p: ["Messages and knowledge base content are sent to OpenAI to generate answers and to prepare content for search. Data is stored in a managed PostgreSQL database and the application runs on cloud hosting. Email notifications are delivered through an email provider.", "These providers process information on our behalf and only to deliver the service."] },
+        { h: "Service providers", p: ["Messages and knowledge base content are sent to OpenAI to generate answers and to prepare content for search. Data is stored in a managed PostgreSQL database and the application runs on cloud hosting. Email notifications are delivered through an email provider. If a business turns on WhatsApp alerts for its team, the alert, which includes the visitor's name and their last message, is delivered through Meta's WhatsApp Business platform.", "These providers process information on our behalf and only to deliver the service."] },
         { h: "Cookies", p: ["The dashboard uses a small number of cookies that are necessary for it to work: one to keep you signed in, one to remember your workspace and one for your language. The chat widget stores its visitor identifier in the browser's session storage. We do not use advertising cookies."] },
         { h: "Retention and deletion", p: ["Conversations, leads and knowledge base content are kept for as long as the business's workspace exists. A business can delete knowledge sources at any time, and can ask us to delete its workspace and all associated data.", "Visitors who want their conversation or contact details removed should contact the business they chatted with, or us."] },
         { h: "Your rights", p: ["Depending on where you live, you may have the right to access, correct or delete your personal information, including under the UAE Personal Data Protection Law. Contact us and we will respond within a reasonable time."] },
@@ -393,7 +409,7 @@ export const en: SiteContent = {
   },
 
   footer: {
-    tagline: "AI customer support for businesses in the UAE, in English and Arabic.",
+    tagline: "AI customer support for businesses in the UAE, in your customers' language.",
     product: "Product",
     industries: "Industries",
     company: "Company",
