@@ -35,6 +35,8 @@ export type SiteContent = {
     ctaSecondary: string;
     assurances: string[];
     demo: { site: string; assistant: string; status: string; placeholder: string; chat: ChatLine[]; leadTitle: string; leadName: string; leadPhone: string; answered: string };
+    /** Short labels on the dark strip under the hero picture. */
+    strip: string[];
     madeFor: string;
     steps: { eyebrow: string; title: string; sub: string; items: { title: string; text: string }[] };
     features: { eyebrow: string; title: string; sub: string; items: Record<FeatureKey, { title: string; text: string }>; more: string };

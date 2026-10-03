@@ -4,12 +4,11 @@ import Link from "next/link";
 import { DotPattern } from "@/components/illustrations";
 import { FEATURE_ART, STEP_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
-import { HeroStage } from "@/components/site/mockups";
+import { HeadlineStroke, HeroStage } from "@/components/site/mockups";
 import {
   ArrowLink,
   BilingualVisual,
   CtaBand,
-  Eyebrow,
   FaqList,
   GroundedVisual,
   HandoverSection,
@@ -73,43 +72,51 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       {/* ---- Hero */}
       <section className="site-hero relative overflow-hidden">
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-14 pb-16 text-center sm:px-6 sm:pt-20 sm:pb-24">
-          <Eyebrow>
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60 motion-reduce:hidden" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary" />
-            </span>
-            {home.badge}
-          </Eyebrow>
-          <h1 className="mt-6 max-w-4xl text-[2.6rem] leading-[1.06] font-bold tracking-tight text-balance sm:text-6xl lg:text-[4.5rem]">
+        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-12 text-center sm:px-6 sm:pt-16">
+          <h1 className="max-w-4xl text-[2.5rem] leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl lg:text-[4.25rem]">
             {home.h1[0]}
-            <span className="site-gradient-text">{home.h1[1]}</span>
+            <span className="relative inline-block text-primary sm:whitespace-nowrap">
+              {home.h1[1]}
+              <HeadlineStroke />
+            </span>
             {home.h1[2]}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted-foreground sm:text-xl">{home.sub}</p>
-          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <CtaLink href={appLink("/signup")} size="lg" arrow>
+          <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
+            <CtaLink href={appLink("/signup")} size="lg" arrow className="sm:min-w-64">
               {home.ctaPrimary}
             </CtaLink>
             <CtaLink href="#how-it-works" variant="outline" size="lg">
               {home.ctaSecondary}
             </CtaLink>
           </div>
-          <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+          <ul className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-foreground/80">
             {home.assurances.map((item) => (
               <li key={item} className="flex items-center gap-2">
-                <Check className="size-4 text-success" strokeWidth={3} />
+                <Check className="size-4 text-primary" strokeWidth={3} />
                 {item}
               </li>
             ))}
           </ul>
-          <div className="mt-14 w-full sm:mt-16">
-            <HeroStage home={home} />
-          </div>
+          <HeroStage home={home} />
+        </div>
+
+        {/* what it does, in one dark line under the picture */}
+        <div className="relative bg-sidebar text-white">
+          <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2.5 px-4 py-4 text-sm font-semibold sm:px-6 lg:justify-between">
+            {home.strip.map((item) => (
+              <li key={item} className="flex items-center gap-2.5">
+                <svg aria-hidden viewBox="-10 -10 20 20" className="size-3.5 shrink-0" fill="#fbbf24">
+                  <path d="M0-10C1.5-3 3-1.5 10 0 3 1.5 1.5 3 0 10-1.5 3-3 1.5-10 0-3-1.5-1.5-3 0-10Z" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* industries strip */}
-        <div className="border-y border-border/60 bg-white/70">
+        <div className="border-b border-border/60 bg-white">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-3 px-4 py-5 sm:px-6">
             <span className="text-sm font-medium text-muted-foreground">{home.madeFor}</span>
             {INDUSTRY_SLUGS.map((slug) => (

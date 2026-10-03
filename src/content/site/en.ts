@@ -40,6 +40,7 @@ export const en: SiteContent = {
       leadPhone: "+971 50 555 0142",
       answered: "Answered from your price list",
     },
+    strip: ["Answers from your own information", "Live on your site in minutes", "Replies in any language", "Captures leads", "Hands over to your team"],
     madeFor: "Made for",
     steps: {
       eyebrow: "How it works",
