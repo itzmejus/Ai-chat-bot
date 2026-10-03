@@ -14,9 +14,9 @@ const BLUE = "var(--primary)";
 const INK = "#1b1b20";
 const AMBER = "#fbbf24";
 const GREEN = "#00c057";
-const LINE = "#bfdbfe";
-const TINT = "#dbeafe";
-const PALE = "#eff4ff";
+const LINE = "#fecaca";
+const TINT = "#fee2e2";
+const PALE = "#fff1f0";
 const SPARKLE = "M0-10C1.5-3 3-1.5 10 0 3 1.5 1.5 3 0 10-1.5 3-3 1.5-10 0-3-1.5-1.5-3 0-10Z";
 
 type ArtProps = { className?: string };
@@ -138,7 +138,7 @@ function InsightsArt(props: ArtProps) {
     <Art {...props}>
       <rect x="18" y="19" width="84" height="60" rx="10" fill="#fff" stroke={LINE} strokeWidth="1.5" />
       <rect x="29" y="55" width="11" height="16" rx="3" fill={LINE} />
-      <rect x="46" y="45" width="11" height="26" rx="3" fill="#93c5fd" />
+      <rect x="46" y="45" width="11" height="26" rx="3" fill="#fca5a5" />
       <rect x="63" y="50" width="11" height="21" rx="3" fill={LINE} />
       <rect x="80" y="34" width="11" height="37" rx="3" fill={BLUE} />
       <path d="M30 46 51 35l17 6 18-14" stroke={AMBER} strokeWidth="2.500" strokeLinecap="round" strokeLinejoin="round" />
@@ -220,10 +220,10 @@ function RealEstateArt(props: ArtProps) {
           <rect x="45" y={y} width="5" height="5" rx="1" />
         </g>
       ))}
-      <rect x="58" y="42" width="28" height="36" rx="5" fill="#93c5fd" />
+      <rect x="58" y="42" width="28" height="36" rx="5" fill="#fca5a5" />
       <rect x="64" y="50" width="6" height="6" rx="1" fill="#fff" />
       <rect x="74" y="50" width="6" height="6" rx="1" fill="#fff" />
-      <rect x="69" y="64" width="7" height="14" rx="2" fill="#1d4ed8" />
+      <rect x="69" y="64" width="7" height="14" rx="2" fill="#b91c1c" />
       <path d="M20 78h80" stroke={INK} strokeOpacity="0.25" strokeWidth="2" strokeLinecap="round" />
       <path d="M94 16a11 11 0 0 1 11 11c0 7.500-11 17-11 17S83 34.500 83 27a11 11 0 0 1 11-11Z" fill={AMBER} />
       <circle cx="94" cy="27" r="4" fill="#fff" />
@@ -306,7 +306,7 @@ export const INDUSTRY_ART: Record<IndustrySlug, (props: ArtProps) => React.React
 function SourcesArt(props: ArtProps) {
   return (
     <Art {...props}>
-      <path d="M50 28c13 0 11 20 24 20M50 48h24M50 68c13 0 11-20 24-20" stroke="#93c5fd" strokeWidth="1.500" strokeDasharray="3 4" />
+      <path d="M50 28c13 0 11 20 24 20M50 48h24M50 68c13 0 11-20 24-20" stroke="#fca5a5" strokeWidth="1.500" strokeDasharray="3 4" />
       <rect x="14" y="20" width="36" height="16" rx="8" fill="#fff" stroke={LINE} strokeWidth="1.5" />
       <circle cx="24" cy="28" r="4" stroke={BLUE} strokeWidth="1.600" />
       <path d="M20 28h8M24 24c-2 2-2 6 0 8" stroke={BLUE} strokeWidth="1.200" />
@@ -334,7 +334,7 @@ function CodeArt(props: ArtProps) {
       <circle cx="26" cy="29" r="2.200" fill="#fff" fillOpacity="0.3" />
       <circle cx="33" cy="29" r="2.200" fill="#fff" fillOpacity="0.3" />
       <circle cx="40" cy="29" r="2.200" fill="#fff" fillOpacity="0.3" />
-      <path d="m31 43-6 5.500 6 5.500M85 43l6 5.500-6 5.500" stroke="#93c5fd" strokeWidth="2.500" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m31 43-6 5.500 6 5.500M85 43l6 5.500-6 5.500" stroke="#fca5a5" strokeWidth="2.500" strokeLinecap="round" strokeLinejoin="round" />
       <rect x="37" y="46" width="18" height="5" rx="2.5" fill={AMBER} />
       <rect x="59" y="46" width="20" height="5" rx="2.5" fill="#fff" fillOpacity="0.75" />
       <rect x="26" y="62" width="30" height="4" rx="2" fill="#fff" fillOpacity="0.22" />

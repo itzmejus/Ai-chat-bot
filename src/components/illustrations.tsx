@@ -34,16 +34,16 @@ export function ChatScene({ className }: { className?: string }) {
     <svg aria-hidden viewBox="0 0 320 220" fill="none" className={className}>
       <defs>
         <radialGradient id="chat-glow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#3b82f6" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#3b82f6" stopOpacity="0" />
+          <stop offset="0" stopColor="#ef4444" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#ef4444" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="chat-window" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0.14" />
           <stop offset="1" stopColor="#fff" stopOpacity="0.04" />
         </linearGradient>
         <linearGradient id="chat-blue" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#1d4ed8" />
+          <stop offset="0" stopColor="#ef4444" />
+          <stop offset="1" stopColor="#b91c1c" />
         </linearGradient>
       </defs>
 
@@ -99,12 +99,12 @@ export function KnowledgeScene({ className }: { className?: string }) {
     <svg aria-hidden viewBox="0 0 320 200" fill="none" className={className}>
       <defs>
         <radialGradient id="kb-glow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#3b82f6" stopOpacity="0.5" />
-          <stop offset="1" stopColor="#3b82f6" stopOpacity="0" />
+          <stop offset="0" stopColor="#ef4444" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#ef4444" stopOpacity="0" />
         </radialGradient>
         <linearGradient id="kb-blue" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#1d4ed8" />
+          <stop offset="0" stopColor="#ef4444" />
+          <stop offset="1" stopColor="#b91c1c" />
         </linearGradient>
         <linearGradient id="kb-glass" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0.16" />
@@ -119,20 +119,20 @@ export function KnowledgeScene({ className }: { className?: string }) {
       <path d="M112 100h94" stroke="#fff" strokeOpacity="0.25" strokeWidth="1.500" strokeDasharray="4 5" />
       <path d="M112 156C160 156 170 100 206 100" stroke="#fff" strokeOpacity="0.25" strokeWidth="1.500" strokeDasharray="4 5" />
       <circle cx="160" cy="62" r="3" fill="#fbbf24" />
-      <circle cx="150" cy="100" r="3" fill="#93c5fd" />
+      <circle cx="150" cy="100" r="3" fill="#fca5a5" />
       <circle cx="160" cy="138" r="3" fill="#00c057" />
 
       {/* website */}
       <rect x="24" y="22" width="88" height="44" rx="12" fill="url(#kb-glass)" stroke="#fff" strokeOpacity="0.2" />
-      <circle cx="46" cy="44" r="11" stroke="#93c5fd" strokeWidth="2" />
-      <path d="M35 44h22M46 33c-5 4-5 18 0 22M46 33c5 4 5 18 0 22" stroke="#93c5fd" strokeWidth="1.500" />
+      <circle cx="46" cy="44" r="11" stroke="#fca5a5" strokeWidth="2" />
+      <path d="M35 44h22M46 33c-5 4-5 18 0 22M46 33c5 4 5 18 0 22" stroke="#fca5a5" strokeWidth="1.500" />
       <rect x="66" y="37" width="34" height="5" rx="2.500" fill="#fff" fillOpacity="0.7" />
       <rect x="66" y="47" width="22" height="4" rx="2" fill="#fff" fillOpacity="0.3" />
 
       {/* file */}
       <rect x="24" y="78" width="88" height="44" rx="12" fill="url(#kb-glass)" stroke="#fff" strokeOpacity="0.2" />
       <path d="M38 89h11l6 6v16a2 2 0 0 1-2 2H38a2 2 0 0 1-2-2V91a2 2 0 0 1 2-2Z" fill="#fff" fillOpacity="0.9" />
-      <path d="M40 101h11M40 106h8" stroke="#1d4ed8" strokeWidth="1.500" strokeLinecap="round" />
+      <path d="M40 101h11M40 106h8" stroke="#b91c1c" strokeWidth="1.500" strokeLinecap="round" />
       <rect x="66" y="93" width="30" height="5" rx="2.500" fill="#fff" fillOpacity="0.7" />
       <rect x="66" y="103" width="36" height="4" rx="2" fill="#fff" fillOpacity="0.3" />
 
@@ -166,15 +166,15 @@ export function InboxScene({ className }: { className?: string }) {
       <defs>
         <linearGradient id="in-tray" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#eef4ff" />
+          <stop offset="1" stopColor="#fff1f0" />
         </linearGradient>
         <linearGradient id="in-blue" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#1d4ed8" />
+          <stop offset="0" stopColor="#ef4444" />
+          <stop offset="1" stopColor="#b91c1c" />
         </linearGradient>
       </defs>
       <ellipse cx="100" cy="134" rx="74" ry="8" fill="#1b1b20" fillOpacity="0.05" />
-      <circle cx="100" cy="70" r="58" fill="#eff4ff" fillOpacity="0.7" />
+      <circle cx="100" cy="70" r="58" fill="#fff1f0" fillOpacity="0.7" />
 
       {/* bubbles */}
       <rect x="34" y="26" width="76" height="30" rx="13" fill="#fff" stroke="#d4d4d7" strokeWidth="1.500" />
@@ -186,9 +186,9 @@ export function InboxScene({ className }: { className?: string }) {
       <path d="m162 50 3 3 5-5.500" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 
       {/* tray */}
-      <path d="M38 92h30l7 12h50l7-12h30l10 26a6 6 0 0 1-5.600 8H33.600A6 6 0 0 1 28 118Z" fill="url(#in-tray)" stroke="#bfdbfe" strokeWidth="1.500" strokeLinejoin="round" />
-      <path d="M38 92 54 70h92l16 22" stroke="#bfdbfe" strokeWidth="1.500" strokeLinejoin="round" />
-      <rect x="84" y="111" width="32" height="5" rx="2.500" fill="#2563eb" fillOpacity="0.35" />
+      <path d="M38 92h30l7 12h50l7-12h30l10 26a6 6 0 0 1-5.600 8H33.600A6 6 0 0 1 28 118Z" fill="url(#in-tray)" stroke="#fecaca" strokeWidth="1.500" strokeLinejoin="round" />
+      <path d="M38 92 54 70h92l16 22" stroke="#fecaca" strokeWidth="1.500" strokeLinejoin="round" />
+      <rect x="84" y="111" width="32" height="5" rx="2.500" fill="#dc2626" fillOpacity="0.35" />
 
       <path d={SPARKLE} transform="translate(26 44) scale(0.7)" fill="#fbbf24" />
       <path d={SPARKLE} transform="translate(180 96) scale(0.5)" fill="#fbbf24" fillOpacity="0.8" />
@@ -203,26 +203,26 @@ export function UploadScene({ className }: { className?: string }) {
     <svg aria-hidden viewBox="0 0 140 100" fill="none" className={className}>
       <defs>
         <linearGradient id="up-cloud" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#dbeafe" />
-          <stop offset="1" stopColor="#f5f8ff" />
+          <stop offset="0" stopColor="#fee2e2" />
+          <stop offset="1" stopColor="#fff8f7" />
         </linearGradient>
         <linearGradient id="up-blue" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#1d4ed8" />
+          <stop offset="0" stopColor="#ef4444" />
+          <stop offset="1" stopColor="#b91c1c" />
         </linearGradient>
       </defs>
       {/* cloud */}
       <path
         d="M38 78c-12 0-21-8.500-21-19.500 0-10 7.500-18 17.500-19.300C38 27 49 19 62 19c14.500 0 26.500 9.500 29.500 22.500C103 42 112 50 112 60.500 112 70.500 104 78 93.500 78Z"
         fill="url(#up-cloud)"
-        stroke="#bfdbfe"
+        stroke="#fecaca"
         strokeWidth="1.500"
       />
       {/* back sheet */}
       <rect x="76" y="34" width="30" height="38" rx="5" transform="rotate(10 76 34)" fill="#fff" stroke="#d4d4d7" strokeWidth="1.500" />
       {/* front sheet */}
       <rect x="46" y="30" width="34" height="44" rx="6" fill="#fff" stroke="#c5c8d0" strokeWidth="1.500" />
-      <rect x="53" y="39" width="14" height="4" rx="2" fill="#2563eb" fillOpacity="0.85" />
+      <rect x="53" y="39" width="14" height="4" rx="2" fill="#dc2626" fillOpacity="0.85" />
       <rect x="53" y="48" width="20" height="3" rx="1.500" fill="#1b1b20" fillOpacity="0.18" />
       <rect x="53" y="55" width="16" height="3" rx="1.500" fill="#1b1b20" fillOpacity="0.12" />
       <rect x="53" y="62" width="19" height="3" rx="1.500" fill="#1b1b20" fillOpacity="0.18" />
@@ -240,16 +240,16 @@ export function DocsScene({ className }: { className?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 200 140" fill="none" className={className}>
       <ellipse cx="100" cy="124" rx="70" ry="8" fill="#1b1b20" fillOpacity="0.05" />
-      <rect x="46" y="22" width="78" height="96" rx="12" transform="rotate(-9 46 22)" fill="#eff4ff" />
+      <rect x="46" y="22" width="78" height="96" rx="12" transform="rotate(-9 46 22)" fill="#fff1f0" />
       <rect x="66" y="14" width="80" height="100" rx="12" fill="#fff" stroke="#d4d4d7" strokeWidth="1.5" />
-      <rect x="78" y="30" width="38" height="7" rx="3.500" fill="#2563eb" fillOpacity="0.85" />
+      <rect x="78" y="30" width="38" height="7" rx="3.500" fill="#dc2626" fillOpacity="0.85" />
       <rect x="78" y="46" width="56" height="5" rx="2.500" fill="#1b1b20" fillOpacity="0.18" />
       <rect x="78" y="57" width="48" height="5" rx="2.500" fill="#1b1b20" fillOpacity="0.12" />
       <rect x="78" y="68" width="54" height="5" rx="2.500" fill="#1b1b20" fillOpacity="0.18" />
       <rect x="78" y="79" width="30" height="5" rx="2.500" fill="#1b1b20" fillOpacity="0.12" />
-      <circle cx="140" cy="88" r="20" fill="#fff" stroke="#2563eb" strokeWidth="4" />
-      <path d="m154.500 103 14 14" stroke="#2563eb" strokeWidth="6" strokeLinecap="round" />
-      <path d="M132 88h16M140 80v16" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeOpacity="0.35" />
+      <circle cx="140" cy="88" r="20" fill="#fff" stroke="#dc2626" strokeWidth="4" />
+      <path d="m154.500 103 14 14" stroke="#dc2626" strokeWidth="6" strokeLinecap="round" />
+      <path d="M132 88h16M140 80v16" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" strokeOpacity="0.35" />
       <path d={SPARKLE} transform="translate(44 34) scale(0.8)" fill="#fbbf24" />
       <path d={SPARKLE} transform="translate(170 40) scale(0.5)" fill="#00c057" fillOpacity="0.7" />
     </svg>

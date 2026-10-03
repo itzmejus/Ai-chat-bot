@@ -195,7 +195,7 @@ export default async function OverviewPage() {
 
       {/* Headline numbers */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-        <StatTile icon={MessagesSquare} label={t("overview.kpiTotal")} value={counts.total} hint={t("overview.kpiTotalHint")} color="#2563eb" href="/dashboard/inbox" />
+        <StatTile icon={MessagesSquare} label={t("overview.kpiTotal")} value={counts.total} hint={t("overview.kpiTotalHint")} color="#dc2626" href="/dashboard/inbox" />
         <StatTile icon={CalendarDays} label={t("overview.kpiToday")} value={counts.today} hint={t("overview.kpiTodayHint")} color="#7c4dff" />
         <StatTile
           icon={UserPlus}
@@ -218,7 +218,7 @@ export default async function OverviewPage() {
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardTitleRow icon={TrendingUp} title={t("overview.chartTitle")} description={t("overview.chartSubtitle")} color="#2563eb" />
+          <CardTitleRow icon={TrendingUp} title={t("overview.chartTitle")} description={t("overview.chartSubtitle")} color="#dc2626" />
           <CardContent>
             <DailyColumns data={daily} />
           </CardContent>
@@ -237,14 +237,14 @@ export default async function OverviewPage() {
       {/* What customers ask */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardTitleRow icon={MessagesSquare} title={t("overview.topTitle")} description={t("overview.topSubtitle")} color="#2563eb" />
+          <CardTitleRow icon={MessagesSquare} title={t("overview.topTitle")} description={t("overview.topSubtitle")} color="#dc2626" />
           <CardContent>
             {questions.top.length === 0 ? (
               <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">{t("overview.topEmpty")}</p>
             ) : (
               <QuestionList
                 groups={questions.top}
-                barColor="#2563eb"
+                barColor="#dc2626"
                 timesAsked={timesAsked}
                 action={(group) => (
                   <Link

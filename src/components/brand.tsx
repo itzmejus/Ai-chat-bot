@@ -17,7 +17,7 @@ export function LogoMark({ className }: { className?: string }) {
 export function Brand({ tone = "dark", className }: { tone?: "dark" | "light"; className?: string }) {
   return (
     <span className={cn("flex items-center gap-2.5 text-lg font-bold tracking-tight", tone === "light" && "text-white", className)}>
-      <LogoMark className="drop-shadow-[0_2px_6px_rgb(37_99_235/0.4)]" />
+      <LogoMark className="drop-shadow-[0_2px_6px_rgb(220_38_38/0.4)]" />
       {APP_NAME}
     </span>
   );

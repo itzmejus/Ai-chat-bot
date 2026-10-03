@@ -62,7 +62,7 @@ const FILTERS: Filter[] = ["all", "needs_human", "ai", "closed"];
 
 /** Colour language used everywhere a status appears: pill, avatar ring, filter dot. */
 const STATUS: Record<Status, { pill: string; avatar: string; dot: string }> = {
-  ai: { pill: "bg-accent text-accent-foreground", avatar: "from-[#dbeafe] to-[#f5f8ff] text-primary", dot: "bg-primary" },
+  ai: { pill: "bg-accent text-accent-foreground", avatar: "from-[#fee2e2] to-[#fff8f7] text-primary", dot: "bg-primary" },
   needs_human: { pill: "bg-[#fff1d6] text-[#9a5b00]", avatar: "from-[#ffe2a8] to-[#fff6e3] text-[#9a5b00]", dot: "bg-[#f59e0b]" },
   human: { pill: "bg-[#e7f8ee] text-success", avatar: "from-[#c4f0d6] to-[#effbf4] text-success", dot: "bg-[#00c057]" },
   closed: { pill: "bg-secondary text-muted-foreground", avatar: "from-[#e4e4e7] to-[#f6f6f7] text-muted-foreground", dot: "bg-[#a1a1aa]" },
@@ -382,7 +382,7 @@ export function Inbox({ initialConversationId }: { initialConversationId: string
                         className={cn(
                           "flex w-full min-w-0 items-start gap-3 rounded-xl border p-3 text-start transition-all outline-none focus-visible:ring-4 focus-visible:ring-ring/15",
                           selected
-                            ? "border-primary/30 bg-gradient-to-br from-accent to-white shadow-[0_4px_14px_-6px_rgb(37_99_235/0.35)]"
+                            ? "border-primary/30 bg-gradient-to-br from-accent to-white shadow-[0_4px_14px_-6px_rgb(220_38_38/0.35)]"
                             : "border-transparent hover:border-border/80 hover:bg-background",
                         )}
                       >
@@ -624,7 +624,7 @@ function MessageRow({ message, time }: { message: Message; time: string }) {
           "max-w-full rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]",
           message.role === "customer" && "rounded-ss-md bg-background shadow-[0_1px_2px_rgb(16_24_40/0.08)] ring-1 ring-black/5",
           message.role === "assistant" && "rounded-se-md bg-gradient-to-br from-[#2a2a31] to-[#1b1b20] text-white shadow-sm",
-          message.role === "agent" && "rounded-se-md bg-gradient-to-br from-[#2f7dff] to-[#1d4ed8] text-white shadow-[0_4px_12px_-4px_rgb(37_99_235/0.5)]",
+          message.role === "agent" && "rounded-se-md bg-gradient-to-br from-[#2f7dff] to-[#b91c1c] text-white shadow-[0_4px_12px_-4px_rgb(220_38_38/0.5)]",
         )}
       >
         {message.content}

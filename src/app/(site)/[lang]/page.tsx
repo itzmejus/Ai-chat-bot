@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/site/json-ld";
-import { HeadlineStroke, HeroStage } from "@/components/site/hero";
+import { HeadlineStroke, HeroStage, PlatformMarquee } from "@/components/site/hero";
 import { FeatureList, FeatureRows, StatTiles, StepsTimeline } from "@/components/site/home-sections";
 import {
   ArrowLink,
@@ -77,19 +77,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <HeroStage home={home} />
         </div>
 
-        {/* what it does, in one dark line under the picture */}
-        <div className="relative bg-sidebar text-white">
-          <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2.5 px-4 py-4 text-sm font-semibold sm:px-6 lg:justify-between">
-            {home.strip.map((item) => (
-              <li key={item} className="flex items-center gap-2.5">
-                <svg aria-hidden viewBox="-10 -10 20 20" className="size-3.5 shrink-0" fill="#fbbf24">
-                  <path d="M0-10C1.5-3 3-1.5 10 0 3 1.5 1.5 3 0 10-1.5 3-3 1.5-10 0-3-1.5-1.5-3 0-10Z" />
-                </svg>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* the website builders it plugs into, scrolling past under the picture */}
+        <PlatformMarquee label={home.worksWith} />
 
         {/* industries strip */}
         <div className="border-b border-border/60 bg-white">

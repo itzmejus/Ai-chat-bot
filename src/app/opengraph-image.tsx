@@ -22,14 +22,14 @@ export default function OpenGraphImage() {
           padding: 72,
           color: "#ffffff",
           backgroundColor: "#16161b",
-          backgroundImage: "radial-gradient(circle at 100% 0%, rgba(37,99,235,0.75), rgba(37,99,235,0) 55%), radial-gradient(circle at 0% 100%, rgba(251,191,36,0.18), rgba(251,191,36,0) 50%)",
+          backgroundImage: "radial-gradient(circle at 100% 0%, rgba(220,38,38,0.75), rgba(220,38,38,0) 55%), radial-gradient(circle at 0% 100%, rgba(251,191,36,0.18), rgba(251,191,36,0) 50%)",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <svg width="64" height="64" viewBox="0 0 32 32">
-            <rect width="32" height="32" rx="9" fill="#2563eb" />
+            <rect width="32" height="32" rx="9" fill="#dc2626" />
             <path d={LOGO_BUBBLE} fill="#ffffff" />
-            <path d={LOGO_SPARK} fill="#2563eb" />
+            <path d={LOGO_SPARK} fill="#dc2626" />
           </svg>
           <div style={{ fontSize: 40, fontWeight: 700 }}>{APP_NAME}</div>
         </div>

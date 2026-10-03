@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#2563eb",
+  themeColor: "#dc2626",
   // On Android the on-screen keyboard shrinks the page instead of covering it, so a chat's
   // reply box stays visible while typing.
   interactiveWidget: "resizes-content",

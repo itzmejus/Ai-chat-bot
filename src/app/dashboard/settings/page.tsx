@@ -57,7 +57,7 @@ export default async function SettingsPage() {
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <Card>
-          <SectionHeader icon={Building2} title={t("settings.profileTitle")} description={t("settings.profileSubtitle")} color="#2563eb" />
+          <SectionHeader icon={Building2} title={t("settings.profileTitle")} description={t("settings.profileSubtitle")} color="#dc2626" />
           <CardContent>
             <OnboardingForm
               mode="edit"

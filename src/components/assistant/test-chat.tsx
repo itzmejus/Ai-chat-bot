@@ -83,7 +83,7 @@ export function TestChat({ assistantName, greeting }: { assistantName: string; g
       {/* Header styled like the customer-facing widget */}
       <div className="hero-surface flex items-center justify-between gap-2 px-4 py-3 text-white">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-primary shadow-[0_2px_8px_rgb(37_99_235/0.5)]">
+          <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full bg-primary shadow-[0_2px_8px_rgb(220_38_38/0.5)]">
             <Bot className="size-[18px]" />
             <span className="absolute -end-0.5 -bottom-0.5 size-3 rounded-full bg-[#00c057] ring-2 ring-[#1b1b20]" />
           </span>

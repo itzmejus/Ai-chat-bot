@@ -135,7 +135,7 @@ export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bot
           >
             {/* Accent bar marking the current page */}
             {active && <span className="absolute inset-y-2 start-0 w-[3px] rounded-full bg-primary" aria-hidden />}
-            <Icon className={cn("size-[18px]", active && "text-[#93c5fd]")} />
+            <Icon className={cn("size-[18px]", active && "text-[#fca5a5]")} />
             {t(key)}
           </Link>
         );

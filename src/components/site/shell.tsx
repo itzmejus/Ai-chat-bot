@@ -32,7 +32,7 @@ export function CtaLink({
       className={cn(
         "group inline-flex items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-[background-color,box-shadow,transform] active:translate-y-px",
         size === "lg" ? "h-13 px-7 text-base" : "h-11 px-5 text-[15px]",
-        variant === "primary" && "bg-primary text-white shadow-[0_8px_24px_-8px_rgb(37_99_235/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-[#1d4ed8]",
+        variant === "primary" && "bg-primary text-white shadow-[0_8px_24px_-8px_rgb(220_38_38/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-[#b91c1c]",
         variant === "dark" && "bg-foreground text-white hover:bg-foreground/85",
         variant === "outline" && "border border-border bg-white text-foreground hover:bg-muted",
         variant === "light" && "bg-white text-foreground hover:bg-white/90",

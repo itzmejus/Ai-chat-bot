@@ -84,7 +84,7 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
               </Link>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-24px_rgb(15_30_80/0.45)] sm:p-5">
+            <div className="flex flex-col gap-4 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-24px_rgb(80_24_16/0.45)] sm:p-5">
               <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">{asks}</p>
               <ul className="flex flex-wrap gap-2">
                 {item.questions.map((question) => (

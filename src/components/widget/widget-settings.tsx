@@ -23,7 +23,7 @@ export type WidgetSettingsValues = {
   allowedDomains: string[];
 };
 
-const PRESETS = ["#2563eb", "#1b1b20", "#00a04a", "#7c4dff", "#e11d48", "#f97316", "#0891b2", "#b45309"];
+const PRESETS = ["#2563eb", "#dc2626", "#1b1b20", "#00a04a", "#7c4dff", "#e11d48", "#f97316", "#0891b2", "#b45309"];
 const FORM_ID = "widget-settings-form";
 
 /** Whether two sets of settings would save the same thing. */
@@ -352,9 +352,9 @@ export function WidgetSettings({
 
           {/* Embed code */}
           <Card>
-            <SectionHeader icon={Code2} title={t("widget.embedTitle")} description={t("widget.embedSubtitle")} color="#2563eb" />
+            <SectionHeader icon={Code2} title={t("widget.embedTitle")} description={t("widget.embedSubtitle")} color="#dc2626" />
             <CardContent className="flex flex-col gap-3">
-              <pre dir="ltr" className="overflow-x-auto rounded-xl bg-sidebar p-4 text-[13px] leading-relaxed text-[#dbeafe]">
+              <pre dir="ltr" className="overflow-x-auto rounded-xl bg-sidebar p-4 text-[13px] leading-relaxed text-[#fee2e2]">
                 <code>{embedCode}</code>
               </pre>
               <Button type="button" variant="outline" className="w-fit" onClick={copyCode}>
@@ -374,7 +374,7 @@ export function WidgetSettings({
             </CardHeader>
             <CardContent>
               {/* On small screens the frame is phone-shaped, which is how most customers will see the chat. */}
-              <div className="mx-auto max-w-sm overflow-hidden rounded-[1.75rem] border border-border/70 bg-[linear-gradient(135deg,#eef4ff,#f6f6f7)] xl:max-w-none xl:rounded-2xl">
+              <div className="mx-auto max-w-sm overflow-hidden rounded-[1.75rem] border border-border/70 bg-[linear-gradient(135deg,#fff1f0,#f6f6f7)] xl:max-w-none xl:rounded-2xl">
                 <iframe
                   ref={frame}
                   src={previewUrl}

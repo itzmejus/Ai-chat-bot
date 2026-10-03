@@ -296,14 +296,14 @@ export function AddSource({
               className={cn(
                 "group relative flex flex-col items-start gap-2.5 rounded-xl border p-3.5 text-start transition-all outline-none focus-visible:ring-4 focus-visible:ring-ring/20",
                 active
-                  ? "border-primary bg-gradient-to-br from-accent to-white shadow-[0_4px_16px_-6px_rgb(37_99_235/0.45)]"
+                  ? "border-primary bg-gradient-to-br from-accent to-white shadow-[0_4px_16px_-6px_rgb(220_38_38/0.45)]"
                   : "border-border/80 bg-background hover:border-primary/40 hover:bg-accent/40",
               )}
             >
               <span
                 className={cn(
                   "flex size-9 items-center justify-center rounded-lg transition-colors",
-                  active ? "bg-primary text-white shadow-[0_2px_8px_rgb(37_99_235/0.4)]" : "bg-muted text-muted-foreground group-hover:text-primary",
+                  active ? "bg-primary text-white shadow-[0_2px_8px_rgb(220_38_38/0.4)]" : "bg-muted text-muted-foreground group-hover:text-primary",
                 )}
               >
                 <Icon className="size-[18px]" />

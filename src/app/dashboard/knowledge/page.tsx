@@ -94,7 +94,7 @@ export default async function KnowledgePage({ searchParams }: PageProps<"/dashbo
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="flex min-w-0 flex-col gap-6">
           <Card>
-            <SectionHeader icon={PlusCircle} title={t("knowledge.addTitle")} description={t("knowledge.addSubtitle")} color="#2563eb" />
+            <SectionHeader icon={PlusCircle} title={t("knowledge.addTitle")} description={t("knowledge.addSubtitle")} color="#dc2626" />
             <CardContent>
               <AddSource
                 // Suggest the business's own website until it has been added once.

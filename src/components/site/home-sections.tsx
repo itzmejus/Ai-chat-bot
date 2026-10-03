@@ -20,13 +20,13 @@ function GroundedPanel({ home }: { home: Home }) {
     <div className="flex flex-col gap-4">
       <div dir="ltr" className="flex flex-wrap gap-2">
         {["brightsmile.ae", "price-list.pdf", "FAQ"].map((label, i) => (
-          <span key={label} className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold shadow-[0_6px_16px_-8px_rgb(15_30_80/0.4)]">
+          <span key={label} className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold shadow-[0_6px_16px_-8px_rgb(80_24_16/0.4)]">
             <span className={cn("size-2 rounded-full", ["bg-primary", "bg-[#fbbf24]", "bg-[#00c057]"][i])} />
             {label}
           </span>
         ))}
       </div>
-      <div className="flex items-start gap-3 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-20px_rgb(15_30_80/0.5)] sm:p-5">
+      <div className="flex items-start gap-3 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-20px_rgb(80_24_16/0.5)] sm:p-5">
         <LogoMark className="size-8" />
         <div className="flex min-w-0 flex-col gap-2.5">
           <p dir="auto" className="text-[15px] leading-relaxed">
@@ -110,11 +110,11 @@ function WidgetPanel({ home }: { home: Home }) {
       </div>
       <div className="mt-5 flex items-end justify-between gap-3">
         <div className="flex gap-1.5 sm:gap-2">
-          {["#2563eb", "#1b1b20", "#00a04a", "#e11d48", "#f97316"].map((color, i) => (
+          {["#dc2626", "#1b1b20", "#00a04a", "#e11d48", "#f97316"].map((color, i) => (
             <span key={color} className={cn("size-5 rounded-full sm:size-7", i === 0 && "ring-2 ring-foreground ring-offset-2")} style={{ backgroundColor: color }} />
           ))}
         </div>
-        <div className="flex w-28 shrink-0 flex-col overflow-hidden rounded-2xl shadow-[0_12px_28px_-12px_rgb(15_30_80/0.6)] ring-1 ring-black/5 sm:w-44">
+        <div className="flex w-28 shrink-0 flex-col overflow-hidden rounded-2xl shadow-[0_12px_28px_-12px_rgb(80_24_16/0.6)] ring-1 ring-black/5 sm:w-44">
           <span className="bg-primary px-3 py-2 text-xs font-semibold text-white">{home.demo.assistant}</span>
           <span className="flex flex-col gap-1.5 bg-muted p-2.5">
             <span className="h-4 w-3/4 rounded-full bg-white" />

@@ -92,7 +92,7 @@ export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: Ind
           <li key={slug}>
             <Link
               href={sitePath(lang, `/industries/${slug}`)}
-              className="group flex h-full flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(37_99_235/0.5)]"
+              className="group flex h-full flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(220_38_38/0.5)]"
             >
               <Art className="-ms-1 h-20 w-[6.25rem]" />
               <h3 className="text-lg font-semibold">{industry.name}</h3>
@@ -137,7 +137,7 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
             key={plan.id}
             className={cn(
               "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7 sm:p-8",
-              dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(37_99_235/0.7)] lg:-my-3" : "border border-border/80 bg-white",
+              dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(220_38_38/0.7)] lg:-my-3" : "border border-border/80 bg-white",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -278,7 +278,7 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
 function HandoverChat({ t }: { t: SiteContent["home"]["handover"] }) {
   return (
     <div aria-hidden className="flex flex-col rounded-[1.75rem] bg-accent p-3 sm:p-5">
-      <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_48px_-28px_rgb(37_99_235/0.55)] ring-1 ring-black/5">
+      <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_48px_-28px_rgb(220_38_38/0.55)] ring-1 ring-black/5">
         <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
           <span className="flex min-w-0 items-center gap-2.5">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">{t.names[0].slice(0, 1)}</span>
