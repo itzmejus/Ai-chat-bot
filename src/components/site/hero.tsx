@@ -64,6 +64,18 @@ function Float({ className, tone = "card", at, children }: { className?: string;
   );
 }
 
+/**
+ * One turn of the looping conversation shown on phones and tablets: it comes in `at` seconds
+ * into the loop, stays a few seconds and leaves, and the whole loop repeats.
+ */
+function Turn({ className, at, children }: { className?: string; at: number; children: React.ReactNode }) {
+  return (
+    <div style={{ "--at": `${at}s` } as React.CSSProperties} className={cn("site-turn absolute z-20 text-start shadow-[0_18px_40px_-18px_rgb(80_24_16/0.55)] lg:hidden", className)}>
+      {children}
+    </div>
+  );
+}
+
 /** The assistant's reply: typing dots for a moment, then the words. The bubble is full size from the start, so nothing jumps. */
 function Typed({ text }: { text: string }) {
   return (
@@ -114,6 +126,9 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
   const joined = handover.chat.find((line) => line.from === "note")?.text;
   const [ask, answer, askAgain, answerAgain] = demo.chat;
   const reply = "flex max-w-[17rem] items-start gap-2.5 p-3 text-[13px] leading-relaxed";
+  // Phone versions: a question bubble in a top corner, and a card across the bottom of the picture.
+  const question = "max-w-[11.5rem] rounded-2xl rounded-ee-md bg-primary px-3 py-2 text-xs leading-relaxed font-medium text-white";
+  const answerCard = "inset-x-2 bottom-3 flex items-start gap-2.5 rounded-2xl bg-white p-2.5 pe-3 text-xs leading-relaxed ring-1 ring-black/5 sm:inset-x-auto sm:start-1/2 sm:w-[22rem] sm:-translate-x-1/2 sm:text-[13px] rtl:sm:translate-x-1/2";
 
   return (
     <div aria-hidden className="relative mt-6 h-[25rem] w-full max-w-5xl overflow-hidden sm:mt-12 sm:h-[33rem]">
@@ -159,16 +174,52 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
         className="absolute inset-x-0 bottom-0 mx-auto h-[97%] w-auto max-w-full object-contain object-bottom"
       />
 
-      {/* phones and tablets: two short pieces, tucked at the edges */}
-      <Float at={0.5} tone="customer" className="start-0 top-3 max-w-[10.5rem] px-3 py-2 text-xs lg:hidden">
+      {/* Phones and tablets: there is no room beside her, so the same conversation plays as a
+          loop instead. Questions appear at the top corners, and the reply to each (then the lead
+          and the team member) in one card across the bottom, each giving way to the next. */}
+      <Turn at={0.4} className={cn(question, "start-0 top-3")}>
         <span dir="auto">{ask.text}</span>
-      </Float>
-      <Float at={1.8} className="end-0 bottom-6 flex max-w-[10.5rem] items-center gap-2 p-2 pe-3 text-xs leading-snug font-semibold lg:hidden">
-        <svg viewBox="-10 -10 20 20" className="size-7 shrink-0 rounded-lg bg-[#fff6dc] p-1.5" fill="#f59e0b">
-          <path d={SPARKLE} />
-        </svg>
-        {demo.answered}
-      </Float>
+      </Turn>
+      <Turn at={1.2} className={answerCard}>
+        <LogoMark className="size-7" />
+        <span className="flex min-w-0 flex-col gap-1.5">
+          <span dir="auto">{answer.text}</span>
+          <span className="w-fit rounded-full bg-[#fff6dc] px-2 py-0.5 text-[11px] font-semibold text-[#8a5a00]">{demo.answered}</span>
+        </span>
+      </Turn>
+      <Turn at={5.4} className={cn(question, "end-0 top-3")}>
+        <span dir="auto">{askAgain.text}</span>
+      </Turn>
+      <Turn at={6.2} className={answerCard}>
+        <LogoMark className="size-7" />
+        <span dir="auto">{answerAgain.text}</span>
+      </Turn>
+      <Turn at={10.6} className={cn(answerCard, "items-center")}>
+        <Portrait look="scarf" />
+        <span className="flex min-w-0 flex-col">
+          <span className="text-[11px] font-medium text-muted-foreground">{demo.leadTitle}</span>
+          <span dir="auto" className="truncate text-sm font-semibold">
+            {demo.leadName}
+          </span>
+          <span dir="ltr" className="text-[11px] text-muted-foreground rtl:text-end">
+            {demo.leadPhone}
+          </span>
+        </span>
+      </Turn>
+      {joined && (
+        <Turn at={15.2} className={cn(answerCard, "items-center")}>
+          <span className="relative">
+            <Portrait look="short" />
+            <span className="absolute -end-0.5 -bottom-0.5 size-3 rounded-full bg-[#00c057] ring-2 ring-white" />
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <span dir="auto" className="text-sm font-semibold">
+              {joined}
+            </span>
+            <span className="text-[11px] font-medium text-muted-foreground">{handover.takeover}</span>
+          </span>
+        </Turn>
+      )}
 
       {/* wide screens: the conversation on both sides, a lead below on one side and a team member on the other */}
       <Float at={0.5} tone="customer" className="start-[7%] top-[7%] hidden max-w-60 lg:block">

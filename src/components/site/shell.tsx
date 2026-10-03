@@ -105,29 +105,31 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
 
       <footer className="relative overflow-hidden bg-sidebar text-white">
         <DotPattern className="text-white/[0.06]" />
-        <div className="relative mx-auto grid max-w-6xl gap-12 px-4 pt-14 pb-12 sm:px-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] lg:gap-16 lg:pt-20 lg:pb-16">
-          <div className="flex flex-col items-start gap-5">
+        {/* Compact on phones: short paddings, the two buttons side by side, and the links in two
+            columns with the long industries list beside the two short ones. */}
+        <div className="relative mx-auto grid max-w-6xl gap-8 px-4 pt-9 pb-8 sm:gap-10 sm:px-6 sm:pt-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] lg:gap-16 lg:pt-14 lg:pb-12">
+          <div className="flex flex-col items-start gap-4">
             <Link href={href("")} aria-label={APP_NAME}>
               <Brand tone="light" className="text-xl" />
             </Link>
-            <p className="max-w-sm text-[15px] leading-relaxed text-white/65">{t.footer.tagline}</p>
-            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-              <CtaLink href={start.href} arrow>
+            <p className="max-w-sm text-sm leading-relaxed text-white/65 sm:text-[15px]">{t.footer.tagline}</p>
+            <div className="flex w-full gap-2.5 sm:w-auto sm:gap-3">
+              <CtaLink href={start.href} arrow className="max-sm:flex-1 max-sm:px-3">
                 {start.label}
               </CtaLink>
-              <CtaLink href={login.href} variant="ghost-light">
+              <CtaLink href={login.href} variant="ghost-light" className="max-sm:flex-1 max-sm:px-3">
                 {login.label}
               </CtaLink>
             </div>
           </div>
 
-          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
+          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10">
             <FooterColumn title={t.footer.product}>
               <FooterLink href={href("/features")}>{t.nav.features}</FooterLink>
               <FooterLink href={href("/pricing")}>{t.nav.pricing}</FooterLink>
               <FooterLink href={href("/industries")}>{t.nav.industries}</FooterLink>
             </FooterColumn>
-            <FooterColumn title={t.footer.industries}>
+            <FooterColumn title={t.footer.industries} className="max-sm:row-span-2">
               {INDUSTRY_SLUGS.map((slug) => (
                 <FooterLink key={slug} href={href(`/industries/${slug}`)}>
                   {t.industries[slug].name}
@@ -147,11 +149,11 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
         </div>
 
         <div className="relative border-t border-white/10">
-          <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-[13px] text-white/55 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5 sm:text-sm">
             <p>
               © {new Date().getFullYear()} {APP_NAME}. {t.footer.rights}
             </p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3">
               <p className="flex items-center gap-2">
                 <UaeFlag />
                 {t.footer.madeIn}
@@ -173,9 +175,9 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
   );
 }
 
-function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+function FooterColumn({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className={cn("flex min-w-0 flex-col gap-2.5 sm:gap-3.5", className)}>
       <h2 className="text-xs font-semibold tracking-wider text-white/45 uppercase">{title}</h2>
       {children}
     </div>
@@ -183,7 +185,7 @@ function FooterColumn({ title, children }: { title: string; children: React.Reac
 }
 
 function FooterLink({ href, children, external }: { href: string; children: React.ReactNode; external?: boolean }) {
-  const className = "w-fit text-[15px] text-white/75 transition-colors hover:text-white";
+  const className = "w-fit text-sm text-white/75 transition-colors hover:text-white sm:text-[15px]";
   return external ? (
     <a href={href} className={className}>
       {children}
