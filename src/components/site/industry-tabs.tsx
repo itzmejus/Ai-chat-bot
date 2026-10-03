@@ -30,12 +30,12 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-6">
+    <div className="flex flex-col gap-5 sm:gap-8">
       <div
         role="tablist"
         aria-label={label}
         onKeyDown={onKeyDown}
-        className="-mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 lg:flex-col lg:flex-nowrap [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 flex snap-x scroll-px-4 gap-1 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-auto sm:max-w-full sm:rounded-2xl sm:bg-muted sm:p-1.5 [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item, i) => {
           const selected = i === active;
@@ -53,11 +53,10 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(i)}
               className={cn(
-                "flex h-12 shrink-0 snap-start items-center gap-3 rounded-2xl border px-4 text-[15px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-4 focus-visible:ring-ring/20 lg:h-14 lg:w-full",
-                selected ? "border-primary bg-primary text-white shadow-[0_10px_24px_-12px_rgb(37_99_235/0.8)]" : "border-border/80 bg-white text-foreground hover:border-primary/40",
+                "flex h-11 shrink-0 snap-start items-center rounded-xl px-4 text-[15px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-4 focus-visible:ring-ring/20 max-sm:bg-muted sm:px-5",
+                selected ? "bg-foreground text-white sm:bg-white sm:text-foreground sm:shadow-[0_2px_8px_rgb(27_27_32/0.12)]" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <span className={cn("size-2 shrink-0 rounded-full", selected ? "bg-[#fbbf24]" : "bg-primary/30")} />
               {item.name}
             </button>
           );
@@ -73,19 +72,19 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
             id={`industry-panel-${item.slug}`}
             aria-labelledby={`industry-tab-${item.slug}`}
             hidden={i !== active}
-            className="grid gap-6 rounded-[1.75rem] border border-border/80 bg-white p-5 sm:p-8 lg:col-start-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-8"
+            className="grid gap-6 rounded-[2rem] bg-accent p-4 sm:p-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-10 lg:p-10"
           >
             <div className="flex flex-col items-start gap-4">
               <Art />
               <h3 className="text-2xl leading-tight font-bold tracking-tight text-balance">{item.title}</h3>
               <p className="text-[15px] leading-relaxed text-muted-foreground">{item.short}</p>
-              <Link href={item.href} className="group mt-auto flex h-11 items-center gap-2 rounded-xl bg-accent px-4 text-[15px] font-semibold text-accent-foreground hover:bg-[#dbeafe]">
+              <Link href={item.href} className="group mt-auto flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-[15px] font-semibold text-white hover:bg-foreground/85">
                 {more}
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
               </Link>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-3xl bg-muted p-4 sm:p-5">
+            <div className="flex flex-col gap-4 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-24px_rgb(15_30_80/0.45)] sm:p-5">
               <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">{asks}</p>
               <ul className="flex flex-wrap gap-2">
                 {item.questions.map((question) => (
@@ -101,7 +100,7 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
                     dir="auto"
                     className={cn(
                       "max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed",
-                      line.from === "customer" ? "self-end rounded-ee-md bg-primary text-white" : "self-start rounded-es-md bg-white shadow-[0_1px_3px_rgb(27_27_32/0.1)]",
+                      line.from === "customer" ? "self-end rounded-ee-md bg-primary text-white" : "self-start rounded-es-md bg-muted",
                     )}
                   >
                     {line.text}

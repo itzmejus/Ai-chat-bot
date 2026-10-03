@@ -31,7 +31,7 @@ export function SectionHeading({ eyebrow, title, sub, align = "center", as: Tag 
   return (
     <div className={cn("flex max-w-3xl flex-col gap-4", align === "center" ? "mx-auto items-center text-center" : "items-start text-start")}>
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
-      <Tag className={cn("font-bold tracking-tight text-balance", Tag === "h1" ? "text-4xl leading-[1.1] sm:text-5xl" : "text-3xl leading-tight sm:text-[2.5rem]")}>{title}</Tag>
+      <Tag className={cn("font-bold tracking-tight text-balance", Tag === "h1" ? "text-4xl leading-[1.1] sm:text-5xl" : "text-[1.75rem] leading-[1.15] sm:text-[2.75rem] sm:leading-[1.1]")}>{title}</Tag>
       {sub && <p className="text-lg leading-relaxed text-pretty text-muted-foreground">{sub}</p>}
     </div>
   );
@@ -219,16 +219,17 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
     { label: limit(t.limits.seats), cells: SITE_PLANS.map((p) => number.format(p.seats)) },
   ];
   return (
-    <div className="overflow-x-auto rounded-[1.75rem] border border-border/80 bg-white">
-      <table className="w-full min-w-[34rem] border-collapse text-[15px]">
+    <div className="overflow-hidden rounded-3xl border border-border/80 bg-white sm:rounded-[1.75rem]">
+      {/* Sized to fit a phone without scrolling sideways: small type and tight cells there, roomier from tablets up. */}
+      <table className="w-full border-collapse text-[13px] leading-snug sm:text-[15px]">
         <caption className="sr-only">{t.compare.title}</caption>
         <thead>
           <tr className="border-b border-border">
-            <th scope="col" className="p-4 text-start text-sm font-semibold text-muted-foreground sm:px-6">
+            <th scope="col" className="p-2.5 text-start text-xs font-semibold text-muted-foreground sm:p-4 sm:px-6 sm:text-sm">
               {t.compare.feature}
             </th>
             {SITE_PLANS.map((plan) => (
-              <th key={plan.id} scope="col" className={cn("p-4 text-center text-base font-bold", plan.popular && "bg-accent text-accent-foreground")}>
+              <th key={plan.id} scope="col" className={cn("w-[19%] p-2.5 text-center text-[13px] font-bold sm:w-auto sm:p-4 sm:text-base", plan.popular && "bg-accent text-accent-foreground")}>
                 {t.plans[plan.id].name}
               </th>
             ))}
@@ -237,11 +238,11 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.label} className="border-b border-border/70">
-              <th scope="row" className="p-4 text-start font-medium sm:px-6">
+              <th scope="row" className="p-2.5 text-start font-medium sm:p-4 sm:px-6">
                 {row.label}
               </th>
               {row.cells.map((cell, i) => (
-                <td key={i} dir="ltr" className={cn("p-4 text-center font-semibold tabular-nums", SITE_PLANS[i].popular && "bg-accent/60")}>
+                <td key={i} dir="ltr" className={cn("p-2 text-center font-semibold whitespace-nowrap tabular-nums sm:p-4", SITE_PLANS[i].popular && "bg-accent/60")}>
                   {cell}
                 </td>
               ))}
@@ -249,11 +250,11 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
           ))}
           {t.included.items.map((item) => (
             <tr key={item} className="border-b border-border/70 last:border-0">
-              <th scope="row" className="p-4 text-start font-medium sm:px-6">
+              <th scope="row" className="p-2.5 text-start font-medium sm:p-4 sm:px-6">
                 {item}
               </th>
               {SITE_PLANS.map((plan) => (
-                <td key={plan.id} className={cn("p-4", plan.popular && "bg-accent/60")}>
+                <td key={plan.id} className={cn("p-2 sm:p-4", plan.popular && "bg-accent/60")}>
                   <span className="mx-auto flex size-5 items-center justify-center rounded-full bg-[#e7f8ee] text-success">
                     <Check className="size-3" strokeWidth={3} />
                     <span className="sr-only">{t.compare.yes}</span>
@@ -346,7 +347,7 @@ export function HandoverSection({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).home.handover;
   return (
     <Section id="handover">
-      <SectionHeading eyebrow={t.eyebrow} title={t.title} sub={t.text} />
+      <SectionHeading title={t.title} sub={t.text} />
       <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-2">
         <ol className="relative flex flex-col gap-4">
           {t.flow.map((stage, i) => {

@@ -1,16 +1,12 @@
-import { ArrowRight, Check } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { DotPattern } from "@/components/illustrations";
-import { FEATURE_ART, STEP_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
-import { HeadlineStroke, HeroStage } from "@/components/site/mockups";
+import { HeadlineStroke, HeroStage } from "@/components/site/hero";
+import { FeatureList, FeatureRows, StatTiles, StepsTimeline } from "@/components/site/home-sections";
 import {
   ArrowLink,
-  BilingualVisual,
   CtaBand,
   FaqList,
-  GroundedVisual,
   HandoverSection,
   IncludedInEveryPlan,
   IndustryShowcase,
@@ -19,11 +15,10 @@ import {
   SectionHeading,
 } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
-import { getSiteContent, SITE_PLANS, type FeatureKey } from "@/content/site";
+import { getSiteContent, SITE_PLANS } from "@/content/site";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
-import { cn } from "@/lib/utils";
 
 const asLang = (lang: string): SiteLang => (lang === "ar" ? "ar" : "en");
 
@@ -31,18 +26,6 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
   const lang = asLang((await params).lang);
   return siteMetadata(lang, "", getSiteContent(lang).home.meta);
 }
-
-/** Layout of the feature grid: two wide cards, four small ones, two wide ones. */
-const FEATURE_ORDER: { key: FeatureKey; wide: boolean }[] = [
-  { key: "grounded", wide: true },
-  { key: "bilingual", wide: true },
-  { key: "leads", wide: false },
-  { key: "handover", wide: false },
-  { key: "inbox", wide: false },
-  { key: "insights", wide: false },
-  { key: "widget", wide: true },
-  { key: "security", wide: true },
-];
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const lang = asLang((await params).lang);
@@ -70,10 +53,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <JsonLd key={i} data={data} />
       ))}
 
-      {/* ---- Hero */}
+      {/* ---- Hero. On phones the words are kept compact (smaller type, buttons side by side)
+          so the picture is already on screen when the page opens. */}
       <section className="site-hero relative overflow-hidden">
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-12 text-center sm:px-6 sm:pt-16">
-          <h1 className="max-w-4xl text-[2.5rem] leading-[1.05] font-bold tracking-tight text-balance sm:text-6xl lg:text-[4.25rem]">
+        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 pt-7 text-center sm:px-6 sm:pt-16">
+          <h1 className="max-w-4xl text-[2rem] leading-[1.08] font-bold tracking-tight text-balance sm:text-6xl sm:leading-[1.05] lg:text-[4.25rem]">
             {home.h1[0]}
             <span className="relative inline-block text-primary sm:whitespace-nowrap">
               {home.h1[1]}
@@ -81,23 +65,15 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             </span>
             {home.h1[2]}
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-pretty text-muted-foreground sm:text-xl">{home.sub}</p>
-          <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
-            <CtaLink href={appLink("/signup")} size="lg" arrow className="sm:min-w-64">
+          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-pretty text-muted-foreground sm:mt-6 sm:text-xl">{home.sub}</p>
+          <div className="mt-5 flex w-full max-w-md gap-2.5 sm:mt-8 sm:max-w-none sm:justify-center sm:gap-3">
+            <CtaLink href={appLink("/signup")} size="lg" arrow className="max-sm:h-12 max-sm:flex-1 max-sm:px-3 max-sm:text-[15px] sm:min-w-64">
               {home.ctaPrimary}
             </CtaLink>
-            <CtaLink href="#how-it-works" variant="outline" size="lg">
+            <CtaLink href="#how-it-works" variant="outline" size="lg" className="max-sm:h-12 max-sm:flex-1 max-sm:px-3 max-sm:text-[15px]">
               {home.ctaSecondary}
             </CtaLink>
           </div>
-          <ul className="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-medium text-foreground/80">
-            {home.assurances.map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <Check className="size-4 text-primary" strokeWidth={3} />
-                {item}
-              </li>
-            ))}
-          </ul>
           <HeroStage home={home} />
         </div>
 
@@ -132,78 +108,46 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      {/* ---- How it works */}
-      <Section id="how-it-works">
-        <SectionHeading eyebrow={home.steps.eyebrow} title={home.steps.title} sub={home.steps.sub} />
-        <ol className="mt-12 grid gap-5 lg:grid-cols-3">
-          {home.steps.items.map((step, i) => {
-            const Art = STEP_ART[i];
-            return (
-              <li key={step.title} className="relative flex flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 sm:p-7">
-                <div className="flex items-start justify-between gap-3">
-                  <Art />
-                  <span className="text-5xl leading-none font-bold text-primary/15">{i + 1}</span>
-                </div>
-                <h3 className="text-xl font-semibold">{step.title}</h3>
-                <p className="text-[15px] leading-relaxed text-muted-foreground">{step.text}</p>
-                {i < 2 && <ArrowRight className="absolute -end-[1.15rem] top-14 z-10 hidden size-6 rounded-full bg-white p-1 text-muted-foreground ring-1 ring-border lg:block rtl:rotate-180" />}
-              </li>
-            );
-          })}
-        </ol>
-      </Section>
-
-      {/* ---- Features */}
-      <Section tone="muted" id="features">
-        <SectionHeading eyebrow={home.features.eyebrow} title={home.features.title} sub={home.features.sub} />
-        <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURE_ORDER.map(({ key, wide }) => {
-            const Art = FEATURE_ART[key];
-            return (
-              <li key={key} className={cn("flex flex-col gap-3 rounded-3xl border border-border/70 bg-white p-6", wide && "sm:col-span-2 sm:p-7")}>
-                <Art className="-ms-1 h-20 w-[6.25rem]" />
-                <h3 className={cn("font-semibold", wide ? "text-xl" : "text-lg")}>{home.features.items[key].title}</h3>
-                <p className="text-[15px] leading-relaxed text-muted-foreground">{home.features.items[key].text}</p>
-                {key === "grounded" && (
-                  <div className="mt-auto rounded-2xl bg-muted p-4">
-                    <GroundedVisual />
-                  </div>
-                )}
-                {key === "bilingual" && (
-                  <div className="mt-auto rounded-2xl bg-muted p-4">
-                    <BilingualVisual />
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+      {/* ---- What you get: four large rows, then the rest as a list */}
+      <Section id="features">
+        <SectionHeading title={home.features.title} sub={home.features.sub} />
+        <div className="mt-12 sm:mt-20">
+          <FeatureRows home={home} />
+        </div>
+        <div className="mt-16 border-t border-border pt-12 sm:mt-24 sm:pt-16">
+          <FeatureList home={home} keys={["handover", "inbox", "insights", "security"]} />
+        </div>
         <div className="mt-10 flex justify-center">
-          <ArrowLink href={sitePath(lang, "/features")}>{home.features.more}</ArrowLink>
+          <CtaLink href={sitePath(lang, "/features")} variant="dark" arrow>
+            {home.features.more}
+          </CtaLink>
         </div>
       </Section>
+
+      {/* ---- Numbers */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+        <StatTiles stats={home.stats} />
+      </section>
 
       {/* ---- AI and people, together */}
       <HandoverSection lang={lang} />
 
-      {/* ---- Numbers */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <dl className="hero-surface relative grid grid-cols-2 gap-x-6 gap-y-8 overflow-hidden rounded-[2rem] p-7 text-white sm:p-10 lg:grid-cols-4">
-          <DotPattern className="text-white/10" />
-          {home.stats.map((stat) => (
-            <div key={stat.label} className="relative flex flex-col-reverse justify-end gap-2">
-              <dt className="text-sm leading-snug text-white/65 sm:text-[15px]">{stat.label}</dt>
-              <dd dir="ltr" className="text-4xl font-bold tracking-tight sm:text-5xl rtl:text-end">
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
+      {/* ---- How it works */}
+      <Section tone="muted" id="how-it-works">
+        <SectionHeading title={home.steps.title} sub={home.steps.sub} />
+        <div className="mt-12 sm:mt-16">
+          <StepsTimeline steps={home.steps} />
+        </div>
+        <div className="mt-10 flex justify-center sm:mt-14">
+          <CtaLink href={appLink("/signup")} size="lg" arrow className="w-full sm:w-auto">
+            {home.ctaPrimary}
+          </CtaLink>
+        </div>
+      </Section>
 
       {/* ---- Industries */}
       <Section id="industries">
-        <SectionHeading eyebrow={home.industries.eyebrow} title={home.industries.title} sub={home.industries.sub} />
+        <SectionHeading title={home.industries.title} sub={home.industries.sub} />
         <div className="mt-10 sm:mt-12">
           <IndustryShowcase lang={lang} />
         </div>
@@ -211,7 +155,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       {/* ---- Pricing */}
       <Section tone="muted" id="pricing">
-        <SectionHeading eyebrow={home.pricing.eyebrow} title={home.pricing.title} sub={home.pricing.sub} />
+        <SectionHeading title={home.pricing.title} sub={home.pricing.sub} />
         <div className="mt-12 lg:mt-16">
           <PricingCards lang={lang} />
         </div>
@@ -225,7 +169,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       {/* ---- FAQ */}
       <Section id="faq">
-        <SectionHeading eyebrow={home.faq.eyebrow} title={home.faq.title} sub={home.faq.sub} />
+        <SectionHeading title={home.faq.title} sub={home.faq.sub} />
         <div className="mt-12">
           <FaqList items={home.faq.items} />
         </div>

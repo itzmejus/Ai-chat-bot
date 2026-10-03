@@ -21,7 +21,7 @@ export function CtaLink({
 }: {
   href: string;
   children: React.ReactNode;
-  variant?: "primary" | "outline" | "light" | "ghost-light";
+  variant?: "primary" | "dark" | "outline" | "light" | "ghost-light";
   size?: "md" | "lg";
   className?: string;
   arrow?: boolean;
@@ -33,6 +33,7 @@ export function CtaLink({
         "group inline-flex items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-[background-color,box-shadow,transform] active:translate-y-px",
         size === "lg" ? "h-13 px-7 text-base" : "h-11 px-5 text-[15px]",
         variant === "primary" && "bg-primary text-white shadow-[0_8px_24px_-8px_rgb(37_99_235/0.7),inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-[#1d4ed8]",
+        variant === "dark" && "bg-foreground text-white hover:bg-foreground/85",
         variant === "outline" && "border border-border bg-white text-foreground hover:bg-muted",
         variant === "light" && "bg-white text-foreground hover:bg-white/90",
         variant === "ghost-light" && "border border-white/25 bg-white/10 text-white hover:bg-white/20",
@@ -64,7 +65,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
   const language = { href: sitePath(other, page), label: t.nav.otherLanguage, lang: other };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-foreground">
+    <div className="flex min-h-screen flex-col overflow-x-clip bg-white text-foreground">
       <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-white">
         {t.nav.skip}
       </a>

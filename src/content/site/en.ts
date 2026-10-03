@@ -23,7 +23,6 @@ export const en: SiteContent = {
     sub: "An assistant for your website that answers customers day and night using only your business information, collects their contact details, and calls in your team when a person is needed.",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
-    assurances: ["Free plan, no card needed", "Live on your site in minutes", "Replies in the language customers write"],
     demo: {
       site: "brightsmile.ae",
       assistant: "Noor",
@@ -44,6 +43,7 @@ export const en: SiteContent = {
     madeFor: "Made for",
     steps: {
       eyebrow: "How it works",
+      label: "Step",
       title: "From sign-up to answering customers in three steps",
       sub: "No developers, no training sessions, no scripts to write.",
       items: [
