@@ -11,7 +11,7 @@ export const appLink = (path: string) => (APP_URL === SITE_URL ? path : APP_URL 
 /** The shared preview picture (src/app/opengraph-image.tsx). Listed explicitly: a page's own openGraph block replaces the inherited one. */
 const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${APP_NAME}: AI customer support in your customers' language` };
 
-const OG_LOCALE: Record<SiteLang, string> = { en: "en_AE", ar: "ar_AE" };
+const OG_LOCALE: Record<SiteLang, string> = { en: "en_US", ar: "ar_AR" };
 
 /**
  * Metadata for one marketing page: title, description, canonical address, the
@@ -47,7 +47,7 @@ export function siteMetadata(lang: SiteLang, page: string, meta: { title: string
 }
 
 /** schema.org description of the product and its plans, for the home and pricing pages. */
-export function softwareJsonLd(lang: SiteLang, description: string, plans: { name: string; priceAed: number }[]) {
+export function softwareJsonLd(lang: SiteLang, description: string, plans: { name: string; price: number }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -60,8 +60,8 @@ export function softwareJsonLd(lang: SiteLang, description: string, plans: { nam
     offers: plans.map((plan) => ({
       "@type": "Offer",
       name: plan.name,
-      price: plan.priceAed,
-      priceCurrency: "AED",
+      price: plan.price,
+      priceCurrency: "EUR",
       url: siteUrl(lang, "/pricing"),
     })),
   };

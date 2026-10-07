@@ -7,9 +7,9 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 /** A short sample conversation that shows what the product does, in both languages. */
 const SAMPLE_CHAT: { from: "customer" | "assistant"; text: string }[] = [
   { from: "customer", text: "Hi, how much is teeth cleaning?" },
-  { from: "assistant", text: "Teeth cleaning is AED 250 and takes about 45 minutes. Would you like to book?" },
-  { from: "customer", text: "هل تقبلون تأمين ضمان؟" },
-  { from: "assistant", text: "نعم، نقبل تأمين ضمان. هل تودّ حجز موعد؟" },
+  { from: "assistant", text: "Teeth cleaning is $80 and takes about 45 minutes. Would you like to book?" },
+  { from: "customer", text: "¿Aceptan mi seguro dental?" },
+  { from: "assistant", text: "Sí, trabajamos con la mayoría de los seguros. ¿Quiere reservar una cita?" },
 ];
 
 const darkSwitcher = "border-white/20 bg-white/10 text-white hover:bg-white/20 hover:text-white";

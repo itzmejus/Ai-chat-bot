@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   // Base for relative URLs in metadata (canonical links, social images).
   metadataBase: new URL(SITE_URL),
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
-  description: "AI customer support for businesses in the UAE",
+  description: "AI customer support for your website, in your customers' language",
   applicationName: APP_NAME,
   appleWebApp: { title: APP_NAME },
   // Only the public site is for search engines; its pages turn indexing back on (src/lib/site-seo.ts).

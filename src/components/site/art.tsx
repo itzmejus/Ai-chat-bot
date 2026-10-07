@@ -276,6 +276,24 @@ function CarRentalArt(props: ArtProps) {
   );
 }
 
+/** A coach, side on, with a location pin above it. */
+function CoachArt(props: ArtProps) {
+  return (
+    <Art {...props}>
+      <path d="M14 76h92" stroke={INK} strokeOpacity="0.2" strokeWidth="2" strokeLinecap="round" />
+      <path d="M18 66V40a8 8 0 0 1 8-8h58a10 10 0 0 1 9 6l5 12a8 8 0 0 1 1 3v13a3 3 0 0 1-3 3H21a3 3 0 0 1-3-3Z" fill={BLUE} />
+      <path d="M25 39h13v12H25ZM42 39h13v12H42ZM59 39h13v12H59ZM76 39h8a4 4 0 0 1 4 2l4 10H76Z" fill={TINT} />
+      <path d="M18 58h81" stroke="#fff" strokeOpacity="0.35" strokeWidth="2" />
+      <circle cx="36" cy="69" r="8" fill={INK} />
+      <circle cx="36" cy="69" r="3" fill="#fff" />
+      <circle cx="80" cy="69" r="8" fill={INK} />
+      <circle cx="80" cy="69" r="3" fill="#fff" />
+      <path d="M100 12a9 9 0 0 1 9 9c0 6-9 14-9 14s-9-8-9-14a9 9 0 0 1 9-9Z" fill={AMBER} stroke={PALE} strokeWidth="2" />
+      <circle cx="100" cy="21" r="3.5" fill="#fff" />
+    </Art>
+  );
+}
+
 /** A shopping bag with an offer tag. */
 function RetailArt(props: ArtProps) {
   return (
@@ -297,6 +315,7 @@ export const INDUSTRY_ART: Record<IndustrySlug, (props: ArtProps) => React.React
   salons: SalonArt,
   restaurants: RestaurantArt,
   "car-rental": CarRentalArt,
+  "coach-hire": CoachArt,
   retail: RetailArt,
 };
 
@@ -394,14 +413,12 @@ export function PlanArt({ level, className }: { level: 1 | 2 | 3; className?: st
   );
 }
 
-/** The UAE flag, for the footer. Drawn here because flag emoji do not render on Windows. */
-export function UaeFlag({ className }: { className?: string }) {
+/** A small globe, for the footer. */
+export function GlobeMark({ className }: { className?: string }) {
   return (
-    <svg aria-hidden viewBox="0 0 24 16" className={cn("h-3.5 w-[1.3rem] shrink-0 rounded-[3px]", className)}>
-      <rect width="24" height="16" fill="#fff" />
-      <rect x="6" width="18" height="5.340" fill="#00843d" />
-      <rect x="6" y="10.660" width="18" height="5.340" fill="#000" />
-      <rect width="6" height="16" fill="#c8102e" />
+    <svg aria-hidden viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" className={cn("size-4 shrink-0", className)}>
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M1.5 8h13M8 1.500c-4.500 4-4.500 9 0 13M8 1.500c4.500 4 4.500 9 0 13" />
     </svg>
   );
 }

@@ -9,7 +9,7 @@
 export const SITE_LANGS = ["en", "ar"] as const;
 export type SiteLang = (typeof SITE_LANGS)[number];
 
-export const INDUSTRY_SLUGS = ["clinics", "real-estate", "salons", "restaurants", "car-rental", "retail"] as const;
+export const INDUSTRY_SLUGS = ["clinics", "real-estate", "salons", "restaurants", "car-rental", "coach-hire", "retail"] as const;
 export type IndustrySlug = (typeof INDUSTRY_SLUGS)[number];
 
 /** Every page of the site, as a path without language prefix. "" is the home page. */

@@ -45,7 +45,7 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
           serviceType: "AI customer support chatbot",
           url: siteUrl(lang, page),
           inLanguage: lang,
-          areaServed: { "@type": "Country", name: "United Arab Emirates" },
+          areaServed: "Worldwide",
           provider: { "@type": "Organization", name: APP_NAME, url: SITE_URL },
         }}
       />

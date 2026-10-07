@@ -19,12 +19,15 @@ export const getSiteContent = (lang: SiteLang): SiteContent => CONTENT[lang];
 /**
  * Plans shown on the public site.
  *
- * The limits must match the `Plan` rows created by the first database migration.
- * PRICES ARE PLACEHOLDERS: online payment is not built yet, so nothing in the app
- * charges these amounts. Set the real monthly prices (in AED) here before launch.
+ * The limits must match the `Plan` rows in the database (a test checks this).
+ * Prices are monthly, in euros. `was` is the regular price shown crossed out beside
+ * the current one. Online payment is not built yet, so nothing in the app charges these
+ * amounts; they are what the site advertises.
  */
-export const SITE_PLANS: { id: PlanId; priceAed: number; messages: number; pages: number; seats: number; popular?: boolean }[] = [
-  { id: "free", priceAed: 0, messages: 200, pages: 25, seats: 1 },
-  { id: "starter", priceAed: 99, messages: 2000, pages: 200, seats: 3, popular: true },
-  { id: "pro", priceAed: 299, messages: 10000, pages: 1000, seats: 10 },
+export const PLAN_CURRENCY = { code: "EUR", symbol: "€" } as const;
+
+export const SITE_PLANS: { id: PlanId; price: number; was?: number; messages: number; pages: number; seats: number; popular?: boolean }[] = [
+  { id: "free", price: 0, messages: 30, pages: 25, seats: 1 },
+  { id: "starter", price: 49, was: 79, messages: 2000, pages: 200, seats: 3, popular: true },
+  { id: "pro", price: 199, was: 289, messages: 10000, pages: 1000, seats: 10 },
 ];

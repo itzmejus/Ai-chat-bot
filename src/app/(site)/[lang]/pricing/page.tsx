@@ -23,7 +23,7 @@ export default async function PricingPage({ params }: PageProps<"/[lang]/pricing
     <SiteShell lang={lang} page={PAGE}>
       <JsonLd data={breadcrumbJsonLd(lang, t.breadcrumbHome, [{ name: t.nav.pricing, page: PAGE }])} />
       <JsonLd data={faqJsonLd(page.faq.items)} />
-      <JsonLd data={softwareJsonLd(lang, page.meta.description, SITE_PLANS.map((plan) => ({ name: page.plans[plan.id].name, priceAed: plan.priceAed })))} />
+      <JsonLd data={softwareJsonLd(lang, page.meta.description, SITE_PLANS.map((plan) => ({ name: page.plans[plan.id].name, price: plan.price })))} />
 
       <PageHero eyebrow={page.eyebrow} title={page.h1} sub={page.sub} />
 

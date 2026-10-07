@@ -2,7 +2,7 @@ import { ArrowRight, Check, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { LogoMark } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
-import { getSiteContent, SITE_PLANS, type Faq, type SiteContent } from "@/content/site";
+import { getSiteContent, PLAN_CURRENCY, SITE_PLANS, type Faq, type SiteContent } from "@/content/site";
 import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
@@ -111,7 +111,7 @@ export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: Ind
 
 // ---------------------------------------------------------------- pricing
 
-const planNumber = (lang: SiteLang) => new Intl.NumberFormat(lang === "ar" ? "ar-AE-u-nu-latn" : "en-AE");
+const planNumber = (lang: SiteLang) => new Intl.NumberFormat(lang === "ar" ? "ar-u-nu-latn" : "en");
 
 function Tick({ tone = "light" }: { tone?: "light" | "dark" }) {
   return (
@@ -149,13 +149,22 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
               <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
             </div>
             <p className="flex items-baseline gap-2">
-              {plan.priceAed === 0 ? (
+              {plan.price === 0 ? (
                 <span className="text-5xl font-bold tracking-tight">{t.free}</span>
               ) : (
                 <>
-                  <span dir="ltr" className="flex items-baseline gap-1.5">
-                    <span className={cn("text-base font-semibold", dark ? "text-white/70" : "text-muted-foreground")}>AED</span>
-                    <span className="text-5xl font-bold tracking-tight">{number.format(plan.priceAed)}</span>
+                  <span dir="ltr" className="flex items-baseline gap-2">
+                    {plan.was && (
+                      // The regular price, crossed out; <s> tells screen readers it no longer applies.
+                      <s className={cn("text-xl font-semibold", dark ? "text-white/45" : "text-muted-foreground/70")}>
+                        {PLAN_CURRENCY.symbol}
+                        {number.format(plan.was)}
+                      </s>
+                    )}
+                    <span className="text-5xl font-bold tracking-tight">
+                      {PLAN_CURRENCY.symbol}
+                      {number.format(plan.price)}
+                    </span>
                   </span>
                   <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
                 </>
@@ -213,7 +222,23 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
   const number = planNumber(lang);
   const limit = (label: string) => label.charAt(0).toUpperCase() + label.slice(1);
   const rows: { label: string; cells: React.ReactNode[] }[] = [
-    { label: t.compare.price, cells: SITE_PLANS.map((p) => (p.priceAed === 0 ? t.free : `AED ${number.format(p.priceAed)}`)) },
+    { label: t.compare.price, cells: SITE_PLANS.map((p) =>
+        p.price === 0 ? (
+          t.free
+        ) : (
+          <span key={p.id} dir="ltr" className="inline-flex items-baseline gap-1.5">
+            {p.was && (
+              <s className="text-sm font-normal text-muted-foreground">
+                {PLAN_CURRENCY.symbol}
+                {number.format(p.was)}
+              </s>
+            )}
+            {PLAN_CURRENCY.symbol}
+            {number.format(p.price)}
+          </span>
+        ),
+      ),
+    },
     { label: limit(t.limits.messages), cells: SITE_PLANS.map((p) => number.format(p.messages)) },
     { label: limit(t.limits.pages), cells: SITE_PLANS.map((p) => number.format(p.pages)) },
     { label: limit(t.limits.seats), cells: SITE_PLANS.map((p) => number.format(p.seats)) },

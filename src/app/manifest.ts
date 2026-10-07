@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: APP_NAME,
     short_name: APP_NAME,
-    description: "AI customer support for businesses in the UAE",
+    description: "AI customer support for your website, in your customers' language",
     start_url: "/dashboard",
     display: "standalone",
     background_color: "#ffffff",

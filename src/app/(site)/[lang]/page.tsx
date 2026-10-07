@@ -40,10 +40,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       url: SITE_URL,
       logo: `${SITE_URL}/apple-icon.png`,
       description: t.footer.tagline,
-      areaServed: { "@type": "Country", name: "United Arab Emirates" },
+      areaServed: "Worldwide",
     },
     { "@context": "https://schema.org", "@type": "WebSite", name: APP_NAME, url: siteUrl(lang, ""), inLanguage: lang },
-    softwareJsonLd(lang, home.meta.description, SITE_PLANS.map((plan) => ({ name: t.pricingPage.plans[plan.id].name, priceAed: plan.priceAed }))),
+    softwareJsonLd(lang, home.meta.description, SITE_PLANS.map((plan) => ({ name: t.pricingPage.plans[plan.id].name, price: plan.price }))),
     faqJsonLd(home.faq.items),
   ];
 

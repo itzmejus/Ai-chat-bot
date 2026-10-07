@@ -7,7 +7,7 @@ import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
 import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
-import { UaeFlag } from "./art";
+import { GlobeMark } from "./art";
 import { MobileMenu } from "./mobile-menu";
 
 /** Button-styled link used across the site. */
@@ -155,7 +155,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
             </p>
             <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3">
               <p className="flex items-center gap-2">
-                <UaeFlag />
+                <GlobeMark />
                 {t.footer.madeIn}
               </p>
               <a

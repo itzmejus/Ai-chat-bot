@@ -4,7 +4,7 @@ import { LOGO_BUBBLE, LOGO_SPARK } from "@/lib/logo";
 
 // Rendered per request so APP_NAME comes from the running server's environment.
 export const dynamic = "force-dynamic";
-export const alt = "AI customer support for UAE businesses, in your customers' language";
+export const alt = "AI customer support for your website, in your customers' language";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -38,7 +38,7 @@ export default function OpenGraphImage() {
           <div style={{ fontSize: 30, color: "rgba(255,255,255,0.75)", maxWidth: 900 }}>Answers only from your business information. Captures leads. Hands over to your team.</div>
         </div>
         <div style={{ display: "flex", gap: 14 }}>
-          {["Built for UAE businesses", "24/7", "One line of code"].map((label) => (
+          {["Any language", "24/7", "One line of code"].map((label) => (
             <div key={label} style={{ display: "flex", padding: "12px 22px", borderRadius: 999, fontSize: 24, backgroundColor: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)" }}>
               {label}
             </div>
