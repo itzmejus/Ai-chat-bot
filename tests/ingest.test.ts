@@ -324,3 +324,87 @@ describe("ingestion", () => {
     expect(await scope.db.knowledgeSource.count()).toBe(2);
   });
 });
+
+describe("websites built with JavaScript", () => {
+  // What such a site really sends: a title, a description and an empty element for the app.
+  const shell = '<html><head><title>Shop</title><meta name="description" content="We build websites."></head><body><div id="root"></div><script type="module" src="/app.js"></script></body></html>';
+  const long = (topic: string) => `${topic} `.repeat(60);
+
+  it("finds pages through the sitemap when no link points to them", async () => {
+    const { fetcher } = fakeSite({
+      "/": page("Home page with no links at all."),
+      "/pricing": page("Pricing page."),
+      "/blog/first-post": page("First blog post."),
+      "/sitemap.xml": "<urlset><url><loc>https://shop.ae/</loc></url><url><loc>https://www.shop.ae/pricing</loc></url><url><loc>https://shop.ae/blog/first-post</loc></url><url><loc>https://evil.com/x</loc></url></urlset>",
+    });
+    const pages = await crawlSite("https://shop.ae", { maxPages: 50, fetcher });
+    expect(pages.map((p) => new URL(p.url).pathname).sort()).toEqual(["/", "/blog/first-post", "/pricing"]);
+  });
+
+  it("uses the sitemap named in robots.txt, and still obeys robots.txt for those pages", async () => {
+    const { fetcher, requested } = fakeSite(
+      {
+        "/": page("Home."),
+        "/open": page("Open page."),
+        "/private/x": page("Private page."),
+        "/maps/pages.xml": "<urlset><url><loc>https://shop.ae/open</loc></url><url><loc>https://shop.ae/private/x</loc></url></urlset>",
+      },
+      "User-agent: *\nDisallow: /private/\nSitemap: https://shop.ae/maps/pages.xml",
+    );
+    const pages = await crawlSite("https://shop.ae", { maxPages: 50, fetcher });
+    expect(pages.map((p) => new URL(p.url).pathname).sort()).toEqual(["/", "/open"]);
+    expect(requested.some((u) => u.includes("/private/"))).toBe(false);
+  });
+
+  it("reads an empty-shell page through the page reader and follows the links it finds", async () => {
+    const { fetcher } = fakeSite({ "/": shell, "/services": shell, "/about": page("A normal page with real text. ".repeat(20)) });
+    const rendered: string[] = [];
+    const renderer = async (url: string) => {
+      rendered.push(new URL(url).pathname);
+      return new URL(url).pathname === "/"
+        ? { title: "Shop", text: long("We design websites for restaurants."), links: ["https://shop.ae/services", "https://shop.ae/about", "https://elsewhere.com/"] }
+        : { title: "Services", text: long("Website design, hosting and support."), links: [] };
+    };
+
+    const pages = await crawlSite("https://shop.ae", { maxPages: 50, fetcher, renderer });
+    expect(pages.map((p) => new URL(p.url).pathname).sort()).toEqual(["/", "/about", "/services"]);
+    expect(pages.find((p) => p.url.endsWith("/services"))?.text).toContain("hosting and support");
+    // Pages that already had text are not sent to the reader.
+    expect(rendered.sort()).toEqual(["/", "/services"]);
+  });
+
+  it("keeps what little it found and warns when there is no page reader", async () => {
+    const { workspace } = await createTenant("JS Site");
+    const db = tenantDb(workspace.id);
+    await addUrlSource({ workspaceId: workspace.id, db, maxPages: 25 }, "https://shop.ae");
+    const source = await db.knowledgeSource.findFirstOrThrow();
+
+    await processSource(workspace.id, source.id, { fetcher: fakeSite({ "/": shell.replace("We build websites.", "We build professional websites for local businesses across the Emirates: restaurants, salons, clinics and service companies.") }).fetcher });
+    expect(await db.knowledgeSource.findFirstOrThrow()).toMatchObject({ status: "ready", pageCount: 1, error: "needsJavascript" });
+
+    // With a reader the same site is read properly and the warning goes away.
+    await processSource(workspace.id, source.id, {
+      fetcher: fakeSite({ "/": shell }).fetcher,
+      renderer: async () => ({ title: "Shop", text: long("Full page text."), links: [] }),
+    });
+    expect(await db.knowledgeSource.findFirstOrThrow()).toMatchObject({ status: "ready", error: null });
+  });
+
+  it("reads a website again instead of listing it twice", async () => {
+    const { workspace } = await createTenant("Same Site");
+    const db = tenantDb(workspace.id);
+    const scope = { workspaceId: workspace.id, db, maxPages: 25 };
+    await addUrlSource(scope, "https://www.shop.ae");
+    await db.knowledgeSource.updateMany({ data: { status: "ready" } });
+    enqueueIngest.mockClear();
+
+    await addUrlSource(scope, "https://Shop.ae/");
+    expect(await db.knowledgeSource.count()).toBe(1);
+    expect(await db.knowledgeSource.findFirstOrThrow()).toMatchObject({ status: "processing" });
+    expect(enqueueIngest).toHaveBeenCalledTimes(1);
+
+    // A different page of the same site is its own source.
+    await addUrlSource(scope, "https://shop.ae/menu");
+    expect(await db.knowledgeSource.count()).toBe(2);
+  });
+});

@@ -3,11 +3,14 @@ import { replaceSourceChunks, type NewChunk } from "@/server/db/chunks";
 import { tenantDb } from "@/server/db/tenant";
 import { knowledgePagesUsed, MAX_CRAWL_PAGES } from "@/server/knowledge";
 import { chunkText } from "./chunker";
-import { crawlSite } from "./crawler";
+import { crawlSite, THIN_PAGE_CHARS } from "./crawler";
+import { renderConfigured, type Renderer } from "./render";
 import { BlockedUrlError, type Fetcher } from "./safe-fetch";
 
 /** Codes stored in KnowledgeSource.error; the dashboard translates them. */
 export type IngestErrorCode = "noContent" | "fetchFailed" | "blockedUrl" | "limit" | "openaiKey" | "generic";
+/** Stored in the same column on a source that is ready but deserves a warning. */
+export type IngestWarningCode = "needsJavascript";
 
 class IngestError extends Error {
   constructor(public code: IngestErrorCode) {
@@ -31,7 +34,7 @@ type Document = { url: string | null; text: string };
  * Turn one knowledge source into embedded chunks. Runs in the background worker.
  * Never throws: the outcome is recorded on the source as `ready` or `failed`.
  */
-export async function processSource(workspaceId: string, sourceId: string, deps: { fetcher?: Fetcher } = {}) {
+export async function processSource(workspaceId: string, sourceId: string, deps: { fetcher?: Fetcher; renderer?: Renderer } = {}) {
   const db = tenantDb(workspaceId);
   const source = await db.knowledgeSource.findUnique({ where: { id: sourceId } });
   if (!source) return; // deleted before the job ran
@@ -45,7 +48,7 @@ export async function processSource(workspaceId: string, sourceId: string, deps:
       const maxPages = Math.min(MAX_CRAWL_PAGES, workspace.plan.maxKnowledgePages - usedElsewhere);
       if (maxPages <= 0) throw new IngestError("limit");
 
-      const pages = await crawlSite(source.url!, { maxPages, fetcher: deps.fetcher });
+      const pages = await crawlSite(source.url!, { maxPages, fetcher: deps.fetcher, renderer: deps.renderer });
       // Sources added while the crawl was running also count: keep only what still fits.
       const room = workspace.plan.maxKnowledgePages - ((await knowledgePagesUsed(db)) - source.pageCount);
       if (room <= 0) throw new IngestError("limit");
@@ -57,6 +60,7 @@ export async function processSource(workspaceId: string, sourceId: string, deps:
       documents = [{ url: null, text: source.content ?? "" }];
     }
 
+    const thinSite = source.type === "url" && !deps.renderer && !renderConfigured() && documents.every((d) => d.text.length < THIN_PAGE_CHARS);
     const pieces = documents.flatMap((doc) => chunkText(doc.text).map((chunk) => ({ ...chunk, url: doc.url })));
     if (pieces.length === 0) throw new IngestError("noContent");
 
@@ -68,7 +72,9 @@ export async function processSource(workspaceId: string, sourceId: string, deps:
       where: { id: sourceId },
       data: {
         status: "ready",
-        error: null,
+        // A website that gave almost no text is a JavaScript-built site this crawl could not read.
+        // It is still saved (the page title and description are worth having), with a warning.
+        error: thinSite ? ("needsJavascript" satisfies IngestWarningCode) : null,
         pageCount: source.type === "url" ? documents.length : 1,
         lastSyncedAt: new Date(),
       },

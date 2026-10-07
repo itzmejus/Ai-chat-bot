@@ -239,6 +239,13 @@ The page shows each source as processing, ready or failed, with re-sync and dele
 
 - **Website crawl:** same domain only, up to 50 pages (or what the plan has left), obeys robots.txt.
   All requests go through `safe-fetch.ts`, which refuses private and internal addresses.
+  Pages are found by following links and from the site's sitemap. Adding a website that is already
+  a source reads it again rather than listing it twice.
+- **Websites built with JavaScript** (React, Vue, Vite apps) send an almost empty page and draw it in
+  the browser, so a plain download finds no text and no links. With `JS_RENDER_URL` set (for example
+  `https://r.jina.ai/`), such pages are read through a page-reader service that runs a real browser
+  (`src/server/ingest/render.ts`); only the public page address is sent. Without it the source is
+  saved with a warning that says why so little was found.
 - **Files:** text is extracted at upload (10 MB max) and the file itself is discarded.
 - **Worker:** by default the worker runs inside the web server process, so one service is enough.
   To run it separately, set `WORKER_MODE=external` on the web service and start `npm run worker`.

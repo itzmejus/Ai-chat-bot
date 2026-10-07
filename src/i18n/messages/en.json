@@ -239,7 +239,10 @@
     "dropActive": "Drop the file to add it",
     "maxSize": "up to 10 MB",
     "removeFile": "Remove file",
-    "faqFromQuestion": "Answer this customer question so the assistant can handle it next time."
+    "faqFromQuestion": "Answer this customer question so the assistant can handle it next time.",
+    "warnings": {
+      "needsJavascript": "Very little text was found. This site is built with JavaScript, which the reader could not run. Add the information as a file, FAQs or notes instead, or ask your administrator to turn on the page reader."
+    }
   },
   "assistant": {
     "testTitle": "Test your assistant",

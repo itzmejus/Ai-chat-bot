@@ -84,7 +84,9 @@ function SourceIdentity({ source }: { source: SourceRow }) {
         <p className="truncate font-medium" dir="auto" title={source.title}>
           {source.type === "notes" ? t("types.notes") : source.title}
         </p>
-        {source.status === "failed" && source.error ? (
+        {source.status === "ready" && source.error ? (
+          <p className="text-xs leading-relaxed text-[#9a5b00]">{t(`warnings.${source.error}`)}</p>
+        ) : source.status === "failed" && source.error ? (
           <p className="text-xs text-destructive">{t(`errors.${source.error}`)}</p>
         ) : (
           <p className="text-xs text-muted-foreground">{t(`types.${source.type}`)}</p>

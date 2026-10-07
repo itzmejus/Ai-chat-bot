@@ -35,7 +35,24 @@ export function listSources(db: TenantDb) {
   });
 }
 
+/** Two addresses of the same page of a website: "https://www.Site.ae/" and "http://site.ae". */
+function sameSite(a: string, b: string) {
+  const key = (raw: string) => {
+    try {
+      const u = new URL(raw);
+      return u.hostname.toLowerCase().replace(/^www\./, "") + u.pathname.replace(/\/+$/, "");
+    } catch {
+      return raw;
+    }
+  };
+  return key(a) === key(b);
+}
+
+/** Adding a website that is already a source reads it again instead of listing it twice. */
 export async function addUrlSource(scope: Scope, url: string) {
+  const existing = (await scope.db.knowledgeSource.findMany({ where: { type: "url" }, select: { id: true, url: true } })).find((s) => s.url && sameSite(s.url, url));
+  if (existing) return resyncSource(scope, existing.id);
+
   await assertRoom(scope);
   const source = await scope.db.knowledgeSource.create({
     data: { workspaceId: scope.workspaceId, type: "url", title: url, url },

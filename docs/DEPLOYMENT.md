@@ -57,6 +57,8 @@ the server, so new migrations are applied on every deploy.
 | `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from the same page; a secret |
+| `JS_RENDER_URL` | `https://r.jina.ai/` to read websites that are built with JavaScript; optional but recommended |
+| `JS_RENDER_API_KEY` | a Jina Reader API key, for a higher rate limit; optional |
 | `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`, `EMAIL_FROM` | see step 4; optional |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | see step 5; optional |
 
@@ -208,6 +210,7 @@ To remove it, delete the "Bright Smile Dental Clinic" workspace and that user fr
 | Login works locally but loops in production | `NEXTAUTH_URL` / `APP_URL` do not match the address in the browser, including `https` and the exact hostname. |
 | Widget shows nothing on the customer's site | The site's domain is not under Allowed websites, or `WIDGET_URL` does not match the hostname in the embed code. The browser console shows a `frame-ancestors` message in the first case. |
 | Product photos cannot be uploaded | `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY` is missing or wrong. The product form says when storage is not set up; the server log shows the reason a refused upload was refused. |
+| A website source shows 1 page and a "very little text" warning | The site is drawn by JavaScript. Set `JS_RENDER_URL` (see the variables above), redeploy and press Re-sync. |
 | Sources stay on *Processing* | The service was asleep or restarted (use a paid instance), or `WORKER_MODE=external` is set without a worker running. Press Re-sync after fixing. |
 | Sources fail with an OpenAI key error | `OPENAI_API_KEY` is missing or has no credit. |
 | Customers get "Our assistant is unavailable" | The workspace used up its plan's monthly AI messages; the dashboard shows a banner. Change the plan (`Workspace.planId`) until billing is built. |

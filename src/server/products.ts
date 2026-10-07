@@ -234,7 +234,7 @@ export type ProductMatch = ProductRow & { similarity: number };
  * The products closest to a query embedding, for ONE workspace. Unavailable products
  * are included, so the assistant can say that something is not available right now.
  */
-export async function searchProducts(workspaceId: string, embedding: number[], limit = 6): Promise<ProductMatch[]> {
+export async function searchProducts(workspaceId: string, embedding: number[], limit = 8): Promise<ProductMatch[]> {
   if (!workspaceId) throw new Error("searchProducts requires a workspaceId");
   const vec = `[${embedding.join(",")}]`;
   return prisma.$queryRaw<ProductMatch[]>`
