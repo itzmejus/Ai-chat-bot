@@ -71,13 +71,41 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 [dir="rtl"] .mw-send svg{transform:scaleX(-1)}
 
 /* Product cards under a reply: a row that scrolls sideways */
-.mw-cards{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:2px 16px 8px;scroll-snap-type:x proximity;scrollbar-width:thin;flex:none}
+.mw-cards{position:relative;flex:none;margin:0 -16px}
 .mw-cards[hidden]{display:none}
-.mw-card{flex:none;width:148px;display:flex;flex-direction:column;gap:4px;padding:0 0 10px;text-align:start;background:#fff;border-radius:16px;overflow:hidden;scroll-snap-align:start;
-  box-shadow:0 1px 2px rgb(16 24 40/.08),0 0 0 1px rgb(16 24 40/.05);transition:transform .15s,box-shadow .15s;animation:mw-in .2s ease}
-.mw-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgb(16 24 40/.14),0 0 0 1px rgb(16 24 40/.06)}
-.mw-card b{padding:6px 10px 0;font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.mw-card .price{padding:0 10px;font-size:13px;font-weight:600;color:var(--brand);min-height:19px}
+/* The row scrolls sideways and stops on a card. The scrollbar is hidden; the faded edge and the
+   half-visible next card show there is more. */
+.mw-cards-track{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;padding:4px 16px 12px;scroll-snap-type:x mandatory;scroll-padding-inline:16px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;--fade-start:0px;--fade-end:0px;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent);
+  mask-image:linear-gradient(to right,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent)}
+.mw-cards-track::-webkit-scrollbar{display:none}
+.mw-cards[data-start="true"] .mw-cards-track{--fade-start:28px}
+.mw-cards[data-end="true"] .mw-cards-track{--fade-end:28px}
+[dir="rtl"] .mw-cards[data-start="true"] .mw-cards-track{--fade-start:0px;--fade-end:28px}
+[dir="rtl"] .mw-cards[data-end="true"] .mw-cards-track{--fade-start:28px;--fade-end:0px}
+[dir="rtl"] .mw-cards[data-start="true"][data-end="true"] .mw-cards-track{--fade-start:28px;--fade-end:28px}
+.mw-card{flex:none;width:min(164px,62%);display:flex;flex-direction:column;gap:4px;padding:0 0 12px;text-align:start;background:#fff;border-radius:16px;overflow:hidden;scroll-snap-align:start;
+  box-shadow:0 1px 2px rgb(16 24 40/.06),0 4px 14px -6px rgb(16 24 40/.18),0 0 0 1px rgb(16 24 40/.05);transition:transform .18s ease,box-shadow .18s ease;animation:mw-in .2s ease}
+.mw-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px -8px rgb(16 24 40/.28),0 0 0 1px rgb(16 24 40/.06)}
+.mw-card:active{transform:scale(.98)}
+.mw-card img{transition:transform .35s ease}
+.mw-card:hover img{transform:scale(1.05)}
+/* Arrows: only where there is a mouse, and only towards cards that are out of view */
+.mw-cards-arrow{display:none;position:absolute;top:49px;width:32px;height:32px;border-radius:50%;place-items:center;background:#fff;color:var(--ink);
+  box-shadow:0 4px 14px rgb(16 24 40/.22),0 0 0 1px rgb(16 24 40/.06);transition:transform .15s ease,opacity .15s ease}
+.mw-cards-arrow:hover{transform:scale(1.08)}
+.mw-cards-arrow svg{width:18px;height:18px}
+.mw-cards-arrow.prev{inset-inline-start:8px}
+.mw-cards-arrow.next{inset-inline-end:8px}
+.mw-cards-arrow.next svg{transform:scaleX(-1)}
+[dir="rtl"] .mw-cards-arrow.prev svg{transform:scaleX(-1)}
+[dir="rtl"] .mw-cards-arrow.next svg{transform:none}
+@media (hover:hover) and (pointer:fine){
+  .mw-cards[data-start="true"] .mw-cards-arrow.prev,.mw-cards[data-end="true"] .mw-cards-arrow.next{display:grid}
+}
+.mw-card b{padding:8px 12px 0;font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mw-card .price{padding:0 12px;font-size:13px;font-weight:600;color:var(--brand);min-height:19px}
 .mw-card[data-available="false"] .price{color:var(--muted);font-weight:500}
 .mw-card[data-available="false"] img{filter:grayscale(1);opacity:.6}
 .mw-card-img,.mw-detail-img{display:grid;place-items:center;background:var(--canvas);overflow:hidden;flex:none}
@@ -135,7 +163,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
 /* Phones (the host page tells us): the chat is a sheet over the lower part of the page, not the whole
    screen. The launcher hides while it is open (the header's arrow closes it) to leave room for the conversation. */
-.mw[data-mobile="true"][data-open="true"]{padding:8px}
+.mw[data-mobile="true"][data-open="true"]{padding:12px 12px 14px}
 .mw[data-mobile="true"][data-open="true"] .mw-launcher{display:none}
 /* Touch screens zoom the page when a focused field's text is smaller than 16px. */
 @media (pointer:coarse){.mw-composer textarea,.mw-form input{font-size:16px}}

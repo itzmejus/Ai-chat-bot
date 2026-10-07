@@ -440,6 +440,7 @@ function productImage(product: Product, className: string): HTMLElement {
 function addProducts(products: Product[]): HTMLDivElement | null {
   if (!products.length) return null;
   const row = el("div", "mw-cards");
+  const track = el("div", "mw-cards-track");
   for (const product of products) {
     const card = el("button", "mw-card");
     card.type = "button";
@@ -450,9 +451,35 @@ function addProducts(products: Product[]): HTMLDivElement | null {
     card.append(productImage(product, "mw-card-img"), name, price);
     card.setAttribute("aria-label", `${product.name}. ${t("viewDetails")}`);
     card.addEventListener("click", () => openProduct(product));
-    row.appendChild(card);
+    track.appendChild(card);
   }
+
+  // Arrows for mouse users, and soft fades at whichever edge has more cards beyond it.
+  const arrow = (direction: 1 | -1) => {
+    const button = el("button", `mw-cards-arrow ${direction === 1 ? "next" : "prev"}`);
+    button.type = "button";
+    button.tabIndex = -1; // the cards themselves are reachable with the keyboard
+    button.setAttribute("aria-hidden", "true");
+    button.innerHTML = ICONS.back;
+    button.addEventListener("click", () => {
+      // In a right-to-left panel "next" is towards the left.
+      const sign = getComputedStyle(track).direction === "rtl" ? -1 : 1;
+      track.scrollBy({ left: direction * sign * Math.max(160, track.clientWidth * 0.75), behavior: "smooth" });
+    });
+    return button;
+  };
+  const update = () => {
+    const offset = Math.abs(track.scrollLeft); // negative in right-to-left layouts
+    row.dataset.start = String(offset > 4);
+    row.dataset.end = String(offset + track.clientWidth < track.scrollWidth - 4);
+  };
+  track.addEventListener("scroll", update, { passive: true });
+  // The row may be built while the chat is closed (no size yet), and the window can be resized.
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(update).observe(track);
+
+  row.append(track, arrow(-1), arrow(1));
   messages.appendChild(row);
+  update();
   scrollToEnd();
   return row;
 }
