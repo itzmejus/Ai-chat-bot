@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getProducts, toCard } from "@/server/products";
 import { authenticateWidget, conversationIdSchema, errorJson, findVisitorConversation, visitorIdSchema } from "@/server/widget/service";
 
 const bodySchema = z.object({ visitorId: visitorIdSchema, conversationId: conversationIdSchema.optional() });
@@ -22,7 +23,14 @@ export async function POST(request: Request) {
     where: { conversationId: conversation.id, role: { not: "system" } },
     orderBy: { createdAt: "asc" },
     take: 200,
-    select: { id: true, role: true, content: true },
+    select: { id: true, role: true, content: true, productIds: true },
   });
-  return Response.json({ conversationId: conversation.id, status: conversation.status, messages });
+
+  // Product cards shown under earlier replies. Products deleted since then are left out.
+  const cards = new Map((await getProducts(widget.db, [...new Set(messages.flatMap((m) => m.productIds))])).map((p) => [p.id, toCard(p)]));
+  return Response.json({
+    conversationId: conversation.id,
+    status: conversation.status,
+    messages: messages.map(({ productIds, ...m }) => ({ ...m, products: productIds.flatMap((id) => cards.get(id) ?? []) })),
+  });
 }

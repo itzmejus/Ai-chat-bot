@@ -94,7 +94,15 @@
     "more": "More",
     "closeMenu": "Close menu",
     "limitReached": "You have used all of this month's AI messages. Customers now see your contact details instead of AI replies.",
-    "viewPlans": "View plans"
+    "viewPlans": "View plans",
+    "catalog": {
+      "products": "Products",
+      "services": "Services",
+      "menu": "Menu items"
+    },
+    "shortCatalog": {
+      "menu": "Menu"
+    }
   },
   "roles": {
     "owner": "Owner",
@@ -261,7 +269,8 @@
     "save": "Save settings",
     "ownerOnlyNote": "Only the workspace owner can change these settings.",
     "online": "Online",
-    "preview": "Preview"
+    "preview": "Preview",
+    "productsShown": "Cards shown"
   },
   "errors": {
     "required": "This field is required",
@@ -294,7 +303,8 @@
     "notificationEmail": "One of the addresses is not a valid email",
     "tooManyEmails": "You can list up to 5 addresses",
     "whatsappNumber": "Enter each number in international format, e.g. +971 50 123 4567",
-    "tooManyNumbers": "You can list up to 3 numbers"
+    "tooManyNumbers": "You can list up to 3 numbers",
+    "tooLong": "This is too long"
   },
   "widget": {
     "title": "Chat widget",
@@ -396,7 +406,8 @@
     "statUnread": "Unread",
     "statTotal": "Total",
     "channelWeb": "Website chat",
-    "statWaiting": "Waiting"
+    "statWaiting": "Waiting",
+    "productsShown": "Shown as cards"
   },
   "leads": {
     "title": "Leads",
@@ -418,7 +429,8 @@
     "colDate": "Captured",
     "colStatus": "Status",
     "colChat": "Chat",
-    "viewChat": "Open conversation"
+    "viewChat": "Open conversation",
+    "colInterest": "Interested in"
   },
   "team": {
     "title": "Team",
@@ -495,5 +507,86 @@
     "planDemoNote": "Demo mode: plans can be switched freely because online payment is not connected yet.",
     "planContactNote": "Online payment is coming soon. Contact us to change your plan.",
     "planChangeUnavailable": "Plans cannot be changed here yet. Contact us to change your plan."
+  },
+  "products": {
+    "variants": {
+      "products": {
+        "title": "Products",
+        "subtitle": "Add what you sell. Your assistant shows these as cards in the chat and answers questions about them.",
+        "add": "Add product",
+        "edit": "Edit product",
+        "empty": "No products yet",
+        "emptyHint": "Add your first product with a photo and a price. Customers will see it as a card when they ask about it.",
+        "namePlaceholder": "e.g. Classic leather wallet",
+        "count": "{count, plural, =0 {No products} one {# product} other {# products}}"
+      },
+      "services": {
+        "title": "Services",
+        "subtitle": "Add the services you offer. Your assistant shows these as cards in the chat and answers questions about them.",
+        "add": "Add service",
+        "edit": "Edit service",
+        "empty": "No services yet",
+        "emptyHint": "Add your first service with a photo and a price. Customers will see it as a card when they ask about it.",
+        "namePlaceholder": "e.g. Laser teeth whitening",
+        "count": "{count, plural, =0 {No services} one {# service} other {# services}}"
+      },
+      "menu": {
+        "title": "Menu",
+        "subtitle": "Add your dishes and drinks. Your assistant shows these as cards in the chat and answers questions about them.",
+        "add": "Add item",
+        "edit": "Edit item",
+        "empty": "Your menu is empty",
+        "emptyHint": "Add your first dish with a photo and a price. Customers will see it as a card when they ask about it.",
+        "namePlaceholder": "e.g. Chicken shawarma plate",
+        "count": "{count, plural, =0 {No items} one {# item} other {# items}}"
+      }
+    },
+    "heroTotal": "In your list",
+    "heroAvailable": "Available",
+    "heroWithPhoto": "With a photo",
+    "search": "Search by name…",
+    "allCategories": "All",
+    "noResults": "Nothing matches your search.",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "markAvailable": "Mark {name} as available",
+    "markUnavailable": "Mark {name} as unavailable",
+    "editNamed": "Edit {name}",
+    "deleteNamed": "Delete {name}",
+    "confirmDelete": "Delete \"{name}\"? Customers will no longer see it in the chat.",
+    "noPrice": "No price",
+    "photo": "Photo",
+    "photoHint": "JPG, PNG or WebP, up to 8 MB. It is resized for you.",
+    "photoChoose": "Choose a photo",
+    "photoDrop": "or drop it here",
+    "photoReplace": "Replace",
+    "photoRemove": "Remove photo",
+    "storageMissing": "Photo upload is not set up yet. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to the server settings to turn it on. You can still add everything else.",
+    "name": "Name",
+    "price": "Price",
+    "priceHint": "Leave empty to show no price",
+    "category": "Category",
+    "categoryPlaceholder": "e.g. Whitening, Starters, Bags",
+    "description": "Description",
+    "descriptionPlaceholder": "What it is, what is included, sizes, ingredients, anything customers ask about.",
+    "descriptionHint": "The assistant answers questions about this from what you write here.",
+    "link": "Link",
+    "linkPlaceholder": "Page for this on your website",
+    "availableLabel": "Available to customers",
+    "availableHint": "Switch off to keep it in your list while it is out of stock. The assistant will say it is unavailable.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "limitNote": "You can add up to {max}.",
+    "errors": {
+      "check": "Please check the highlighted fields.",
+      "price": "Enter a price like 900 or 49.50",
+      "notFound": "This item no longer exists.",
+      "limit": "You have reached the maximum number of items.",
+      "imageUnsupported": "This file is not a photo we can read. Use JPG, PNG or WebP.",
+      "imageTooLarge": "The photo is larger than 8 MB.",
+      "storageNotConfigured": "Photo upload is not set up yet. Save without a photo, or ask your administrator to configure storage.",
+      "storageFailed": "The photo could not be uploaded. Please try again."
+    }
   }
 }

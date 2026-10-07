@@ -44,8 +44,8 @@ export async function POST(request: Request) {
     for await (const event of answerMessage({ workspaceId: workspace.id, conversationId: conversation.id, text: parsed.data.message })) {
       if (event.type === "token") send("token", { text: event.text });
       else {
-        const { confidence, answered, needsHuman, skipped, sources } = event.result;
-        send("done", { confidence, answered, needsHuman, skipped, sources });
+        const { confidence, answered, needsHuman, skipped, sources, products } = event.result;
+        send("done", { confidence, answered, needsHuman, skipped, sources, products: products.map((p) => p.name) });
       }
     }
   }, request);

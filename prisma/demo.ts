@@ -16,6 +16,7 @@ import { prisma } from "@/server/db/prisma";
 import { tenantDb } from "@/server/db/tenant";
 import { processSource } from "@/server/ingest/process";
 import { currentMonth } from "@/server/limits/usage";
+import { createProduct, productSchema } from "@/server/products";
 import { createWorkspaceForUser } from "@/server/workspaces";
 
 export const DEMO_EMAIL = "demo@brightsmile.example";
@@ -232,10 +233,21 @@ const CONVERSATIONS: DemoConversation[] = [
 
 const ROLE = { customer: "customer", assistant: "assistant", agent: "agent", system: "system" } as const;
 
+/** The clinic's services, shown as cards in the chat. No photos: add them from the dashboard. */
+const SERVICES: { name: string; category: string; price: string; description: string }[] = [
+  { name: "Dental check-up", category: "General", price: "150", description: "Examination by one of our dentists and a written treatment plan. X-rays, if needed, are AED 100 extra. Takes about 20 minutes.\nفحص الأسنان مع خطة علاج." },
+  { name: "Scaling and polishing", category: "General", price: "250", description: "Professional teeth cleaning: removes plaque and stains. About 40 minutes. Recommended every six months.\nتنظيف وتلميع الأسنان." },
+  { name: "Laser teeth whitening", category: "Cosmetic", price: "900", description: "In-clinic laser whitening, one session of one hour. Results are visible straight away. Not usually covered by insurance.\nتبييض الأسنان بالليزر في العيادة." },
+  { name: "Take-home whitening kit", category: "Cosmetic", price: "600", description: "Custom trays and whitening gel to use at home for two weeks.\nطقم تبييض الأسنان المنزلي." },
+  { name: "Child's check-up", category: "Children", price: "120", description: "Check-up with Dr. Layla Hassan, our paediatric dentist, for children from the age of two.\nفحص أسنان الأطفال." },
+  { name: "Metal braces", category: "Orthodontics", price: "8000", description: "Full orthodontic treatment with Dr. Priya Nair. From AED 8,000, payable in monthly instalments over the treatment.\nتقويم الأسنان المعدني." },
+];
+
 export type SeedResult = {
   workspaceId: string;
   email: string;
   sources: { ready: number; failed: number };
+  products: number;
   conversations: number;
   leads: number;
 };
@@ -293,6 +305,12 @@ export async function seedDemo({ password, embed = true }: { password: string; e
     }
   } else {
     await db.knowledgeSource.updateMany({ data: { status: "failed", error: "openaiKey" } });
+  }
+
+  // ---------------------------------------------------------------- services (product cards)
+  // Each one is embedded as it is saved, so this needs OpenAI too.
+  if (embed) {
+    await Promise.all(SERVICES.map((service) => createProduct({ workspaceId, db }, productSchema.parse({ ...service, url: "", available: true }))));
   }
 
   // ---------------------------------------------------------------- conversations and leads
@@ -366,6 +384,7 @@ export async function seedDemo({ password, embed = true }: { password: string; e
     workspaceId,
     email: DEMO_EMAIL,
     sources: { ready, failed },
+    products: embed ? SERVICES.length : 0,
     conversations: CONVERSATIONS.length,
     leads: CONVERSATIONS.filter((c) => c.lead).length,
   };

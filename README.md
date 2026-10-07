@@ -109,6 +109,7 @@ All are documented in `.env.example`. Secrets live only in the environment, neve
 | `WIDGET_URL` | no | separate hostname for the widget; defaults to `APP_URL` |
 | `SITE_URL` | no | separate hostname for the public marketing site; defaults to `APP_URL` |
 | `CONTACT_EMAIL` | no | shown in the site footer and legal pages |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | no | Supabase Storage for product photos; without them products have no pictures |
 | `APP_NAME` | no | product name shown everywhere, default "Selo Assist" |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no | enables "Continue with Google" |
 | `EMAIL_SERVER_HOST`, `_PORT`, `_USER`, `_PASSWORD`, `EMAIL_FROM` | no | SMTP for invitations and notifications; without it they are written to the server log |
@@ -146,6 +147,7 @@ Postgres with pgvector (PGlite) with every migration applied, and OpenAI is mock
 | `tests/analytics.test.ts` | overview numbers, question grouping, CSV export |
 | `tests/team.test.ts` | invitations, roles, seat limit |
 | `tests/seed.test.ts` | the demo seed |
+| `tests/products.test.ts` | products: form, photo handling, isolation, cards in answers and in the widget API |
 | `tests/site.test.ts` | public site addresses, host routing, sitemap, English/Arabic content parity |
 
 ## Deploy
@@ -198,6 +200,8 @@ src/server/limits/      monthly usage counter and rate limiter
 src/server/realtime/    event bus (in-process + Postgres NOTIFY) and Server-Sent Events helper
 src/server/inbox.ts     inbox list, takeover, agent replies, close and reopen
 src/server/leads.ts     leads list, status, CSV export
+src/server/products.ts  products: save, embed, search, card format
+src/server/storage.ts   product photos on Supabase Storage
 src/server/analytics.ts overview numbers, daily counts, question grouping
 src/server/team.ts      members, roles, invitations
 src/server/notifications.ts  lead and needs-human emails
@@ -254,7 +258,7 @@ message it:
    knowledge base had no answer or the customer asked for a person, and records any contact details as a lead
 
 The model begins each reply with a hidden one-line JSON header (`answered`, `wants_human`, `name`,
-`phone`, `email`) that the server strips before streaming. That is where the confidence signal and
+`phone`, `email`, `products`) that the server strips before streaming. That is where the confidence signal and
 lead details come from, without a second model call.
 
 Prompt-injection defence: retrieved text is wrapped in a `<knowledge>` block, declared to be data
@@ -349,6 +353,32 @@ Grouping works on a compact (256-dimension) embedding stored with each customer 
 (`src/server/analytics.ts`). Messages containing a phone number or email are left out of both lists.
 The charts are plain HTML and CSS (`src/components/overview/charts.tsx`), with a hover tooltip and
 a screen-reader table for the daily chart.
+
+## Products, services and menu items
+
+**Dashboard > Products** (named *Services* for clinics and salons and *Menu items* for restaurants;
+`src/lib/catalog.ts`) is where a business lists what it sells: name, price, category, description,
+an optional link and a photo. One table (`Product`) holds them all.
+
+- **In the chat.** When a reply is about specific products the widget shows them as a row of cards
+  under it. A card opens the product inside the chat: photo, price, description, an
+  **Ask about this** button and an **I'm interested** button.
+- **How the assistant picks them.** Each product is embedded when it is saved. For every customer
+  message the closest products of that workspace are added to the prompt in a `<products>` block,
+  each with a short reference (`p1`, `p2`…). The model names the ones its reply is about in the
+  hidden header line (`"products":["p1"]`); the server maps the references back to real products,
+  dropping anything it did not offer, and sends the cards with the reply. No second AI call.
+- **Follow-up questions.** The product a customer opens becomes the subject of the conversation
+  (`Conversation.focusProductId`), so "how long does it take?" is answered about that product.
+- **Leads.** If the customer then leaves their details, the lead records what they were
+  interested in (`Lead.interest`), shown on the Leads page and in the CSV export.
+- **Photos** are resized to a 1200-pixel WebP and stored in a public Supabase Storage bucket
+  (`product-images`, created on first use), in a folder per workspace. This needs `SUPABASE_URL`
+  and `SUPABASE_SERVICE_ROLE_KEY`; without them the form says so and products are saved without pictures.
+- **Unavailable** products stay in the list; the assistant tells customers they are not available.
+- Product text is treated like other knowledge: as data, never as instructions.
+
+Not built yet: creating products from an uploaded menu or pasted text (planned next), ordering and payment.
 
 ## Team, notifications, settings and plans
 

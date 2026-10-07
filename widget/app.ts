@@ -27,6 +27,18 @@ type Config = {
   previewOrigin: string | null;
 };
 type Role = "customer" | "assistant" | "agent";
+/** A product as the server sends it for a card (see ProductCard in src/server/products.ts). */
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  category: string | null;
+  price: number | null;
+  currency: string;
+  imageUrl: string | null;
+  url: string | null;
+  available: boolean;
+};
 type Locale = ChatLocale;
 
 const TEXT: Record<Locale, Record<string, string>> = {
@@ -51,6 +63,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "You are chatting with the assistant again",
     chatClosed: "This chat has ended. Send a message to start a new one.",
     poweredBy: "Powered by",
+    back: "Back to chat",
+    askAbout: "Ask about this",
+    interested: "I'm interested",
+    interestedIn: "I'm interested in {name}",
+    askingAbout: "Asking about",
+    clearProduct: "Stop asking about this",
+    unavailable: "Currently unavailable",
+    viewOnSite: "View on website",
+    viewDetails: "View details",
   },
   ar: {
     online: "متصل الآن",
@@ -73,6 +94,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "أنت تتحدث مع المساعد مرة أخرى",
     chatClosed: "انتهت هذه المحادثة. أرسل رسالة لبدء محادثة جديدة.",
     poweredBy: "بدعم من",
+    back: "العودة إلى المحادثة",
+    askAbout: "اسأل عنه",
+    interested: "أنا مهتم",
+    interestedIn: "أنا مهتم بـ {name}",
+    askingAbout: "تسأل عن",
+    clearProduct: "إيقاف السؤال عنه",
+    unavailable: "غير متاح حالياً",
+    viewOnSite: "عرض على الموقع",
+    viewDetails: "عرض التفاصيل",
   },
   fr: {
     online: "En ligne",
@@ -95,6 +125,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "Vous discutez de nouveau avec l'assistant",
     chatClosed: "Cette conversation est terminée. Envoyez un message pour en commencer une nouvelle.",
     poweredBy: "Propulsé par",
+    back: "Retour au chat",
+    askAbout: "Poser une question",
+    interested: "Ça m'intéresse",
+    interestedIn: "Je suis intéressé(e) par {name}",
+    askingAbout: "À propos de",
+    clearProduct: "Ne plus parler de ce produit",
+    unavailable: "Indisponible pour le moment",
+    viewOnSite: "Voir sur le site",
+    viewDetails: "Voir les détails",
   },
   hi: {
     online: "ऑनलाइन",
@@ -117,6 +156,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "आप फिर से सहायक से बात कर रहे हैं",
     chatClosed: "यह चैट समाप्त हो गई है। नई चैट शुरू करने के लिए संदेश भेजें।",
     poweredBy: "द्वारा संचालित",
+    back: "चैट पर वापस जाएँ",
+    askAbout: "इसके बारे में पूछें",
+    interested: "मुझे दिलचस्पी है",
+    interestedIn: "मुझे {name} में दिलचस्पी है",
+    askingAbout: "इस बारे में",
+    clearProduct: "इसके बारे में पूछना बंद करें",
+    unavailable: "फ़िलहाल उपलब्ध नहीं",
+    viewOnSite: "वेबसाइट पर देखें",
+    viewDetails: "विवरण देखें",
   },
   ur: {
     online: "آن لائن",
@@ -139,6 +187,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "آپ دوبارہ معاون سے بات کر رہے ہیں",
     chatClosed: "یہ چیٹ ختم ہو گئی ہے۔ نئی چیٹ شروع کرنے کے لیے پیغام بھیجیں۔",
     poweredBy: "پیشکش",
+    back: "چیٹ پر واپس جائیں",
+    askAbout: "اس کے بارے میں پوچھیں",
+    interested: "مجھے دلچسپی ہے",
+    interestedIn: "مجھے {name} میں دلچسپی ہے",
+    askingAbout: "اس بارے میں",
+    clearProduct: "اس کے بارے میں پوچھنا بند کریں",
+    unavailable: "فی الحال دستیاب نہیں",
+    viewOnSite: "ویب سائٹ پر دیکھیں",
+    viewDetails: "تفصیل دیکھیں",
   },
   ru: {
     online: "В сети",
@@ -161,6 +218,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
     returnedToAi: "Вы снова общаетесь с ассистентом",
     chatClosed: "Этот чат завершён. Отправьте сообщение, чтобы начать новый.",
     poweredBy: "Работает на",
+    back: "Назад в чат",
+    askAbout: "Спросить об этом",
+    interested: "Мне интересно",
+    interestedIn: "Меня интересует {name}",
+    askingAbout: "Вопрос о",
+    clearProduct: "Больше не спрашивать об этом",
+    unavailable: "Сейчас недоступно",
+    viewOnSite: "Открыть на сайте",
+    viewDetails: "Подробнее",
   },
 };
 
@@ -175,6 +241,9 @@ const ICONS = {
   send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 20 4l-5 16-3.500-6.500L4 12Z"/></svg>',
   bot: mark("i-mark"),
   person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>',
+  bag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5h5v5M19 5l-8 8M11 7H6v11h11v-5"/></svg>',
 };
 
 // ---------------------------------------------------------------- state
@@ -223,6 +292,8 @@ let open = config.preview; // the dashboard preview shows the window straight aw
 let busy = false;
 let needsForm = config.preChatForm && !conversationId;
 let humanRequested = false;
+/** The product the visitor opened and is asking about; sent along with their next messages. */
+let focusProduct: Product | null = null;
 
 // ---------------------------------------------------------------- DOM
 
@@ -244,6 +315,7 @@ const titleName = el("b");
 const titleStatus = el("span");
 const closeButton = el("button", "mw-close");
 const messages = el("div", "mw-messages");
+const detail = el("div", "mw-detail");
 const footer = el("div", "mw-footer");
 const credit = el("a", "mw-credit");
 const launcher = el("button", "mw-launcher");
@@ -255,7 +327,8 @@ launcher.innerHTML = ICONS.chat + ICONS.close;
 messages.setAttribute("aria-live", "polite");
 title.append(titleName, titleStatus);
 header.append(avatar, title, closeButton);
-panel.append(header, messages, footer);
+detail.hidden = true;
+panel.append(header, messages, detail, footer);
 if (config.poweredBy) {
   credit.href = config.poweredBy.url;
   credit.target = "_blank";
@@ -328,6 +401,131 @@ function addNote(text: string) {
   scrollToEnd();
 }
 
+// ---------------------------------------------------------------- product cards
+
+function priceText(product: Product): string {
+  if (product.price === null) return "";
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency: product.currency, minimumFractionDigits: Number.isInteger(product.price) ? 0 : 2 }).format(product.price);
+  } catch {
+    return `${product.currency} ${product.price}`; // a currency code the browser does not know
+  }
+}
+
+/** The product's photo, or a neutral tile when there is none (or it fails to load). */
+function productImage(product: Product, className: string): HTMLElement {
+  const frame = el("div", className);
+  const placeholder = () => {
+    frame.classList.add("empty");
+    frame.innerHTML = ICONS.bag;
+  };
+  if (product.imageUrl) {
+    const img = el("img");
+    img.src = product.imageUrl;
+    img.alt = "";
+    img.loading = "lazy";
+    img.onerror = placeholder;
+    frame.appendChild(img);
+  } else {
+    placeholder();
+  }
+  return frame;
+}
+
+/** A row of product cards under a reply. Each card opens the product. */
+function addProducts(products: Product[]) {
+  if (!products.length) return;
+  const row = el("div", "mw-cards");
+  for (const product of products) {
+    const card = el("button", "mw-card");
+    card.type = "button";
+    card.dataset.available = String(product.available);
+    const name = el("b", undefined, product.name);
+    name.dir = "auto";
+    const price = el("span", "price", product.available ? priceText(product) : t("unavailable"));
+    card.append(productImage(product, "mw-card-img"), name, price);
+    card.setAttribute("aria-label", `${product.name}. ${t("viewDetails")}`);
+    card.addEventListener("click", () => openProduct(product));
+    row.appendChild(card);
+  }
+  messages.appendChild(row);
+  scrollToEnd();
+}
+
+/** Show one product in full over the conversation. */
+function openProduct(product: Product) {
+  const back = el("button", "mw-detail-back");
+  back.type = "button";
+  back.innerHTML = ICONS.back;
+  back.appendChild(el("span", undefined, t("back")));
+  back.addEventListener("click", closeProduct);
+
+  const body = el("div", "mw-detail-body");
+  if (product.category) {
+    const category = el("span", "mw-detail-category", product.category);
+    category.dir = "auto";
+    body.appendChild(category);
+  }
+  const name = el("h2", undefined, product.name);
+  name.dir = "auto";
+  body.appendChild(name);
+  const price = priceText(product);
+  if (price) body.appendChild(el("p", "mw-detail-price", price));
+  if (!product.available) body.appendChild(el("p", "mw-detail-off", t("unavailable")));
+  if (product.description) {
+    const description = el("p", "mw-detail-text", product.description);
+    description.dir = "auto";
+    body.appendChild(description);
+  }
+  // Only ordinary web links: the address was typed by the business, but check anyway.
+  if (product.url && /^https?:\/\//i.test(product.url)) {
+    const link = el("a", "mw-detail-link");
+    link.href = product.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.innerHTML = ICONS.link;
+    link.prepend(el("span", undefined, t("viewOnSite")));
+    body.appendChild(link);
+  }
+
+  const scroller = el("div", "mw-detail-scroll");
+  scroller.append(productImage(product, "mw-detail-img"), body);
+
+  const actions = el("div", "mw-detail-actions");
+  const ask = el("button", "secondary", t("askAbout"));
+  ask.type = "button";
+  ask.addEventListener("click", () => {
+    focusProduct = product;
+    closeProduct();
+  });
+  actions.appendChild(ask);
+  if (product.available) {
+    const interested = el("button", "primary", t("interested"));
+    interested.type = "button";
+    interested.disabled = busy || needsForm;
+    interested.addEventListener("click", () => {
+      focusProduct = product;
+      closeProduct();
+      void sendMessage(t("interestedIn").replace("{name}", product.name));
+    });
+    actions.appendChild(interested);
+  }
+
+  detail.replaceChildren(back, scroller, actions);
+  detail.hidden = false;
+  panel.dataset.detail = "true";
+  back.focus();
+}
+
+function closeProduct() {
+  detail.hidden = true;
+  detail.replaceChildren();
+  delete panel.dataset.detail;
+  renderFooter();
+  scrollToEnd();
+  footer.querySelector<HTMLElement>("textarea")?.focus();
+}
+
 const greetingBubble = addMessage("assistant", config.greeting);
 
 // ---------------------------------------------------------------- server calls
@@ -371,7 +569,7 @@ async function sync() {
   try {
     const res = await api("session", {});
     if (!res.ok) return;
-    const data = (await res.json()) as { conversationId: string | null; status: string | null; messages: { id: string; role: Role; content: string }[] };
+    const data = (await res.json()) as { conversationId: string | null; status: string | null; messages: { id: string; role: Role; content: string; products?: Product[] }[] };
     if (!data.conversationId) {
       // Unknown or closed: start fresh next time.
       conversationId = undefined;
@@ -385,6 +583,7 @@ async function sync() {
     for (const m of data.messages) {
       seen.add(m.id);
       addMessage(m.role, m.content);
+      addProducts(m.products ?? []);
     }
     humanRequested = data.status === "needs_human" || data.status === "human";
     renderFooter();
@@ -479,7 +678,7 @@ async function sendMessage(text: string) {
 
   let received = "";
   try {
-    const res = await api("message", { text });
+    const res = await api("message", { text, productId: focusProduct?.id });
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
       reply.remove();
@@ -497,11 +696,13 @@ async function sendMessage(text: string) {
         reply.textContent = received;
         scrollToEnd();
       } else if (event === "done") {
-        const done = data as { needsHuman: boolean; paused: boolean };
+        const done = data as { needsHuman: boolean; paused: boolean; products?: Product[] };
         if (done.paused) {
           // An agent has taken over: the AI stays silent.
           reply.remove();
           addNote(t("paused"));
+        } else {
+          addProducts(done.products ?? []);
         }
       } else if (event === "error") {
         if (!received) reply.remove();
@@ -643,7 +844,26 @@ function renderFooter() {
     void sendMessage(text);
   });
   composer.append(input, send);
-  footer.append(human, composer);
+  footer.append(human);
+  if (focusProduct) {
+    // Shows which product the next question is about, with a way to drop it.
+    const chip = el("div", "mw-focus");
+    const label = el("span", undefined, `${t("askingAbout")}: `);
+    const name = el("b", undefined, focusProduct.name);
+    name.dir = "auto";
+    label.appendChild(name);
+    const clear = el("button");
+    clear.type = "button";
+    clear.innerHTML = ICONS.close;
+    clear.setAttribute("aria-label", t("clearProduct"));
+    clear.addEventListener("click", () => {
+      focusProduct = null;
+      renderFooter();
+    });
+    chip.append(label, clear);
+    footer.appendChild(chip);
+  }
+  footer.appendChild(composer);
   // Keep the cursor in the box between messages (not on first load, to avoid stealing focus from the host page).
   if (open && !busy && document.hasFocus()) input.focus();
 }
@@ -672,7 +892,10 @@ function setOpen(value: boolean) {
 launcher.addEventListener("click", () => setOpen(!open));
 closeButton.addEventListener("click", () => setOpen(false));
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && open && !config.preview) setOpen(false);
+  if (event.key !== "Escape" || !open) return;
+  // Escape leaves an open product first, then the chat.
+  if (!detail.hidden) closeProduct();
+  else if (!config.preview) setOpen(false);
 });
 
 window.addEventListener("message", (event) => {

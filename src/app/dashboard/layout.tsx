@@ -8,6 +8,7 @@ import { WorkspaceSwitcher } from "@/components/dashboard/workspace-switcher";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Meter } from "@/components/meter";
 import { Button } from "@/components/ui/button";
+import { catalogVariant } from "@/lib/catalog";
 import { signOutAction } from "@/server/actions/auth";
 import { requireWorkspace } from "@/server/auth/session";
 import { getAiMessagesUsed } from "@/server/limits/usage";
@@ -32,7 +33,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
         <div className="relative flex flex-1 flex-col gap-2 overflow-y-auto">
           <p className="px-3 text-[11px] font-semibold tracking-wider text-sidebar-foreground/40 uppercase">{t("nav.menu")}</p>
-          <SidebarNav />
+          <SidebarNav catalog={catalogVariant(workspace.industry)} />
         </div>
 
         {/* Monthly usage at a glance */}
@@ -101,7 +102,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
           )}
           {children}
         </main>
-        <SidebarNav variant="bottom" />
+        <SidebarNav variant="bottom" catalog={catalogVariant(workspace.industry)} />
       </div>
     </div>
   );

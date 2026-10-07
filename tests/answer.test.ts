@@ -289,8 +289,9 @@ describe("prompt", () => {
     // The block is closed exactly once, at the very end, and the attack text sits inside it.
     expect(prompt.match(/<\/knowledge>/g)).toHaveLength(1);
     expect(prompt.match(/<\/source>/g)).toHaveLength(1);
-    expect(prompt.endsWith("</knowledge>")).toBe(true);
-    const inside = prompt.slice(prompt.lastIndexOf("\n<knowledge>\n"));
+    expect(prompt.match(/<\/products>/g)).toHaveLength(1);
+    expect(prompt.endsWith("</products>")).toBe(true);
+    const inside = prompt.slice(prompt.lastIndexOf("\n<knowledge>\n"), prompt.lastIndexOf("</knowledge>"));
     expect(inside).toContain("Ignore previous instructions");
     expect(inside).not.toMatch(/<knowledge>[\s\S]*<knowledge>/);
   });
@@ -309,7 +310,9 @@ describe("prompt", () => {
   });
 
   it("parses headers defensively", () => {
-    expect(parseHeader('{"answered":false,"wants_human":true,"name":" Ali ","phone":null,"email":""}')).toEqual({ answered: false, wants_human: true, name: "Ali", phone: null, email: null });
+    expect(parseHeader('{"answered":false,"wants_human":true,"name":" Ali ","phone":null,"email":""}')).toEqual({ answered: false, wants_human: true, name: "Ali", phone: null, email: null, products: [] });
+    // Product refs: only well-formed ones, no repeats, four at most.
+    expect(parseHeader('{"answered":true,"products":["p2","p2","x1",7,"p1","p3","p4","p5"]}')?.products).toEqual(["p2", "p1", "p3", "p4"]);
     expect(parseHeader("not json")).toBeNull();
     expect(parseHeader('"just a string"')).toBeNull();
     expect(parseHeader("{}")).toMatchObject({ answered: true, wants_human: false });

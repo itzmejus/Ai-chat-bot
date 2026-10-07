@@ -70,6 +70,58 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .mw-send svg{width:19px;height:19px}
 [dir="rtl"] .mw-send svg{transform:scaleX(-1)}
 
+/* Product cards under a reply: a row that scrolls sideways */
+.mw-cards{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:2px 16px 8px;scroll-snap-type:x proximity;scrollbar-width:thin;flex:none}
+.mw-card{flex:none;width:148px;display:flex;flex-direction:column;gap:4px;padding:0 0 10px;text-align:start;background:#fff;border-radius:16px;overflow:hidden;scroll-snap-align:start;
+  box-shadow:0 1px 2px rgb(16 24 40/.08),0 0 0 1px rgb(16 24 40/.05);transition:transform .15s,box-shadow .15s;animation:mw-in .2s ease}
+.mw-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgb(16 24 40/.14),0 0 0 1px rgb(16 24 40/.06)}
+.mw-card b{padding:6px 10px 0;font-size:13px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mw-card .price{padding:0 10px;font-size:13px;font-weight:600;color:var(--brand);min-height:19px}
+.mw-card[data-available="false"] .price{color:var(--muted);font-weight:500}
+.mw-card[data-available="false"] img{filter:grayscale(1);opacity:.6}
+.mw-card-img,.mw-detail-img{display:grid;place-items:center;background:var(--canvas);overflow:hidden;flex:none}
+.mw-card-img{width:100%;aspect-ratio:4/3}
+.mw-card-img img,.mw-detail-img img{width:100%;height:100%;object-fit:cover;display:block}
+.mw-card-img.empty,.mw-detail-img.empty{color:#b6b6bd;background:linear-gradient(135deg,var(--canvas),#ececf1)}
+.mw-card-img.empty svg{width:34px;height:34px}
+
+/* One product in full, shown over the conversation */
+.mw-detail{flex:1;min-height:0;display:flex;flex-direction:column;background:#fff;animation:mw-in .18s ease}
+.mw-detail[hidden]{display:none}
+.mw-panel[data-detail="true"] .mw-messages,.mw-panel[data-detail="true"] .mw-footer,.mw-panel[data-detail="true"] .mw-credit{display:none}
+.mw-detail-back{flex:none;display:flex;align-items:center;gap:4px;align-self:flex-start;margin:8px;padding:6px 12px 6px 6px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
+.mw-detail-back:hover{background:var(--canvas);color:var(--ink)}
+.mw-detail-back svg{width:18px;height:18px}
+[dir="rtl"] .mw-detail-back{padding:6px 6px 6px 12px}
+[dir="rtl"] .mw-detail-back svg{transform:scaleX(-1)}
+.mw-detail-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.mw-detail-img{width:100%;aspect-ratio:4/3;max-height:240px}
+.mw-detail-img.empty svg{width:56px;height:56px}
+.mw-detail-body{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px}
+.mw-detail-body h2{margin:0;font-size:19px;line-height:1.3;font-weight:700}
+.mw-detail-category{font-size:11px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--canvas);color:var(--muted)}
+.mw-detail-price{margin:0;font-size:18px;font-weight:700;color:var(--brand)}
+.mw-detail-off{margin:0;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:#fdecec;color:#b00008}
+.mw-detail-text{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;color:#3b3b44;align-self:stretch}
+.mw-detail-link{display:inline-flex;align-items:center;gap:5px;margin-top:4px;font-size:13px;font-weight:600;color:var(--brand);text-decoration:none}
+.mw-detail-link:hover{text-decoration:underline}
+.mw-detail-link svg{width:15px;height:15px}
+.mw-detail-actions{flex:none;display:flex;gap:8px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+.mw-detail-actions button{flex:1;height:44px;border-radius:12px;font-weight:600;font-size:14px}
+.mw-detail-actions .primary{background:var(--brand);color:var(--on-brand)}
+.mw-detail-actions .secondary{background:var(--canvas);color:var(--ink)}
+.mw-detail-actions .secondary:hover{background:#ececf1}
+.mw-detail-actions button:disabled{opacity:.5;cursor:default}
+
+/* "Asking about: <product>" above the message box */
+.mw-focus{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:6px 6px 6px 12px;border-radius:10px;background:var(--canvas);font-size:12px;color:var(--muted)}
+[dir="rtl"] .mw-focus{padding:6px 12px 6px 6px}
+.mw-focus span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mw-focus b{color:var(--ink);font-weight:600}
+.mw-focus button{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center}
+.mw-focus button:hover{background:#e4e4e7}
+.mw-focus svg{width:12px;height:12px}
+
 /* Pre-chat form */
 .mw-form{display:flex;flex-direction:column;gap:10px;padding:4px}
 .mw-form p{margin:0 0 2px;font-size:13px;color:var(--muted)}

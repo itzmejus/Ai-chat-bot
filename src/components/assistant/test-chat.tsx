@@ -14,6 +14,8 @@ type Meta = {
   needsHuman: boolean;
   skipped: string | null;
   sources: { title: string; url: string | null; similarity: number }[];
+  /** Names of the products the widget would show as cards. */
+  products?: string[];
 };
 type ChatMessage = { id: number; role: "customer" | "assistant"; text: string; meta?: Meta; error?: boolean };
 
@@ -177,6 +179,11 @@ function MetaRow({ meta }: { meta: Meta }) {
         <Badge variant="outline" className="bg-background">
           {t("needsHuman")}
         </Badge>
+      )}
+      {meta.products && meta.products.length > 0 && (
+        <span className="truncate" dir="auto">
+          {t("productsShown")}: {meta.products.join(", ")}
+        </span>
       )}
       {meta.answered && meta.sources.length > 0 && (
         <span className="truncate" dir="auto">

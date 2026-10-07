@@ -17,6 +17,7 @@ export type LeadRow = {
   name: string | null;
   phone: string | null;
   email: string | null;
+  interest: string | null;
   status: Status;
   conversationId: string | null;
   createdAt: Date;
@@ -158,6 +159,11 @@ export function LeadsTable({ leads, counts, status, search }: { leads: LeadRow[]
                     <p className="truncate font-semibold" dir="auto">
                       {label(lead)}
                     </p>
+                    {lead.interest && (
+                      <p className="truncate text-xs text-primary" dir="auto" title={`${t("colInterest")}: ${lead.interest}`}>
+                        {t("colInterest")}: {lead.interest}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground">{date(lead.createdAt)}</p>
                   </div>
                   <StatusSelect lead={lead} />
@@ -206,8 +212,15 @@ export function LeadsTable({ leads, counts, status, search }: { leads: LeadRow[]
                       <div className="flex min-w-0 items-center gap-3">
                         <Avatar name={label(lead)} />
                         {/* React escapes this text, so a visitor-supplied name cannot inject markup. */}
-                        <span className="truncate font-medium" dir="auto" title={lead.name ?? undefined}>
-                          {lead.name ?? <span className="text-muted-foreground">–</span>}
+                        <span className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium" dir="auto" title={lead.name ?? undefined}>
+                            {lead.name ?? <span className="text-muted-foreground">–</span>}
+                          </span>
+                          {lead.interest && (
+                            <span className="truncate text-xs text-primary" dir="auto" title={`${t("colInterest")}: ${lead.interest}`}>
+                              {t("colInterest")}: {lead.interest}
+                            </span>
+                          )}
                         </span>
                       </div>
                     </td>

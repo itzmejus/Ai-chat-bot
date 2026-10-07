@@ -55,6 +55,8 @@ the server, so new migrations are applied on every deploy.
 | `WIDGET_URL` | `https://chat.siteselo.com` |
 | `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
 | `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
+| `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
+| `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from the same page; a secret |
 | `EMAIL_SERVER_HOST`, `EMAIL_SERVER_PORT`, `EMAIL_SERVER_USER`, `EMAIL_SERVER_PASSWORD`, `EMAIL_FROM` | see step 4; optional |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | see step 5; optional |
 
@@ -205,6 +207,7 @@ To remove it, delete the "Bright Smile Dental Clinic" workspace and that user fr
 | Container exits at start with `P1001` (cannot reach database) | Wrong `DIRECT_URL`, or the Supabase project is paused (free projects pause after a week idle). An occasional `P1001` on the session pooler is transient; redeploy. |
 | Login works locally but loops in production | `NEXTAUTH_URL` / `APP_URL` do not match the address in the browser, including `https` and the exact hostname. |
 | Widget shows nothing on the customer's site | The site's domain is not under Allowed websites, or `WIDGET_URL` does not match the hostname in the embed code. The browser console shows a `frame-ancestors` message in the first case. |
+| Product photos cannot be uploaded | `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY` is missing or wrong. The product form says when storage is not set up; the server log shows the reason a refused upload was refused. |
 | Sources stay on *Processing* | The service was asleep or restarted (use a paid instance), or `WORKER_MODE=external` is set without a worker running. Press Re-sync after fixing. |
 | Sources fail with an OpenAI key error | `OPENAI_API_KEY` is missing or has no credit. |
 | Customers get "Our assistant is unavailable" | The workspace used up its plan's monthly AI messages; the dashboard shows a banner. Change the plan (`Workspace.planId`) until billing is built. |

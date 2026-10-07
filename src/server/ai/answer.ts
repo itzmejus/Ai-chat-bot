@@ -3,9 +3,10 @@ import { saveQuestionEmbedding } from "@/server/analytics";
 import { tenantDb } from "@/server/db/tenant";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
 import { notifyLeadCaptured, notifyNeedsHuman } from "@/server/notifications";
+import { formatPrice, getProducts, searchProducts, toCard, type ProductCard, type ProductRow } from "@/server/products";
 import { publish } from "@/server/realtime/bus";
 import { embedTexts, streamChat } from "./openai";
-import { buildMessages, buildSystemPrompt, parseHeader, type ReplyHeader } from "./prompt";
+import { buildMessages, buildSystemPrompt, parseHeader, type PromptProduct, type ReplyHeader } from "./prompt";
 
 /**
  * The AI answering service.
@@ -28,6 +29,8 @@ export type AnswerResult = {
   skipped: null | "human_takeover" | "usage_limit" | "error";
   leadCaptured: boolean;
   sources: { title: string; url: string | null; similarity: number }[];
+  /** Products to show as cards under the reply. */
+  products: ProductCard[];
 };
 
 export type AnswerEvent = { type: "token"; text: string } | { type: "done"; result: AnswerResult };
@@ -57,9 +60,8 @@ function fallbackReply(kind: "usage_limit" | "error", customerText: string, w: {
  * the question, tempered by how close the best retrieved chunk actually was.
  * (With text-embedding-3-small, on-topic matches score roughly 0.35–0.75.)
  */
-function confidenceScore(header: ReplyHeader, chunks: ChunkMatch[]): number {
+function confidenceScore(header: ReplyHeader, top: number): number {
   if (!header.answered) return 0.15;
-  const top = chunks[0]?.similarity ?? 0;
   return Math.round(Math.min(0.95, Math.max(0.4, 0.5 + (top - 0.25) * 1.25)) * 100) / 100;
 }
 
@@ -67,6 +69,8 @@ export async function* answerMessage(input: {
   workspaceId: string;
   conversationId: string;
   text: string;
+  /** The product the customer has open in the widget when sending this message, if any. */
+  productId?: string;
 }): AsyncGenerator<AnswerEvent> {
   const { workspaceId, conversationId } = input;
   const text = input.text.trim().slice(0, MAX_MESSAGE_CHARS);
@@ -102,8 +106,19 @@ export async function* answerMessage(input: {
   await announce(customerMessage.id);
 
   const base: AnswerResult = {
-    reply: null, messageId: null, confidence: 0, answered: false, needsHuman: false, skipped: null, leadCaptured: false, sources: [],
+    reply: null, messageId: null, confidence: 0, answered: false, needsHuman: false, skipped: null, leadCaptured: false, sources: [], products: [],
   };
+
+  // The product the customer is looking at. It stays the subject of the conversation until they open another.
+  // tenantDb means an id from another workspace is simply not found.
+  let focus: ProductRow | null = null;
+  const focusId = input.productId ?? conversation.focusProductId;
+  if (focusId) {
+    [focus = null] = await getProducts(db, [focusId]);
+    if (focus && input.productId && conversation.focusProductId !== focus.id) {
+      await db.conversation.update({ where: { id: conversationId }, data: { focusProductId: focus.id } });
+    }
+  }
 
   // Human takeover: an agent is handling this conversation, so the AI stays silent.
   if (conversation.status === "human") {
@@ -133,6 +148,9 @@ export async function* answerMessage(input: {
   }
 
   let chunks: ChunkMatch[] = [];
+  /** Products offered to the model this turn, keyed by the short ref it sees. */
+  const offered = new Map<string, ProductRow>();
+  let topProductSimilarity = 0;
   let header: ReplyHeader | null = null;
   let reply = "";
 
@@ -141,8 +159,9 @@ export async function* answerMessage(input: {
     const previous = [...history].reverse().find((m) => m.role === "customer")?.content;
     // One API call embeds both the retrieval query and the bare question.
     const embeddings = await embedTexts(previous ? [`${previous}\n${text}`, text] : [text]);
-    const [found] = await Promise.all([
+    const [found, matches] = await Promise.all([
       searchChunks(workspaceId, embeddings[0]),
+      searchProducts(workspaceId, embeddings[0]),
       // Keep the question's own embedding so the overview can group similar questions. It runs
       // alongside the search (no added wait) and, being analytics only, a failure here must
       // never stop the customer getting an answer.
@@ -151,9 +170,20 @@ export async function* answerMessage(input: {
       ),
     ]);
     chunks = found.sort((a, b) => b.similarity - a.similarity);
+    topProductSimilarity = matches[0]?.similarity ?? 0;
+    // The open product always comes first, then the closest matches.
+    for (const product of [...(focus ? [focus] : []), ...matches.filter((m) => m.id !== focus?.id)]) offered.set(`p${offered.size + 1}`, product);
+    const promptProducts: PromptProduct[] = [...offered].map(([ref, p]) => ({
+      ref,
+      name: p.name,
+      description: p.description,
+      category: p.category,
+      price: formatPrice(p.priceMinor, p.currency),
+      available: p.available,
+    }));
 
     const assistant = workspace.assistantSettings ?? { assistantName: "Assistant", tone: "friendly" as const, extraInstructions: "" };
-    const messages = buildMessages(buildSystemPrompt(workspace, assistant, chunks, text), history, text);
+    const messages = buildMessages(buildSystemPrompt(workspace, assistant, chunks, text, promptProducts, focus ? "p1" : null), history, text);
 
     // The model's output starts with the JSON header; everything after it is the reply.
     let pending = "";
@@ -208,12 +238,14 @@ export async function* answerMessage(input: {
   }
 
   // No valid header: fall back to retrieval strength alone.
-  header ??= { answered: (chunks[0]?.similarity ?? 0) >= 0.3, wants_human: false, name: null, phone: null, email: null };
-  const confidence = confidenceScore(header, chunks);
+  header ??= { answered: (chunks[0]?.similarity ?? 0) >= 0.3, wants_human: false, name: null, phone: null, email: null, products: [] };
+  // Only refs that were actually offered count; anything else the model wrote is dropped.
+  const shown = header.products.flatMap((ref) => offered.get(ref) ?? []);
+  const confidence = confidenceScore(header, Math.max(chunks[0]?.similarity ?? 0, shown.length ? topProductSimilarity : 0));
   const needsHuman = header.wants_human || !header.answered;
 
   const message = await db.message.create({
-    data: { workspaceId, conversationId, role: "assistant", content: reply, confidence, answered: header.answered },
+    data: { workspaceId, conversationId, role: "assistant", content: reply, confidence, answered: header.answered, productIds: shown.map((p) => p.id) },
   });
   // Mark the question itself too, so "unanswered questions" can be listed without pairing rows.
   await db.message.update({ where: { id: customerMessage.id }, data: { answered: header.answered } });
@@ -221,7 +253,8 @@ export async function* answerMessage(input: {
   // Lead capture: contact details the customer has shared. One lead per conversation, updated as more arrives.
   let leadCaptured = false;
   if (!conversation.isTest && (header.phone || header.email)) {
-    const details = { name: header.name ?? undefined, phone: header.phone ?? undefined, email: header.email ?? undefined };
+    // The open product is recorded as what the lead is interested in.
+    const details = { name: header.name ?? undefined, phone: header.phone ?? undefined, email: header.email ?? undefined, interest: focus?.name };
     const existing = await db.lead.findFirst({ where: { conversationId }, select: { id: true } });
     if (existing) await db.lead.update({ where: { id: existing.id }, data: details });
     else {
@@ -249,6 +282,7 @@ export async function* answerMessage(input: {
     result: {
       reply, messageId: message.id, confidence, answered: header.answered, needsHuman, skipped: null, leadCaptured,
       sources: chunks.slice(0, 3).map((c) => ({ title: c.sourceTitle, url: c.url, similarity: Math.round(c.similarity * 100) / 100 })),
+      products: shown.map(toCard),
     },
   };
 }

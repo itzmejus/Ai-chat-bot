@@ -15,12 +15,14 @@ const bodySchema = z.object({
   visitorId: visitorIdSchema,
   conversationId: conversationIdSchema.optional(),
   text: z.string().trim().min(1).max(2000),
+  /** The product the visitor has open, when they ask about it. */
+  productId: z.string().min(1).max(64).optional(),
 });
 
 /**
  * POST /api/widget/message — a customer message from the web widget.
  * Streams the assistant's reply as Server-Sent Events:
- *   conversation {id} → token {text} … → done {needsHuman, paused}
+ *   conversation {id} → token {text} … → done {needsHuman, paused, products}
  * This route only handles transport and abuse limits; the answer itself comes
  * from the shared answering service.
  */
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
 
   const parsed = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return errorJson("invalid", 400);
-  const { visitorId, text } = parsed.data;
+  const { visitorId, text, productId } = parsed.data;
   const { db, workspaceId, preview } = widget;
 
   if (!(await chatRateLimitOk(workspaceId, visitorId, clientIp(request)))) return errorJson("rate_limited", 429);
@@ -46,9 +48,9 @@ export async function POST(request: Request) {
 
   return sseResponse(async (send) => {
     send("conversation", { id: conversationId });
-    for await (const event of answerMessage({ workspaceId, conversationId, text })) {
+    for await (const event of answerMessage({ workspaceId, conversationId, text, productId })) {
       if (event.type === "token") send("token", { text: event.text });
-      else send("done", { needsHuman: event.result.needsHuman, paused: event.result.skipped === "human_takeover" });
+      else send("done", { needsHuman: event.result.needsHuman, paused: event.result.skipped === "human_takeover", products: event.result.products });
     }
   }, request);
 }

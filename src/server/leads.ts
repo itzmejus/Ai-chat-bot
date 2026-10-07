@@ -24,7 +24,7 @@ export function listLeads(db: TenantDb, filter: LeadFilter = {}, limit = 200) {
     },
     orderBy: { createdAt: "desc" },
     take: limit,
-    select: { id: true, name: true, phone: true, email: true, status: true, conversationId: true, createdAt: true },
+    select: { id: true, name: true, phone: true, email: true, interest: true, status: true, conversationId: true, createdAt: true },
   });
 }
 
@@ -55,9 +55,9 @@ export function leadsToCsv(
   leads: Awaited<ReturnType<typeof listLeads>>,
   conversationUrl: (conversationId: string) => string,
 ): string {
-  const header = ["Name", "Phone", "Email", "Status", "Date", "Conversation"];
+  const header = ["Name", "Phone", "Email", "Interested in", "Status", "Date", "Conversation"];
   const rows = leads.map((lead) =>
-    [lead.name, lead.phone, lead.email, lead.status, lead.createdAt.toISOString(), lead.conversationId ? conversationUrl(lead.conversationId) : ""]
+    [lead.name, lead.phone, lead.email, lead.interest, lead.status, lead.createdAt.toISOString(), lead.conversationId ? conversationUrl(lead.conversationId) : ""]
       .map(csvCell)
       .join(","),
   );

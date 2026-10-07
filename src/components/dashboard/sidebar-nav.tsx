@@ -1,10 +1,11 @@
 "use client";
 
-import { BookOpen, Ellipsis, Inbox, LayoutDashboard, MessageSquareCode, Settings, UserPlus, Users, X, type LucideIcon } from "lucide-react";
+import { BookOpen, Ellipsis, Inbox, LayoutDashboard, MessageSquareCode, Settings, ShoppingBag, UserPlus, Users, X, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import type { CatalogVariant } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
 const NAV: { href: string; key: string; icon: LucideIcon }[] = [
@@ -12,6 +13,7 @@ const NAV: { href: string; key: string; icon: LucideIcon }[] = [
   { href: "/dashboard/inbox", key: "inbox", icon: Inbox },
   { href: "/dashboard/leads", key: "leads", icon: UserPlus },
   { href: "/dashboard/knowledge", key: "knowledge", icon: BookOpen },
+  { href: "/dashboard/products", key: "products", icon: ShoppingBag },
   { href: "/dashboard/widget", key: "widget", icon: MessageSquareCode },
   { href: "/dashboard/team", key: "team", icon: Users },
   { href: "/dashboard/settings", key: "settings", icon: Settings },
@@ -24,9 +26,15 @@ const BOTTOM_PRIMARY = 4;
  * `bottom` is the app-style bar fixed to the bottom of the screen (phones), with
  * the less-used sections behind a "More" sheet.
  */
-export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bottom" }) {
+export function SidebarNav({ variant = "sidebar", catalog = "products" }: { variant?: "sidebar" | "bottom"; catalog?: CatalogVariant }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  // The products section is named after what this kind of business sells (products, services, menu).
+  const label = (key: string) => (key === "products" ? t(`catalog.${catalog}`) : t(key));
+  const shortLabel = (key: string) => {
+    if (key === "products") return t.has(`shortCatalog.${catalog}`) ? t(`shortCatalog.${catalog}`) : label(key);
+    return t.has(`short.${key}`) ? t(`short.${key}`) : t(key);
+  };
   const [moreOpen, setMoreOpen] = useState(false);
   const isActive = (href: string) => (href === "/dashboard" ? pathname === href : pathname.startsWith(href));
 
@@ -80,7 +88,7 @@ export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bot
                         <span className={cn("flex size-10 items-center justify-center rounded-xl", active ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
                           <Icon className="size-5" />
                         </span>
-                        {t(key)}
+                        {label(key)}
                       </Link>
                     </li>
                   );
@@ -103,7 +111,7 @@ export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bot
                     <Icon className="size-5" strokeWidth={active ? 2.4 : 2} />
                   </span>
                   {/* Shorter labels where the full one would not fit under an icon */}
-                  <span className="max-w-full truncate">{t.has(`short.${key}`) ? t(`short.${key}`) : t(key)}</span>
+                  <span className="max-w-full truncate">{shortLabel(key)}</span>
                 </Link>
               );
             })}
@@ -136,7 +144,7 @@ export function SidebarNav({ variant = "sidebar" }: { variant?: "sidebar" | "bot
             {/* Accent bar marking the current page */}
             {active && <span className="absolute inset-y-2 start-0 w-[3px] rounded-full bg-primary" aria-hidden />}
             <Icon className={cn("size-[18px]", active && "text-[#fca5a5]")} />
-            {t(key)}
+            {label(key)}
           </Link>
         );
       })}

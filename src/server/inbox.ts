@@ -100,7 +100,7 @@ export async function getConversation(scope: Scope, id: string) {
       messages: {
         orderBy: { createdAt: "asc" },
         take: 500,
-        select: { id: true, role: true, content: true, confidence: true, answered: true, createdAt: true, author: { select: { name: true, email: true } } },
+        select: { id: true, role: true, content: true, confidence: true, answered: true, productIds: true, createdAt: true, author: { select: { name: true, email: true } } },
       },
     },
   });
@@ -114,8 +114,18 @@ export async function getConversation(scope: Scope, id: string) {
   const assignedAgent = conversation.assignedAgentId
     ? await db.membership.findFirst({ where: { userId: conversation.assignedAgentId }, select: { user: { select: { name: true, email: true } } } })
     : null;
-  const { leads, ...rest } = conversation;
-  return { ...rest, unread: false, lead: leads[0] ?? null, assignedAgent: assignedAgent?.user ?? null };
+  // Names of the products shown as cards under each reply (deleted products are left out).
+  const shownIds = [...new Set(conversation.messages.flatMap((m) => m.productIds))];
+  const names = new Map(shownIds.length ? (await db.product.findMany({ where: { id: { in: shownIds } }, select: { id: true, name: true } })).map((p) => [p.id, p.name]) : []);
+
+  const { leads, messages, ...rest } = conversation;
+  return {
+    ...rest,
+    messages: messages.map(({ productIds, ...m }) => ({ ...m, products: productIds.flatMap((id) => names.get(id) ?? []) })),
+    unread: false,
+    lead: leads[0] ?? null,
+    assignedAgent: assignedAgent?.user ?? null,
+  };
 }
 
 async function requireConversation({ db }: Scope, id: string) {

@@ -45,6 +45,8 @@ type Message = {
   content: string;
   confidence: number | null;
   answered: boolean | null;
+  /** Names of the products shown as cards under this reply. */
+  products?: string[];
   createdAt: string;
   author: { name: string | null; email: string } | null;
 };
@@ -629,6 +631,16 @@ function MessageRow({ message, time }: { message: Message; time: string }) {
       >
         {message.content}
       </p>
+      {message.products && message.products.length > 0 && (
+        <p className="flex max-w-full flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+          {t("productsShown")}:
+          {message.products.map((name) => (
+            <span key={name} dir="auto" className="max-w-48 truncate rounded-full bg-accent px-2 py-0.5 font-medium text-accent-foreground">
+              {name}
+            </span>
+          ))}
+        </p>
+      )}
       {message.role === "assistant" && message.answered === false && (
         <span className="rounded-full bg-[#fff1d6] px-2 py-0.5 text-[11px] font-medium text-[#9a5b00]">{t("notInKb")}</span>
       )}

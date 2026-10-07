@@ -134,6 +134,7 @@ model Workspace {
   conversations        Conversation[]
   messages             Message[]
   leads                Lead[]
+  products             Product[]
   usage                UsageCounter[]
 }
 
@@ -249,6 +250,8 @@ model Conversation {
   status          ConversationStatus @default(ai)
   assignedAgentId String?
   unread          Boolean            @default(true)
+  // The product the customer opened in the widget and is asking about, if any.
+  focusProductId  String?
   isTest          Boolean            @default(false) // "Test your assistant" chats; excluded from stats
   lastMessageAt   DateTime           @default(now())
   createdAt       DateTime           @default(now())
@@ -273,6 +276,8 @@ model Message {
   // Customer messages only: a compact embedding of the question, used to group similar
   // questions for the "most asked" and "unanswered" lists on the overview.
   questionEmbedding Unsupported("vector(256)")?
+  // Assistant messages only: products shown as cards under the reply.
+  productIds        String[]                    @default([])
   createdAt         DateTime                    @default(now())
 
   workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -290,11 +295,36 @@ model Lead {
   name           String?
   phone          String?
   email          String?
+  // The product the customer was interested in: its name at the time (kept if the product is deleted).
+  interest       String?
   status         LeadStatus @default(new)
   createdAt      DateTime   @default(now())
 
   workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+}
+
+// Something the business sells: a product, a service or a menu item. Shown as a card in the
+// chat; the assistant answers questions about it from these fields.
+model Product {
+  id          String                       @id @default(cuid())
+  workspaceId String
+  name        String
+  description String                       @default("")
+  category    String?
+  priceMinor  Int? // price in the smallest unit (fils), so 49.50 is stored as 4950; null = no price shown
+  currency    String                       @default("AED")
+  imageUrl    String? // public address of the photo
+  imagePath   String? // where the photo lives in storage, so it can be deleted with the product
+  url         String? // optional link to the product's own page
+  available   Boolean                      @default(true)
+  embedding   Unsupported("vector(1536)")?
+  createdAt   DateTime                     @default(now())
+  updatedAt   DateTime                     @default(now()) @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, createdAt])
 }

@@ -35,6 +35,9 @@ describe("demo seed", () => {
     expect(sources.filter((s) => s.type === "faq" && /[؀-ۿ]/.test(s.title)).length).toBeGreaterThanOrEqual(5);
     expect(sources.filter((s) => s.type === "faq" && /^[A-Za-z]/.test(s.title)).length).toBeGreaterThanOrEqual(5);
     expect(sources.some((s) => s.type === "notes")).toBe(true);
+    // Services the assistant can show as cards.
+    expect(await db.product.count()).toBe(result.products);
+    expect(result.products).toBeGreaterThanOrEqual(5);
     const found = await searchChunks(result.workspaceId, Array(1536).fill(0.01), 50);
     expect(found.length).toBeGreaterThanOrEqual(sources.length);
 

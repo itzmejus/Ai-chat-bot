@@ -28,6 +28,7 @@ const TENANT_MODELS = new Set([
   "Conversation",
   "Message",
   "Lead",
+  "Product",
   "UsageCounter",
 ]);
 

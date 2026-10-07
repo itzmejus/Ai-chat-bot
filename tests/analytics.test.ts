@@ -222,13 +222,13 @@ describe("leads", () => {
     expect(csvCell("@cmd")).toBe('"\'@cmd"');
 
     const csv = leadsToCsv(
-      [{ id: "1", name: "فاطمة", phone: "+971501234567", email: null, status: "new", conversationId: "c1", createdAt: new Date("2026-10-02T08:00:00Z") }],
+      [{ id: "1", name: "فاطمة", phone: "+971501234567", email: null, interest: "Laser whitening", status: "new", conversationId: "c1", createdAt: new Date("2026-10-02T08:00:00Z") }],
       (id) => `https://app.example.com/dashboard/inbox?c=${id}`,
     );
     expect(csv.startsWith("﻿")).toBe(true); // BOM so Excel reads Arabic correctly
     const [header, row] = csv.slice(1).trim().split("\r\n");
-    expect(header).toBe('"Name","Phone","Email","Status","Date","Conversation"');
-    expect(row).toBe('"فاطمة","\'+971501234567","","new","2026-10-02T08:00:00.000Z","https://app.example.com/dashboard/inbox?c=c1"');
+    expect(header).toBe('"Name","Phone","Email","Interested in","Status","Date","Conversation"');
+    expect(row).toBe('"فاطمة","\'+971501234567","","Laser whitening","new","2026-10-02T08:00:00.000Z","https://app.example.com/dashboard/inbox?c=c1"');
   });
 
   it("refuses the export without a login", async () => {

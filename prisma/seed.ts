@@ -28,6 +28,7 @@ Demo workspace ready: Bright Smile Dental Clinic
   Password    ${password}
 
   Knowledge   ${result.sources.ready} sources ready, ${result.sources.failed} failed
+  Services    ${result.products} shown as cards in the chat
   Chats       ${result.conversations} conversations, ${result.leads} leads
 
   Embed code  <script src="${WIDGET_URL}/widget.js" data-workspace="${DEMO_PUBLIC_KEY}" async></script>
