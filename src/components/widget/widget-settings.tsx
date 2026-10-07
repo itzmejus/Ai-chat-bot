@@ -18,6 +18,7 @@ export type WidgetSettingsValues = {
   logoUrl: string;
   position: "left" | "right";
   preChatForm: boolean;
+  showProducts: boolean;
   assistantName: string;
   greeting: string;
   allowedDomains: string[];
@@ -114,6 +115,7 @@ export function WidgetSettings({
           logoUrl: values.logoUrl.trim() || null,
           position: values.position,
           preChatForm: values.preChatForm,
+          showProducts: values.showProducts,
           assistantName: values.assistantName,
           greeting: values.greeting,
         },
@@ -287,6 +289,20 @@ export function WidgetSettings({
                   <span>
                     <span className="block text-sm font-medium">{t("widget.preChatForm")}</span>
                     <span className="block text-xs text-muted-foreground">{t("widget.preChatHint")}</span>
+                  </span>
+                </label>
+
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border/80 bg-background p-3.5">
+                  <input
+                    type="checkbox"
+                    name="showProducts"
+                    checked={values.showProducts}
+                    onChange={(e) => set("showProducts", e.target.checked)}
+                    className="mt-0.5 size-4 accent-primary"
+                  />
+                  <span>
+                    <span className="block text-sm font-medium">{t("widget.showProducts")}</span>
+                    <span className="block text-xs text-muted-foreground">{t("widget.showProductsHint")}</span>
                   </span>
                 </label>
               </CardContent>

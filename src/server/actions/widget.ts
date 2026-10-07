@@ -21,6 +21,7 @@ export async function saveWidgetSettingsAction(_prev: FormState, formData: FormD
     logoUrl: formData.get("logoUrl") ?? "",
     position: formData.get("position"),
     preChatForm: formData.get("preChatForm") === "on",
+    showProducts: formData.get("showProducts") === "on",
     assistantName: formData.get("assistantName"),
     greeting: formData.get("greeting"),
   });

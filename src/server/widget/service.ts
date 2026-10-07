@@ -15,6 +15,8 @@ export type WidgetConfig = {
   logoUrl: string | null;
   position: "left" | "right";
   preChatForm: boolean;
+  /** Show a few products under the greeting when the chat opens. */
+  showProducts: boolean;
   /** Language the business serves customers in: decides the widget's starting language. */
   language: "en" | "ar" | "both";
   /** Shown as a small "Powered by" line under the chat. */
@@ -43,6 +45,7 @@ export async function getWidgetWorkspace(publicKey: string) {
     logoUrl: workspace.widgetSettings?.logoUrl ?? null,
     position: workspace.widgetSettings?.position ?? "right",
     preChatForm: workspace.widgetSettings?.preChatForm ?? false,
+    showProducts: workspace.widgetSettings?.showProducts ?? true,
     language: workspace.defaultLanguage,
     poweredBy: { name: APP_NAME, url: SITE_URL },
   };

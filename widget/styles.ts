@@ -72,6 +72,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 
 /* Product cards under a reply: a row that scrolls sideways */
 .mw-cards{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:2px 16px 8px;scroll-snap-type:x proximity;scrollbar-width:thin;flex:none}
+.mw-cards[hidden]{display:none}
 .mw-card{flex:none;width:148px;display:flex;flex-direction:column;gap:4px;padding:0 0 10px;text-align:start;background:#fff;border-radius:16px;overflow:hidden;scroll-snap-align:start;
   box-shadow:0 1px 2px rgb(16 24 40/.08),0 0 0 1px rgb(16 24 40/.05);transition:transform .15s,box-shadow .15s;animation:mw-in .2s ease}
 .mw-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgb(16 24 40/.14),0 0 0 1px rgb(16 24 40/.06)}

@@ -345,7 +345,9 @@
     "ownerOnlyNote": "Only the workspace owner can change widget settings.",
     "stepKnowledge": "Colour, position and greeting",
     "stepDomains": "Approved websites",
-    "stepEmbed": "One line of code"
+    "stepEmbed": "One line of code",
+    "showProducts": "Show your products when the chat opens",
+    "showProductsHint": "Up to six available items appear under the greeting, ones with a photo first. Customers can tap one to see it or ask about it."
   },
   "inbox": {
     "title": "Inbox",

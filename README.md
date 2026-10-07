@@ -363,6 +363,9 @@ an optional link and a photo. One table (`Product`) holds them all.
 - **In the chat.** When a reply is about specific products the widget shows them as a row of cards
   under it. A card opens the product inside the chat: photo, price, description, an
   **Ask about this** button and an **I'm interested** button.
+- **Before any question.** When the chat opens, up to six available products appear under the
+  greeting (ones with a photo first), so a visitor can tap one straight away. A switch on the
+  Widget page turns this off (`WidgetSettings.showProducts`).
 - **How the assistant picks them.** Each product is embedded when it is saved. For every customer
   message the closest products of that workspace are added to the prompt in a `<products>` block,
   each with a short reference (`p1`, `p2`…). The model names the ones its reply is about in the

@@ -187,6 +187,7 @@ model WidgetSettings {
   logoUrl        String?
   position       WidgetPosition @default(right)
   preChatForm    Boolean        @default(false)
+  showProducts   Boolean        @default(true) // show a few products under the greeting when the chat opens
   allowedDomains String[]       @default([])
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

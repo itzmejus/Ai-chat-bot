@@ -134,6 +134,7 @@ export const widgetSettingsSchema = z.object({
     .transform((v) => v || null),
   position: z.enum(WIDGET_POSITIONS, "errors.required"),
   preChatForm: z.boolean(),
+  showProducts: z.boolean(),
   assistantName: z.string().trim().min(1, "errors.assistantName").max(40, "errors.assistantName"),
   greeting: z.string().trim().min(1, "errors.greeting").max(300, "errors.greeting"),
 });

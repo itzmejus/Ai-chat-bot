@@ -20,6 +20,9 @@ type Config = {
   logoUrl: string | null;
   position: "left" | "right";
   preChatForm: boolean;
+  /** Show `featured` under the greeting when the chat opens. */
+  showProducts: boolean;
+  featured: Product[];
   language: "en" | "ar" | "both";
   /** The platform's name and site, for the small "Powered by" line. */
   poweredBy: { name: string; url: string } | null;
@@ -376,6 +379,7 @@ function render() {
   launcher.setAttribute("aria-label", open ? t("close") : t("open"));
   greetingBubble.textContent = config.greeting;
   greetingBubble.hidden = !config.greeting;
+  if (featuredRow) featuredRow.hidden = !config.showProducts;
   if (config.poweredBy) {
     credit.innerHTML = mark("i-mark");
     credit.prepend(el("span", undefined, t("poweredBy")));
@@ -433,8 +437,8 @@ function productImage(product: Product, className: string): HTMLElement {
 }
 
 /** A row of product cards under a reply. Each card opens the product. */
-function addProducts(products: Product[]) {
-  if (!products.length) return;
+function addProducts(products: Product[]): HTMLDivElement | null {
+  if (!products.length) return null;
   const row = el("div", "mw-cards");
   for (const product of products) {
     const card = el("button", "mw-card");
@@ -450,6 +454,7 @@ function addProducts(products: Product[]) {
   }
   messages.appendChild(row);
   scrollToEnd();
+  return row;
 }
 
 /** Show one product in full over the conversation. */
@@ -527,6 +532,8 @@ function closeProduct() {
 }
 
 const greetingBubble = addMessage("assistant", config.greeting);
+// A few products straight under the greeting, so there is something to tap before typing.
+const featuredRow = addProducts(config.featured ?? []);
 
 // ---------------------------------------------------------------- server calls
 
@@ -579,7 +586,7 @@ async function sync() {
       return;
     }
     // Replace what is on screen with the server's record (the greeting stays).
-    for (const node of [...messages.children]) if (node !== greetingBubble) node.remove();
+    for (const node of [...messages.children]) if (node !== greetingBubble && node !== featuredRow) node.remove();
     for (const m of data.messages) {
       seen.add(m.id);
       addMessage(m.role, m.content);
@@ -912,6 +919,7 @@ window.addEventListener("message", (event) => {
     if (typeof c.brandColor === "string" && /^#[0-9a-f]{6}$/i.test(c.brandColor)) config.brandColor = c.brandColor;
     if (c.logoUrl === null || typeof c.logoUrl === "string") config.logoUrl = c.logoUrl || null;
     if (c.position === "left" || c.position === "right") config.position = c.position;
+    if (typeof c.showProducts === "boolean") config.showProducts = c.showProducts;
     if (typeof c.preChatForm === "boolean") {
       config.preChatForm = c.preChatForm;
       needsForm = c.preChatForm && !conversationId;

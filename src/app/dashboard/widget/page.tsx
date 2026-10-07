@@ -50,6 +50,7 @@ export default async function WidgetPage() {
           logoUrl: widget?.logoUrl ?? "",
           position: widget?.position ?? "right",
           preChatForm: widget?.preChatForm ?? false,
+          showProducts: widget?.showProducts ?? true,
           assistantName: assistant?.assistantName ?? "Assistant",
           greeting: assistant?.greeting ?? "",
           allowedDomains: widget?.allowedDomains ?? [],

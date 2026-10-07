@@ -216,6 +216,18 @@ export async function getProducts(db: TenantDb, ids: string[]): Promise<ProductR
   return ids.flatMap((id) => rows.find((r) => r.id === id) ?? []);
 }
 
+/** How many products the widget shows under its greeting. */
+export const FEATURED_PRODUCTS = 6;
+
+/**
+ * The products shown when the chat opens, before the customer has asked anything:
+ * available ones only, those with a photo first, then in the order they were added.
+ */
+export async function featuredProducts(db: TenantDb, limit = FEATURED_PRODUCTS): Promise<ProductRow[]> {
+  const rows = await db.product.findMany({ where: { available: true }, orderBy: { createdAt: "asc" }, take: 60, select: SELECT });
+  return [...rows.filter((p) => p.imageUrl), ...rows.filter((p) => !p.imageUrl)].slice(0, limit);
+}
+
 export type ProductMatch = ProductRow & { similarity: number };
 
 /**

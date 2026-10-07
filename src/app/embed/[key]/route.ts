@@ -1,5 +1,7 @@
 import { APP_URL } from "@/lib/config";
 import { frameAncestors, isOriginAllowed } from "@/lib/widget-domains";
+import { tenantDb } from "@/server/db/tenant";
+import { featuredProducts, toCard } from "@/server/products";
 import { getWidgetWorkspace } from "@/server/widget/service";
 import { createWidgetToken, verifyWidgetToken } from "@/server/widget/token";
 
@@ -58,8 +60,13 @@ export async function GET(request: Request, ctx: RouteContext<"/embed/[key]">) {
     if (found.allowedDomains.length === 0) return refuse(403, "This chat has no approved websites yet.");
   }
 
+  // Products shown under the greeting. The dashboard preview always gets them, so switching
+  // the setting on shows the result straight away, before it is saved.
+  const featured = found.config.showProducts || preview ? (await featuredProducts(tenantDb(found.workspaceId))).map(toCard) : [];
+
   const data = {
     ...found.config,
+    featured,
     token: createWidgetToken(found.workspaceId, { preview }),
     preview,
     // In preview, the dashboard may push unsaved settings to the iframe from this origin only.

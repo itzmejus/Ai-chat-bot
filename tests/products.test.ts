@@ -343,3 +343,33 @@ describe("products in the widget API", () => {
     expect(await prisma.product.count({ where: { workspaceId: a.workspaceId } })).toBe(0);
   });
 });
+
+describe("products under the greeting", () => {
+  /** Load the chat iframe page as a browser would on the business's own website. */
+  async function embedConfig(workspace: { publicKey: string; websiteUrl: string | null }) {
+    const { GET } = await import("@/app/embed/[key]/route");
+    const res = await GET(new Request(`https://chat.example.com/embed/${workspace.publicKey}`, { headers: { "sec-fetch-dest": "iframe", referer: workspace.websiteUrl! } }), {
+      params: Promise.resolve({ key: workspace.publicKey }),
+    });
+    const json = /<script type="application\/json" id="widget-config">(.*?)<\/script>/.exec(await res.text())?.[1];
+    return JSON.parse(json!) as { showProducts: boolean; featured: { name: string }[] };
+  }
+
+  it("gives the widget up to six available products, ones with a photo first", async () => {
+    const a = await setup("Clinic A9");
+    await setup("Clinic B9"); // another workspace's products must never appear
+    await setProductAvailable(a, a.braces.id, false);
+    await a.db.product.updateMany({ where: { id: a.cleaning.id }, data: { imageUrl: "https://storage.example/cleaning.webp" } });
+    for (let i = 1; i <= 6; i++) await createProduct(a, input({ name: `Extra ${i}` }));
+
+    const config = await embedConfig(a.workspace);
+    expect(config.showProducts).toBe(true);
+    expect(config.featured.map((p) => p.name)).toEqual(["Teeth cleaning", "Laser whitening", "Extra 1", "Extra 2", "Extra 3", "Extra 4"]);
+  });
+
+  it("sends none when the business switched this off", async () => {
+    const a = await setup("Clinic A10");
+    await a.db.widgetSettings.updateMany({ data: { showProducts: false } });
+    expect(await embedConfig(a.workspace)).toMatchObject({ showProducts: false, featured: [] });
+  });
+});
