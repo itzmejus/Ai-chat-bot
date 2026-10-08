@@ -38,6 +38,7 @@ export const en: SiteContent = {
       leadName: "Sofia Martinez",
       leadPhone: "+1 415 555 0142",
       answered: "Answered from your price list",
+      knowledge: "Knowledge",
     },
     worksWith: "Works with the website you already have",
     madeFor: "Made for",

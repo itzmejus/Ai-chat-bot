@@ -1,13 +1,13 @@
 import { ArrowRight, Check, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { LogoMark } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
-import { getSiteContent, PLAN_CURRENCY, SITE_PLANS, type Faq, type SiteContent } from "@/content/site";
+import { getSiteContent, PLAN_CURRENCY, SITE_PLANS, type Faq } from "@/content/site";
 import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 import { INDUSTRY_ART, PlanArt, RELAY_ART } from "./art";
 import { IndustryTabs } from "./industry-tabs";
+import { HandoverLive } from "./live-chat";
 import { CtaLink } from "./shell";
 
 /** Page-width wrapper with consistent vertical rhythm. */
@@ -296,77 +296,6 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
 
 // ---------------------------------------------------------------- AI and people, together
 
-/**
- * A conversation that changes hands: the customer asks for a person, the assistant
- * passes it on, a team member answers. Shown as it looks in the team's inbox.
- */
-function HandoverChat({ t }: { t: SiteContent["home"]["handover"] }) {
-  return (
-    <div aria-hidden className="flex flex-col rounded-[1.75rem] bg-accent p-3 sm:p-5">
-      <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_48px_-28px_rgb(220_38_38/0.55)] ring-1 ring-black/5">
-        <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
-          <span className="flex min-w-0 items-center gap-2.5">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">{t.names[0].slice(0, 1)}</span>
-            <span dir="auto" className="truncate text-sm font-semibold">
-              {t.names[0]}
-            </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-[#fff1d6] px-2.5 py-1 text-[11px] font-semibold text-[#9a5b00]">
-            <span className="size-1.5 rounded-full bg-current" />
-            {t.filters[1]}
-          </span>
-        </div>
-
-        <div className="flex flex-1 flex-col gap-3 bg-muted/60 p-4 sm:p-5">
-          {t.chat.map((line, i) => {
-            if (line.from === "note") {
-              return (
-                <p key={i} className="flex items-center gap-3 py-1 text-[11px] font-semibold text-[#9a5b00]">
-                  <span className="h-px flex-1 bg-[#f5c56b]" />
-                  <span dir="auto" className="rounded-full bg-[#fff1d6] px-3 py-1">
-                    {line.text}
-                  </span>
-                  <span className="h-px flex-1 bg-[#f5c56b]" />
-                </p>
-              );
-            }
-            if (line.from === "customer") {
-              return (
-                <p key={i} dir="auto" className="max-w-[85%] self-start rounded-2xl rounded-es-md bg-white px-3.5 py-2.5 text-[13px] leading-relaxed shadow-[0_1px_3px_rgb(27_27_32/0.1)]">
-                  {line.text}
-                </p>
-              );
-            }
-            const agent = line.from === "agent";
-            return (
-              <div key={i} className="flex max-w-[88%] items-end gap-2 self-end">
-                <p dir="auto" className={cn("rounded-2xl rounded-ee-md px-3.5 py-2.5 text-[13px] leading-relaxed text-white", agent ? "bg-foreground" : "bg-primary")}>
-                  {line.text}
-                </p>
-                {agent ? (
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#fbbf24]">
-                    <svg viewBox="0 0 16 16" className="size-4" fill="#1b1b20">
-                      <circle cx="8" cy="5.5" r="3" />
-                      <path d="M2.500 14a5.500 5.500 0 0 1 11 0Z" />
-                    </svg>
-                  </span>
-                ) : (
-                  <LogoMark className="size-7" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-3 border-t border-border/70 px-4 py-3 sm:px-5">
-          <span className="h-9 flex-1 rounded-full border border-border bg-muted/60" />
-          <span className="flex h-9 items-center rounded-full bg-foreground px-4 text-xs font-semibold text-white">{t.takeover}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /** How the assistant and the team share a conversation: a three-stage relay beside a chat that changes hands. */
 export function HandoverSection({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).home.handover;
@@ -391,7 +320,7 @@ export function HandoverSection({ lang }: { lang: SiteLang }) {
             );
           })}
         </ol>
-        <HandoverChat t={t} />
+        <HandoverLive t={t} />
       </div>
       <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {t.points.map((point) => (

@@ -1,8 +1,8 @@
-import { LogoMark } from "@/components/brand";
 import type { FeatureKey, SiteContent } from "@/content/site";
 import { cn } from "@/lib/utils";
 import { FEATURE_ART, STEP_ART } from "./art";
 import { Portrait } from "./hero";
+import { KnowledgeChat } from "./live-chat";
 
 /**
  * Home page sections below the hero: large feature rows that alternate sides, a row of
@@ -13,31 +13,6 @@ import { Portrait } from "./hero";
 type Home = SiteContent["home"];
 
 // ---------------------------------------------------------------- feature rows
-
-/** Sources on the left, the answer they produce on the right. */
-function GroundedPanel({ home }: { home: Home }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div dir="ltr" className="flex flex-wrap gap-2">
-        {["brightsmile.ae", "price-list.pdf", "FAQ"].map((label, i) => (
-          <span key={label} className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] font-semibold shadow-[0_6px_16px_-8px_rgb(80_24_16/0.4)]">
-            <span className={cn("size-2 rounded-full", ["bg-primary", "bg-[#fbbf24]", "bg-[#00c057]"][i])} />
-            {label}
-          </span>
-        ))}
-      </div>
-      <div className="flex items-start gap-3 rounded-3xl bg-white p-4 shadow-[0_18px_40px_-20px_rgb(80_24_16/0.5)] sm:p-5">
-        <LogoMark className="size-8" />
-        <div className="flex min-w-0 flex-col gap-2.5">
-          <p dir="auto" className="text-[15px] leading-relaxed">
-            {home.demo.chat[1].text}
-          </p>
-          <p className="w-fit rounded-full bg-[#fff6dc] px-3 py-1 text-xs font-semibold text-[#8a5a00]">{home.demo.answered}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /** The same answer in three languages. */
 function LanguagesPanel() {
@@ -143,8 +118,8 @@ export function FeatureRows({ home }: { home: Home }) {
             <h3 className="text-[1.75rem] leading-[1.15] font-bold tracking-tight text-balance sm:text-4xl">{home.features.items[key].title}</h3>
             <p className="text-lg leading-relaxed text-pretty text-muted-foreground">{home.features.items[key].text}</p>
           </div>
-          <div aria-hidden className={cn("min-w-0 overflow-hidden rounded-[2rem] p-5 sm:p-10", panel)}>
-            {key === "grounded" && <GroundedPanel home={home} />}
+          <div aria-hidden className={cn("min-w-0 overflow-hidden rounded-[2rem] p-5 sm:p-10", key === "grounded" && "p-4 sm:p-7", panel)}>
+            {key === "grounded" && <KnowledgeChat demo={home.demo} />}
             {key === "bilingual" && <LanguagesPanel />}
             {key === "leads" && <LeadsPanel home={home} />}
             {key === "widget" && <WidgetPanel home={home} />}

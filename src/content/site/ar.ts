@@ -38,6 +38,7 @@ export const ar: SiteContent = {
       leadName: "صوفيا مارتينيز",
       leadPhone: "+1 415 555 0142",
       answered: "الإجابة من قائمة أسعارك",
+      knowledge: "المعرفة",
     },
     worksWith: "يعمل مع موقعك الحالي",
     madeFor: "مناسب لـ",

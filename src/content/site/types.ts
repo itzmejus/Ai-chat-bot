@@ -33,7 +33,7 @@ export type SiteContent = {
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
-    demo: { site: string; assistant: string; status: string; placeholder: string; chat: ChatLine[]; leadTitle: string; leadName: string; leadPhone: string; answered: string };
+    demo: { site: string; assistant: string; status: string; placeholder: string; chat: ChatLine[]; leadTitle: string; leadName: string; leadPhone: string; answered: string; /** Heading of the list of sources in the animated answer. */ knowledge: string };
     /** Label of the row of website platforms under the hero picture. */
     worksWith: string;
     madeFor: string;
