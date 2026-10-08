@@ -178,8 +178,13 @@ policy and terms, each in English and Arabic (22 pages).
   `noindex`. Structured data (schema.org JSON-LD) is included for the organisation, the product with
   its plans, FAQs and breadcrumbs. Pages are rendered on the server, and the product pictures are
   HTML and CSS, so there are no image downloads.
+- **Search pages.** Besides the product pages there are setup pages per website builder
+  (`/integrations/...`), use-case pages (`/use-cases/...`), blog articles (`/blog/...`) and `/faq`.
+  Their text is in `src/content/site/topics-en.ts` and `topics-ar.ts`; one component
+  (`src/components/site/topic.tsx`) renders all of them. `/llms.txt` summarises the site for AI
+  search tools. `GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` add the ownership tags.
 - **Hostname.** The site is served on the app's hostname: the site at `/`, the dashboard at
-  `/dashboard` (for example `https://www.app.siteselo.com/` and `/dashboard`). `SITE_URL` is only
+  `/dashboard` (for example `https://www.assist.siteselo.com/` and `/dashboard`). `SITE_URL` is only
   for giving the site a separate domain later.
 - **Legal pages** are a starting draft and should be reviewed for your company before launch.
 
@@ -309,7 +314,7 @@ message limit cap what that can cost.
 **Rate limits** (per minute): 12 messages per visitor, 40 per IP address, 300 per workspace.
 Login is limited to 8 attempts per account per 15 minutes.
 
-**Hostnames.** In production the public site and the dashboard run on `APP_URL` (`https://www.app.siteselo.com`) and
+**Hostnames.** In production the public site and the dashboard run on `APP_URL` (`https://www.assist.siteselo.com`) and
 the widget on `WIDGET_URL` (`https://chat.siteselo.com`). Both point at the same deployment;
 `src/proxy.ts` makes each hostname serve only its own paths. Locally both default to
 `http://localhost:3000`.

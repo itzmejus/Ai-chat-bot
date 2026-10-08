@@ -1,7 +1,7 @@
 # Deployment guide: Render + Supabase
 
 This guide takes the app from a Git repository to a live service with the dashboard on
-`www.app.siteselo.com/dashboard`, the public site on the same hostname (`www.app.siteselo.com/`), and the
+`www.assist.siteselo.com/dashboard`, the public site on the same hostname (`www.assist.siteselo.com/`), and the
 chat widget on `chat.siteselo.com`. Replace those names with your own.
 
 What gets deployed:
@@ -50,10 +50,11 @@ the server, so new migrations are applied on every deploy.
 | `OPENAI_API_KEY` | your OpenAI key |
 | `OPENAI_MODEL` | `gpt-4.1-mini` (or another chat model) |
 | `APP_NAME` | the product name shown in the dashboard and emails |
-| `APP_URL` | `https://www.app.siteselo.com` |
-| `NEXTAUTH_URL` | `https://www.app.siteselo.com` (same as `APP_URL`) |
+| `APP_URL` | `https://www.assist.siteselo.com` |
+| `NEXTAUTH_URL` | `https://www.assist.siteselo.com` (same as `APP_URL`) |
 | `WIDGET_URL` | `https://chat.siteselo.com` |
 | `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
+| `REDIRECT_HOSTS` | former hostnames to redirect to the current address, comma separated; optional |
 | `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from the same page; a secret |
@@ -73,20 +74,25 @@ Changing `NEXTAUTH_SECRET` later logs everyone out and invalidates open widget s
 Every hostname points at the **same** Render service. The app decides what to serve from the hostname.
 
 1. In the Render service open **Settings > Custom Domains** and add
-   `www.app.siteselo.com`, `app.siteselo.com` and `chat.siteselo.com`.
+   `www.assist.siteselo.com`, `assist.siteselo.com` and `chat.siteselo.com`.
 2. At your DNS provider create a `CNAME` record for each, pointing to the service's
    `*.onrender.com` address as Render shows.
 3. Wait for Render to verify them and issue the certificates.
 
-`APP_URL` decides which spelling is the official one. With `APP_URL=https://www.app.siteselo.com`,
-public pages opened on `app.siteselo.com` are redirected to the `www.` address, so search engines
-index each page once. Log in and use the dashboard on the `APP_URL` hostname.
+`APP_URL` is the official address. The other spelling (`assist.siteselo.com` without `www.`) should be added as a custom domain too:
+public pages opened there are redirected to `APP_URL`, so search engines index each page once.
+Log in and use the dashboard on the `APP_URL` hostname.
+
+**Changing the hostname later.** Keep the old hostname attached to the Render service and list it
+in `REDIRECT_HOSTS` (comma separated, for example `app.siteselo.com,www.app.siteselo.com`).
+Everything opened on it is then sent, with a permanent redirect, to the same path on the new
+address, so old links, bookmarks and search results keep working.
 
 How the hosts behave:
 
 | Host | Serves | Everything else |
 | --- | --- | --- |
-| `www.app.` | the public site in English and Arabic (`/`, `/ar/...`), `sitemap.xml`, `robots.txt`, login, and the dashboard at `/dashboard` | the chat iframe and public chat API are refused |
+| `www.assist.` | the public site in English and Arabic (`/`, `/ar/...`), `sitemap.xml`, `robots.txt`, login, and the dashboard at `/dashboard` | the chat iframe and public chat API are refused |
 | `chat.` | `widget.js`, the chat iframe, the public chat API | refused (the home page redirects to the site) |
 
 Keeping the widget on its own hostname means dashboard login cookies are never sent along with
@@ -98,12 +104,27 @@ dashboard and redirects marketing pages to the site.
 
 ### Search engines
 
-After the site is live on its final domain:
+The public site is built to be indexed: every page is a complete HTML page rendered on the server
+(no JavaScript is needed to read it), with its own title, description, canonical address, links to
+its translation, and structured data. `/sitemap.xml` lists every page and `/robots.txt` points to it.
+Google still has to be told the site exists, and indexing takes days to weeks:
 
-1. Add the domain in [Google Search Console](https://search.google.com/search-console) and
-   [Bing Webmaster Tools](https://www.bing.com/webmasters), and submit `https://www.app.siteselo.com/sitemap.xml`.
-2. Check a page with Google's Rich Results Test to confirm the FAQ and product data are read.
-3. Share a link in WhatsApp or LinkedIn to see the preview image (`/opengraph-image`).
+1. In [Google Search Console](https://search.google.com/search-console) add the site as a
+   **URL prefix** property using the exact address in `APP_URL`. Choose the **HTML tag** method,
+   copy only the code inside `content="..."`, set it as `GOOGLE_SITE_VERIFICATION` on Render,
+   redeploy, then press Verify.
+2. Under **Sitemaps** submit `sitemap.xml`.
+3. Use **URL inspection > Request indexing** for the home page and the few pages that matter most.
+   The rest are found through the sitemap and the links between pages.
+4. Optional: do the same in [Bing Webmaster Tools](https://www.bing.com/webmasters) with
+   `BING_SITE_VERIFICATION`. Bing's index also feeds several AI search products.
+5. Check a blog article with Google's Rich Results Test to confirm the Article and FAQ data are read.
+
+Things that affect how well it ranks, beyond what the code can do: links from other sites (the
+link from siteselo.com is a start), how long the domain has existed, and adding new articles over
+time. New articles go in `src/content/site/topics-en.ts` and `topics-ar.ts`, with their address
+added to `GUIDE_SLUGS` in `src/lib/site-routes.ts`; the sitemap, the blog page and the footer pick
+them up from there.
 
 Set the real plan prices in `src/content/site/index.ts` before launch, and have the privacy policy
 and terms in `src/content/site/en.ts` and `ar.ts` reviewed for your company.
@@ -153,15 +174,15 @@ after setting it up.
 ## 5. Google login (optional)
 
 1. In Google Cloud Console create an **OAuth client ID** of type *Web application*.
-2. Authorised JavaScript origin: `https://www.app.siteselo.com`
-3. Authorised redirect URI: `https://www.app.siteselo.com/api/auth/callback/google`
+2. Authorised JavaScript origin: `https://www.assist.siteselo.com`
+3. Authorised redirect URI: `https://www.assist.siteselo.com/api/auth/callback/google`
 4. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` on Render.
 
 The "Continue with Google" button appears only when both are set.
 
 ## 6. Check the deployment
 
-1. Open `https://www.app.siteselo.com`: the public site should appear. Press **Start free**, sign up and complete onboarding.
+1. Open `https://www.assist.siteselo.com`: the public site should appear. Press **Start free**, sign up and complete onboarding.
 2. **Knowledge base:** add an FAQ. It should change from *Processing* to *Ready* within seconds.
    That confirms the database, the background worker and the OpenAI key.
 3. **Test your assistant** on the same page: ask the FAQ's question.

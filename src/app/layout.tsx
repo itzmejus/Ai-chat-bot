@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: "AI customer support for your website, in your customers' language",
   applicationName: APP_NAME,
   appleWebApp: { title: APP_NAME },
+  // Proves ownership of the site to Google Search Console and Bing Webmaster Tools, when set.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION } : undefined,
+  },
   // Only the public site is for search engines; its pages turn indexing back on (src/lib/site-seo.ts).
   robots: { index: false, follow: false },
 };

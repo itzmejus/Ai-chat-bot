@@ -1,7 +1,7 @@
 /** Platform-wide settings. Rename the product by changing APP_NAME in the environment. */
 export const APP_NAME = process.env.APP_NAME || "Selo Assist";
 
-/** Where the dashboard lives, e.g. https://app.siteselo.com */
+/** Where the dashboard lives, e.g. https://www.assist.siteselo.com */
 export const APP_URL = (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
 
 /**
@@ -17,6 +17,15 @@ export const WIDGET_URL = (process.env.WIDGET_URL || APP_URL).replace(/\/$/, "")
  * Defaults to APP_URL, in which case the site is simply the app's home page.
  */
 export const SITE_URL = (process.env.SITE_URL || APP_URL).replace(/\/$/, "");
+
+/**
+ * Hostnames the app used to live on, comma separated, e.g. "app.siteselo.com,www.app.siteselo.com".
+ * Everything opened on them is redirected to the same path on the current address.
+ */
+export const REDIRECT_HOSTS = (process.env.REDIRECT_HOSTS || "")
+  .split(",")
+  .map((host) => host.trim().toLowerCase())
+  .filter(Boolean);
 
 /** Shown on the public site (footer, legal pages) when set. */
 export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "";

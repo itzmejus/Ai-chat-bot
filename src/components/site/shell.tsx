@@ -4,7 +4,7 @@ import { Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
 import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
-import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
+import { GUIDE_SLUGS, INDUSTRY_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 import { GlobeMark } from "./art";
@@ -59,6 +59,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
     { href: href("/features"), label: t.nav.features },
     { href: href("/industries"), label: t.nav.industries },
     { href: href("/pricing"), label: t.nav.pricing },
+    { href: href("/blog"), label: t.topics.labels.guides },
   ];
   const login = { href: appLink("/login"), label: t.nav.login };
   const start = { href: appLink("/signup"), label: t.nav.start };
@@ -123,16 +124,26 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
             </div>
           </div>
 
-          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10">
+          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10 lg:grid-cols-4">
             <FooterColumn title={t.footer.product}>
               <FooterLink href={href("/features")}>{t.nav.features}</FooterLink>
               <FooterLink href={href("/pricing")}>{t.nav.pricing}</FooterLink>
               <FooterLink href={href("/industries")}>{t.nav.industries}</FooterLink>
+              <FooterLink href={href("/integrations")}>{t.topics.labels.integrations}</FooterLink>
+              <FooterLink href={href("/use-cases")}>{t.topics.labels.useCases}</FooterLink>
+              <FooterLink href={href("/faq")}>{t.topics.labels.faq}</FooterLink>
             </FooterColumn>
             <FooterColumn title={t.footer.industries} className="max-sm:row-span-2">
               {INDUSTRY_SLUGS.map((slug) => (
                 <FooterLink key={slug} href={href(`/industries/${slug}`)}>
                   {t.industries[slug].name}
+                </FooterLink>
+              ))}
+            </FooterColumn>
+            <FooterColumn title={t.topics.labels.integrations}>
+              {INTEGRATION_SLUGS.map((slug) => (
+                <FooterLink key={slug} href={href(`/integrations/${slug}`)}>
+                  {t.topics.integrations[slug].name}
                 </FooterLink>
               ))}
             </FooterColumn>
@@ -144,6 +155,13 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
                   {t.footer.contact}
                 </FooterLink>
               )}
+            </FooterColumn>
+            <FooterColumn title={t.topics.labels.guides} className="col-span-2 sm:col-span-3 lg:col-span-4">
+              {GUIDE_SLUGS.map((slug) => (
+                <FooterLink key={slug} href={href(`/blog/${slug}`)}>
+                  {t.topics.guides[slug].name}
+                </FooterLink>
+              ))}
             </FooterColumn>
           </nav>
         </div>

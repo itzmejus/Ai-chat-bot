@@ -1,3 +1,4 @@
+import { topicsEn } from "./topics-en";
 import type { SiteContent } from "./types";
 
 export const en: SiteContent = {
@@ -357,7 +358,7 @@ export const en: SiteContent = {
       short: "Quotes, vehicle sizes, routes and group bookings.",
       meta: {
         title: "AI chatbot for bus, coach and minibus hire companies",
-        description: "An AI assistant for bus, coach and minibus hire companies. It answers questions about vehicle sizes, prices, routes and availability in your customers' language, and collects quote requests with the trip details around the clock.",
+        description: "An AI assistant for bus, coach and minibus hire companies. It answers questions about vehicle sizes, prices, routes and availability in your customers' language, and collects quote requests around the clock.",
       },
       h1: "Turn every quote request into a booking, even after hours",
       sub: "Group travel enquiries arrive at all hours and usually go to whoever replies first. The assistant answers questions about vehicles, routes and prices, then collects the trip details your team needs to send a quote.",
@@ -442,4 +443,5 @@ export const en: SiteContent = {
     madeIn: "Made for businesses everywhere",
   },
   breadcrumbHome: "Home",
+  topics: topicsEn,
 };

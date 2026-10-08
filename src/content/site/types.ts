@@ -1,4 +1,4 @@
-import type { IndustrySlug } from "@/lib/site-routes";
+import type { GuideSlug, IndustrySlug, IntegrationSlug, UseCaseSlug } from "@/lib/site-routes";
 
 /**
  * Shape of the public site's text. English (en.ts) and Arabic (ar.ts) both implement it,
@@ -12,6 +12,49 @@ export type Meta = { title: string; description: string };
 
 export type FeatureKey = "grounded" | "bilingual" | "leads" | "handover" | "inbox" | "insights" | "widget" | "security";
 export type PlanId = "free" | "starter" | "pro";
+
+/** A hub page (list of pages in a group) or the FAQ page: its search listing and heading. */
+export type Hub = { meta: Meta; h1: string; sub: string };
+
+/**
+ * One search-focused page. Which of `steps`, `points` and `sections` it has decides its
+ * shape: setup pages have steps, use-case pages have points, articles have sections.
+ */
+export type TopicPage = {
+  /** Short name, used for links and cards. */
+  name: string;
+  /** One line shown on cards. */
+  short: string;
+  meta: Meta;
+  h1: string;
+  sub: string;
+  intro: string[];
+  steps?: { title: string; text: string }[];
+  points?: { title: string; text: string }[];
+  sections?: { h: string; p: string[] }[];
+  faq: Faq[];
+};
+
+export type TopicContent = {
+  labels: {
+    integrations: string;
+    useCases: string;
+    guides: string;
+    faq: string;
+    resources: string;
+    steps: string;
+    why: string;
+    related: string;
+    readMore: string;
+    questions: string;
+    cta: string;
+    updated: string;
+  };
+  hubs: { integrations: Hub; useCases: Hub; guides: Hub; faq: Hub };
+  integrations: Record<IntegrationSlug, TopicPage>;
+  useCases: Record<UseCaseSlug, TopicPage>;
+  guides: Record<GuideSlug, TopicPage>;
+};
 
 export type SiteContent = {
   nav: {
@@ -90,4 +133,6 @@ export type SiteContent = {
   };
   footer: { tagline: string; product: string; industries: string; company: string; privacy: string; terms: string; contact: string; rights: string; madeIn: string };
   breadcrumbHome: string;
+  /** Setup pages per website builder, use cases and blog articles. */
+  topics: TopicContent;
 };

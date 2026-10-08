@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { APP_URL, SITE_URL, WIDGET_URL } from "@/lib/config";
+import { APP_URL, REDIRECT_HOSTS, SITE_URL, WIDGET_URL } from "@/lib/config";
 import { matchSitePath } from "@/lib/site-routes";
 
 /**
@@ -25,11 +25,17 @@ const isWidgetPath = (path: string) =>
   path === "/widget.js" || path === "/widget-app.js" || path.startsWith("/embed/") || path.startsWith("/api/widget/");
 
 /** Files search engines and link previews fetch from the site host. */
-const isSiteFile = (path: string) => path === "/sitemap.xml" || path === "/robots.txt" || path.startsWith("/opengraph-image");
+const isSiteFile = (path: string) => path === "/sitemap.xml" || path === "/robots.txt" || path === "/llms.txt" || path.startsWith("/opengraph-image");
 
 export function proxy(request: NextRequest) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
   const path = request.nextUrl.pathname;
+
+  // ---- former hostnames: same path on the current address, so old links and bookmarks keep working
+  if (REDIRECT_HOSTS.includes(host.toLowerCase())) {
+    const target = matchSitePath(path) || isSiteFile(path) ? SITE_URL : APP_URL;
+    return NextResponse.redirect(target + path + request.nextUrl.search, 308);
+  }
 
   // ---- widget host: widget paths only
   if (widgetHost !== appHost && host === widgetHost) {

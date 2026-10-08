@@ -1,3 +1,4 @@
+import { topicsAr } from "./topics-ar";
 import type { SiteContent } from "./types";
 
 export const ar: SiteContent = {
@@ -441,4 +442,5 @@ export const ar: SiteContent = {
     madeIn: "صُنع للشركات في كل مكان",
   },
   breadcrumbHome: "الرئيسية",
+  topics: topicsAr,
 };

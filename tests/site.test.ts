@@ -54,6 +54,13 @@ describe("host routing", () => {
     expect(visit("https://example.com/")).toMatchObject({ status: 308, redirect: "https://www.example.com/" });
   });
 
+  it("sends a former hostname to the same page on the current address", () => {
+    expect(visit("https://old.example.com/")).toMatchObject({ status: 308, redirect: "https://www.example.com/" });
+    expect(visit("https://www.old.example.com/ar/pricing")).toMatchObject({ status: 308, redirect: "https://www.example.com/ar/pricing" });
+    expect(visit("https://old.example.com/sitemap.xml")).toMatchObject({ status: 308, redirect: "https://www.example.com/sitemap.xml" });
+    expect(visit("https://old.example.com/dashboard/inbox?filter=all")).toMatchObject({ status: 308, redirect: "https://app.example.com/dashboard/inbox?filter=all" });
+  });
+
   it("does not expose the internal /en address", () => {
     expect(visit("https://www.example.com/en/pricing")).toMatchObject({ status: 308, redirect: "https://www.example.com/pricing" });
     expect(visit("https://www.example.com/en")).toMatchObject({ status: 308, redirect: "https://www.example.com/" });
@@ -124,7 +131,7 @@ describe("site content", () => {
 
   it("keeps titles and descriptions within what search results show", () => {
     for (const content of [en, ar]) {
-      const metas = [content.home.meta, content.featuresPage.meta, content.pricingPage.meta, content.industriesPage.meta, ...Object.values(content.industries).map((i) => i.meta)];
+      const metas = [content.home.meta, content.featuresPage.meta, content.pricingPage.meta, content.industriesPage.meta, ...Object.values(content.industries).map((i) => i.meta), ...Object.values(content.topics.hubs).map((h) => h.meta), ...[content.topics.integrations, content.topics.useCases, content.topics.guides].flatMap((group) => Object.values(group).map((p) => p.meta))];
       for (const meta of metas) {
         expect(meta.title.length, meta.title).toBeLessThanOrEqual(90);
         expect(meta.description.length, meta.description).toBeGreaterThanOrEqual(70);

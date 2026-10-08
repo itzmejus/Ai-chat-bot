@@ -15,6 +15,7 @@ export default defineConfig({
       APP_URL: "https://app.example.com",
       WIDGET_URL: "https://chat.example.com",
       SITE_URL: "https://www.example.com",
+      REDIRECT_HOSTS: "old.example.com, www.old.example.com",
     },
   },
 });
