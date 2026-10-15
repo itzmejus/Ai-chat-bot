@@ -10,7 +10,7 @@ export type ChatLine = { from: "customer" | "assistant" | "agent" | "note"; text
 export type Faq = { q: string; a: string };
 export type Meta = { title: string; description: string };
 
-export type FeatureKey = "grounded" | "bilingual" | "leads" | "handover" | "inbox" | "insights" | "widget" | "security";
+export type FeatureKey = "grounded" | "bilingual" | "leads" | "products" | "handover" | "inbox" | "insights" | "widget" | "security";
 export type PlanId = "free" | "starter" | "pro";
 
 /** A hub page (list of pages in a group) or the FAQ page: its search listing and heading. */
@@ -76,10 +76,11 @@ export type SiteContent = {
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    /** Reassurance under the hero buttons. */
+    ctaNote: string;
     demo: { site: string; assistant: string; status: string; placeholder: string; chat: ChatLine[]; leadTitle: string; leadName: string; leadPhone: string; answered: string; /** Heading of the list of sources in the animated answer. */ knowledge: string };
     /** Label of the row of website platforms under the hero picture. */
     worksWith: string;
-    madeFor: string;
     steps: { eyebrow: string; label: string; title: string; sub: string; items: { title: string; text: string }[] };
     features: { eyebrow: string; title: string; sub: string; items: Record<FeatureKey, { title: string; text: string }>; more: string };
     handover: {
@@ -88,14 +89,12 @@ export type SiteContent = {
       text: string;
       /** The three stages of a handover: the AI answers, the team is told, a person steps in. */
       flow: { title: string; text: string }[];
-      points: string[];
       inboxTitle: string;
       filters: string[];
       takeover: string;
       chat: ChatLine[];
       names: string[];
     };
-    stats: { value: string; label: string }[];
     industries: { eyebrow: string; title: string; sub: string; link: string };
     pricing: { eyebrow: string; title: string; sub: string; link: string };
     faq: { eyebrow: string; title: string; sub: string; items: Faq[] };
@@ -115,10 +114,12 @@ export type SiteContent = {
     h1: string;
     sub: string;
     perMonth: string;
+    /** Label beside a crossed-out regular price. */
+    launch: string;
     free: string;
     popular: string;
     plans: Record<PlanId, { name: string; tagline: string; cta: string }>;
-    limits: { messages: string; pages: string; seats: string };
+    limits: { messages: string; pages: string; seats: string; /** Singular, for a plan with one. */ seat: string };
     included: { title: string; items: string[] };
     compare: { title: string; feature: string; price: string; yes: string };
     faq: { title: string; items: Faq[] };

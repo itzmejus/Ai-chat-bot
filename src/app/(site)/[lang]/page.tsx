@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { JsonLd } from "@/components/site/json-ld";
 import { HeadlineStroke, HeroStage, PlatformMarquee } from "@/components/site/hero";
-import { FeatureList, FeatureRows, StatTiles, StepsTimeline } from "@/components/site/home-sections";
+import { FeatureList, FeatureRows, StepsTimeline } from "@/components/site/home-sections";
 import {
   ArrowLink,
   CtaBand,
@@ -17,7 +16,7 @@ import {
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, SITE_PLANS } from "@/content/site";
 import { APP_NAME, SITE_URL } from "@/lib/config";
-import { INDUSTRY_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
+import { sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
 
 const asLang = (lang: string): SiteLang => (lang === "ar" ? "ar" : "en");
@@ -74,52 +73,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               {home.ctaSecondary}
             </CtaLink>
           </div>
+          <p className="mt-3 text-sm font-medium text-muted-foreground sm:mt-4">{home.ctaNote}</p>
           <HeroStage home={home} />
         </div>
 
         {/* the website builders it plugs into, scrolling past under the picture */}
         <PlatformMarquee label={home.worksWith} />
-
-        {/* industries strip */}
-        <div className="border-b border-border/60 bg-white">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-3 px-4 py-5 sm:px-6">
-            <span className="text-sm font-medium text-muted-foreground">{home.madeFor}</span>
-            {INDUSTRY_SLUGS.map((slug) => (
-              <Link
-                key={slug}
-                href={sitePath(lang, `/industries/${slug}`)}
-                className="rounded-full border border-border bg-white px-3.5 py-1.5 text-sm font-medium transition-colors hover:border-primary/50 hover:text-primary"
-              >
-                {t.industries[slug].name}
-              </Link>
-            ))}
-          </div>
-        </div>
       </section>
-
-      {/* ---- What you get: four large rows, then the rest as a list */}
-      <Section id="features">
-        <SectionHeading title={home.features.title} sub={home.features.sub} />
-        <div className="mt-12 sm:mt-20">
-          <FeatureRows home={home} />
-        </div>
-        <div className="mt-16 border-t border-border pt-12 sm:mt-24 sm:pt-16">
-          <FeatureList home={home} keys={["handover", "inbox", "insights", "security"]} />
-        </div>
-        <div className="mt-10 flex justify-center">
-          <CtaLink href={sitePath(lang, "/features")} variant="dark" arrow>
-            {home.features.more}
-          </CtaLink>
-        </div>
-      </Section>
-
-      {/* ---- Numbers */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
-        <StatTiles stats={home.stats} />
-      </section>
-
-      {/* ---- AI and people, together */}
-      <HandoverSection lang={lang} />
 
       {/* ---- How it works */}
       <Section tone="muted" id="how-it-works">
@@ -133,6 +93,25 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </CtaLink>
         </div>
       </Section>
+
+      {/* ---- What you get: four large rows, then the rest as a list */}
+      <Section id="features">
+        <SectionHeading title={home.features.title} sub={home.features.sub} />
+        <div className="mt-12 sm:mt-20">
+          <FeatureRows home={home} />
+        </div>
+        <div className="mt-16 border-t border-border pt-12 sm:mt-24 sm:pt-16">
+          <FeatureList home={home} keys={["products", "inbox", "insights", "security"]} />
+        </div>
+        <div className="mt-10 flex justify-center">
+          <CtaLink href={sitePath(lang, "/features")} variant="dark" arrow>
+            {home.features.more}
+          </CtaLink>
+        </div>
+      </Section>
+
+      {/* ---- AI and people, together */}
+      <HandoverSection lang={lang} />
 
       {/* ---- Industries */}
       <Section id="industries">

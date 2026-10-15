@@ -148,27 +148,23 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
               <h3 className="text-xl font-bold">{t.plans[plan.id].name}</h3>
               <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
             </div>
-            <p className="flex items-baseline gap-2">
-              {plan.price === 0 ? (
-                <span className="text-5xl font-bold tracking-tight">{t.free}</span>
-              ) : (
-                <>
-                  <span dir="ltr" className="flex items-baseline gap-2">
-                    {plan.was && (
-                      // The regular price, crossed out; <s> tells screen readers it no longer applies.
-                      <s className={cn("text-xl font-semibold", dark ? "text-white/45" : "text-muted-foreground/70")}>
-                        {PLAN_CURRENCY.symbol}
-                        {number.format(plan.was)}
-                      </s>
-                    )}
-                    <span className="text-5xl font-bold tracking-tight">
-                      {PLAN_CURRENCY.symbol}
-                      {number.format(plan.price)}
-                    </span>
-                  </span>
-                  <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
-                </>
-              )}
+            <p className="flex flex-wrap items-baseline gap-2">
+              {/* Says why a price is crossed out. Every card keeps the line, so the prices stay level. */}
+              <span className={cn("min-h-5 w-full text-xs font-bold tracking-wide uppercase", dark ? "text-[#fbbf24]" : "text-primary")}>{plan.was ? t.launch : ""}</span>
+              <span dir="ltr" className="flex items-baseline gap-2">
+                {plan.was && (
+                  // The regular price, crossed out; <s> tells screen readers it no longer applies.
+                  <s className={cn("text-xl font-semibold", dark ? "text-white/45" : "text-muted-foreground/70")}>
+                    {PLAN_CURRENCY.symbol}
+                    {number.format(plan.was)}
+                  </s>
+                )}
+                <span className="text-5xl font-bold tracking-tight">
+                  {PLAN_CURRENCY.symbol}
+                  {number.format(plan.price)}
+                </span>
+              </span>
+              <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
             </p>
             <CtaLink href={appLink("/signup")} variant={dark ? "light" : "outline"} className="w-full">
               {t.plans[plan.id].cta}
@@ -178,7 +174,7 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
                 [
                   [plan.messages, t.limits.messages],
                   [plan.pages, t.limits.pages],
-                  [plan.seats, t.limits.seats],
+                  [plan.seats, plan.seats === 1 ? t.limits.seat : t.limits.seats],
                 ] as const
               ).map(([value, label]) => (
                 <li key={label} className="flex items-start gap-3">
@@ -300,7 +296,7 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
 export function HandoverSection({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).home.handover;
   return (
-    <Section id="handover">
+    <Section id="handover" tone="muted">
       <SectionHeading title={t.title} sub={t.text} />
       <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-2">
         <ol className="relative flex flex-col gap-4">
@@ -322,14 +318,6 @@ export function HandoverSection({ lang }: { lang: SiteLang }) {
         </ol>
         <HandoverLive t={t} />
       </div>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {t.points.map((point) => (
-          <li key={point} className="flex items-start gap-3 rounded-2xl bg-muted p-4 text-[15px] leading-snug font-medium">
-            <Tick />
-            {point}
-          </li>
-        ))}
-      </ul>
     </Section>
   );
 }

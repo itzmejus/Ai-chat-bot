@@ -5,8 +5,8 @@ import { Portrait } from "./hero";
 import { KnowledgeChat } from "./live-chat";
 
 /**
- * Home page sections below the hero: large feature rows that alternate sides, a row of
- * solid colour tiles for the headline numbers, and the setup steps on a timeline.
+ * Home page sections below the hero: large feature rows that alternate sides, and the
+ * setup steps on a timeline.
  * Every layout is written phone-first: one column, then two from tablets up.
  */
 
@@ -147,24 +147,6 @@ export function FeatureList({ home, keys }: { home: Home; keys: FeatureKey[] }) 
         );
       })}
     </ul>
-  );
-}
-
-// ---------------------------------------------------------------- numbers
-
-const TILES = ["bg-primary text-white", "bg-[#1b1b20] text-white", "bg-[#fbbf24] text-[#1b1b20]", "bg-accent text-foreground"];
-
-/** The headline numbers as four solid colour tiles. */
-export function StatTiles({ stats }: { stats: Home["stats"] }) {
-  return (
-    <dl className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      {stats.map((stat, i) => (
-        <div key={stat.label} className={cn("flex min-h-40 flex-col-reverse justify-between gap-6 rounded-3xl p-5 sm:min-h-52 sm:p-7", TILES[i % TILES.length])}>
-          <dt className="text-sm leading-snug font-medium opacity-85 sm:text-base">{stat.label}</dt>
-          <dd className="text-[2.5rem] leading-none font-bold tracking-tight sm:text-6xl">{stat.value}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 

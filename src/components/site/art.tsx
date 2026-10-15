@@ -110,6 +110,21 @@ function HandoverArt(props: ArtProps) {
   );
 }
 
+/** Two product cards, the front one with a picture, a name and a price. */
+function ProductsArt(props: ArtProps) {
+  return (
+    <Art {...props}>
+      <rect x="62" y="26" width="38" height="48" rx="8" fill="#fff" stroke={LINE} strokeWidth="2" />
+      <rect x="67" y="31" width="28" height="18" rx="4" fill={TINT} />
+      <rect x="24" y="22" width="44" height="54" rx="9" fill="#fff" stroke={BLUE} strokeWidth="2.500" />
+      <rect x="30" y="28" width="32" height="22" rx="5" fill={AMBER} />
+      <Spark x={46} y={39} size={0.7} fill="#fff" />
+      <path d="M31 58h22" stroke={INK} strokeWidth="3" strokeLinecap="round" />
+      <path d="M31 66h12" stroke={BLUE} strokeWidth="3" strokeLinecap="round" />
+    </Art>
+  );
+}
+
 /** A list of conversations with one selected. */
 function InboxArt(props: ArtProps) {
   return (
@@ -186,6 +201,7 @@ export const FEATURE_ART: Record<FeatureKey, (props: ArtProps) => React.ReactEle
   grounded: GroundedArt,
   bilingual: LanguagesArt,
   leads: LeadsArt,
+  products: ProductsArt,
   handover: HandoverArt,
   inbox: InboxArt,
   insights: InsightsArt,

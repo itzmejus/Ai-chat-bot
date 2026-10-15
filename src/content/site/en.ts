@@ -24,6 +24,7 @@ export const en: SiteContent = {
     sub: "An assistant for your website that answers customers day and night using only your business information, collects their contact details, and calls in your team when a person is needed.",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
+    ctaNote: "Free plan · No card needed",
     demo: {
       site: "brightsmile.com",
       assistant: "Noor",
@@ -42,16 +43,15 @@ export const en: SiteContent = {
       knowledge: "Knowledge",
     },
     worksWith: "Works with the website you already have",
-    madeFor: "Made for",
     steps: {
       eyebrow: "How it works",
       label: "Step",
       title: "From sign-up to answering customers in three steps",
       sub: "No developers, no training sessions, no scripts to write.",
       items: [
-        { title: "Add your business information", text: "Enter your website address and the assistant reads up to 50 pages. Upload PDF, Word or text files, add FAQs, or just type what customers should know." },
+        { title: "Add your business information", text: "Enter your website address and the assistant reads its pages. Upload PDF, Word or text files, add FAQs, or just type what customers should know." },
         { title: "Paste one line of code", text: "Choose your colour, logo and greeting, then copy a single script tag into your website. It works with WordPress, Shopify, Wix, Webflow and custom sites." },
-        { title: "Let it answer, and step in when you want", text: "Customers get instant answers in their language. You see every conversation, get an email for each new lead, and can take over a chat with one click." },
+        { title: "Go live, and step in any time", text: "Customers get instant answers in their language. You see every conversation, get an email for each new lead, and can take over a chat with one click." },
       ],
     },
     features: {
@@ -62,6 +62,7 @@ export const en: SiteContent = {
         grounded: { title: "Answers only from your information", text: "The assistant replies using what you gave it and nothing else. When it does not know, it says so and offers to connect the customer with your team instead of guessing." },
         bilingual: { title: "Replies in your customers' language", text: "It replies in the language the customer writes in, from Spanish and Arabic to Hindi, French or Russian, and the chat window switches to right-to-left when the language needs it." },
         leads: { title: "Turns chats into leads", text: "When a customer wants to book or buy, the assistant asks for their name and phone number and saves them to your leads list. Export to CSV any time." },
+        products: { title: "Product cards in the chat", text: "Add your products or services with photos and prices. The assistant shows them as cards customers can tap, and answers questions about each one." },
         handover: { title: "Human takeover in one click", text: "Jump into any conversation. The AI pauses, your reply appears in the customer's chat instantly, and you can hand it back when you are done." },
         inbox: { title: "A live inbox for your team", text: "Every conversation in one place, updated as it happens, with filters for chats that need a person and search by name or phone." },
         insights: { title: "See what customers ask", text: "The most asked questions, and the ones your assistant could not answer, with a button to add the missing answer." },
@@ -79,7 +80,6 @@ export const en: SiteContent = {
         { title: "It knows when to stop", text: "A complaint, an unusual request, or a customer who asks for a person. The chat is flagged and your team is told straight away." },
         { title: "Your team steps in", text: "One click to take over. The AI goes quiet while you reply, and picks the chat up again when you hand it back." },
       ],
-      points: ["Flags chats it cannot answer with confidence", "\"Talk to a human\" button always available to customers", "Email alert the moment a chat needs you", "Hand the chat back to the AI when you are done"],
       inboxTitle: "Inbox",
       filters: ["All", "Needs human", "AI handled", "Closed"],
       takeover: "Take over",
@@ -91,12 +91,6 @@ export const en: SiteContent = {
       ],
       names: ["Aisha Khan", "Sofia Martinez", "James Carter"],
     },
-    stats: [
-      { value: "24/7", label: "Answers day and night, weekends and holidays" },
-      { value: "Any", label: "Language your customer writes in: the assistant replies in the same one" },
-      { value: "1", label: "Line of code to add the widget to your site" },
-      { value: "50", label: "Pages of your website it reads to build its knowledge" },
-    ],
     industries: {
       eyebrow: "Industries",
       title: "Set up for the way your business works",
@@ -215,6 +209,7 @@ export const en: SiteContent = {
     h1: "Simple plans that grow with your business",
     sub: "Start free. Every plan includes multilingual answers, lead capture, human takeover and the live inbox.",
     perMonth: "per month",
+    launch: "Launch price",
     free: "Free",
     popular: "Most popular",
     plans: {
@@ -222,7 +217,7 @@ export const en: SiteContent = {
       starter: { name: "Starter", tagline: "For a growing business", cta: "Get started" },
       pro: { name: "Pro", tagline: "For busy teams", cta: "Get started" },
     },
-    limits: { messages: "AI messages per month", pages: "knowledge pages", seats: "team members" },
+    limits: { messages: "AI messages per month", pages: "knowledge pages", seats: "team members", seat: "team member" },
     included: {
       title: "Included in every plan",
       items: ["Answers in your customers' language", "Customisable chat widget", "Lead capture and CSV export", "Human takeover and live inbox", "Email notifications", "Most asked and unanswered questions"],

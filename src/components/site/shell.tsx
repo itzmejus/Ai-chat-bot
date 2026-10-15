@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
 import { getSiteContent } from "@/content/site";
-import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL, SITE_WIDGET_KEY, WIDGET_URL } from "@/lib/config";
 import { GUIDE_SLUGS, INDUSTRY_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
@@ -124,7 +124,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
             </div>
           </div>
 
-          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10 lg:grid-cols-4">
+          <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10 lg:grid-cols-[1fr_1fr_1fr_1.5fr]">
             <FooterColumn title={t.footer.product}>
               <FooterLink href={href("/features")}>{t.nav.features}</FooterLink>
               <FooterLink href={href("/pricing")}>{t.nav.pricing}</FooterLink>
@@ -140,23 +140,26 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
                 </FooterLink>
               ))}
             </FooterColumn>
-            <FooterColumn title={t.topics.labels.integrations}>
-              {INTEGRATION_SLUGS.map((slug) => (
-                <FooterLink key={slug} href={href(`/integrations/${slug}`)}>
-                  {t.topics.integrations[slug].name}
-                </FooterLink>
-              ))}
-            </FooterColumn>
-            <FooterColumn title={t.footer.company}>
-              <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
-              <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
-              {CONTACT_EMAIL && (
-                <FooterLink href={`mailto:${CONTACT_EMAIL}`} external>
-                  {t.footer.contact}
-                </FooterLink>
-              )}
-            </FooterColumn>
-            <FooterColumn title={t.topics.labels.guides} className="col-span-2 sm:col-span-3 lg:col-span-4">
+            {/* two short lists share a column, so the row has no gap beside the long ones */}
+            <div className="flex min-w-0 flex-col gap-7 sm:gap-10">
+              <FooterColumn title={t.topics.labels.integrations}>
+                {INTEGRATION_SLUGS.map((slug) => (
+                  <FooterLink key={slug} href={href(`/integrations/${slug}`)}>
+                    {t.topics.integrations[slug].name}
+                  </FooterLink>
+                ))}
+              </FooterColumn>
+              <FooterColumn title={t.footer.company}>
+                <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
+                <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
+                {CONTACT_EMAIL && (
+                  <FooterLink href={`mailto:${CONTACT_EMAIL}`} external>
+                    {t.footer.contact}
+                  </FooterLink>
+                )}
+              </FooterColumn>
+            </div>
+            <FooterColumn title={t.topics.labels.guides} className="col-span-2 sm:col-span-3 lg:col-span-1">
               {GUIDE_SLUGS.map((slug) => (
                 <FooterLink key={slug} href={href(`/blog/${slug}`)}>
                   {t.topics.guides[slug].name}
@@ -189,6 +192,9 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
           </div>
         </div>
       </footer>
+
+      {/* The product's own chat widget on its own site, as a live demo. React moves an async script to <head>. */}
+      {SITE_WIDGET_KEY && <script src={`${WIDGET_URL}/widget.js`} data-workspace={SITE_WIDGET_KEY} async />}
     </div>
   );
 }

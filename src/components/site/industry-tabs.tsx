@@ -53,8 +53,8 @@ export function IndustryTabs({ items, label, asks, more }: { items: Item[]; labe
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(i)}
               className={cn(
-                "flex h-11 shrink-0 snap-start items-center rounded-xl px-4 text-[15px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-4 focus-visible:ring-ring/20 max-sm:bg-muted sm:px-5",
-                selected ? "bg-foreground text-white sm:bg-white sm:text-foreground sm:shadow-[0_2px_8px_rgb(27_27_32/0.12)]" : "text-muted-foreground hover:text-foreground",
+                "flex h-11 shrink-0 snap-start items-center rounded-xl px-4 text-[15px] font-semibold whitespace-nowrap transition-colors outline-none focus-visible:ring-4 focus-visible:ring-ring/20 sm:px-5",
+                selected ? "bg-foreground text-white sm:bg-white sm:text-foreground sm:shadow-[0_2px_8px_rgb(27_27_32/0.12)]" : "text-muted-foreground hover:text-foreground max-sm:bg-muted",
               )}
             >
               {item.name}

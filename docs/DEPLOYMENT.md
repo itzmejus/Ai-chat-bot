@@ -56,6 +56,7 @@ the server, so new migrations are applied on every deploy.
 | `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
 | `REDIRECT_HOSTS` | former hostnames to redirect to the current address, comma separated; optional |
 | `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
+| `SITE_WIDGET_KEY` | public key (`pk_...`) of the workspace whose chat widget appears on the public site as a live demo; optional |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from the same page; a secret |
 | `JS_RENDER_URL` | `https://r.jina.ai/` to read websites that are built with JavaScript; optional but recommended |

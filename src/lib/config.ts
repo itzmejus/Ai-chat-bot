@@ -27,6 +27,12 @@ export const REDIRECT_HOSTS = (process.env.REDIRECT_HOSTS || "")
   .map((host) => host.trim().toLowerCase())
   .filter(Boolean);
 
+/**
+ * Public key (pk_...) of the workspace whose chat widget is shown on the public site itself,
+ * so visitors can try the product. Empty leaves the site without a widget.
+ */
+export const SITE_WIDGET_KEY = process.env.SITE_WIDGET_KEY || "";
+
 /** Shown on the public site (footer, legal pages) when set. */
 export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "";
 
