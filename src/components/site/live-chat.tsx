@@ -15,27 +15,34 @@ import { Portrait } from "./hero";
  *  - Every bubble is always in the page and keeps its space; playing only fades bubbles in.
  *    Nothing below moves, and the full conversation is in the HTML for visitors without
  *    JavaScript and for search engines.
- *  - It plays only while it is on screen, and not at all for visitors who asked their device
- *    for less motion: they see the finished conversation.
+ *  - It starts empty and plays only while it is on screen. Visitors who asked their device
+ *    for less motion, and browsers without JavaScript, see the finished conversation instead
+ *    (see FinishedChat).
  */
 
 /**
  * Step through a script. `times` are the moments (ms from the start) at which each step
- * begins; after `loop` ms it starts over. Returns the number of steps reached so far.
- * Before it starts, and without JavaScript, every step counts as reached.
+ * begins; after `loop` ms it starts over. Returns the number of steps reached so far: none
+ * until the chat comes into view.
  */
 function useTimeline(times: readonly number[], loop: number) {
   const ref = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState(times.length);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
     const element = ref.current;
+    // Less motion: the finished conversation is shown by CSS (see FinishedChat), so nothing plays.
     if (!element || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let timers: number[] = [];
     const stop = () => {
       timers.forEach((timer) => window.clearTimeout(timer));
       timers = [];
+    };
+    // Leaving the screen empties the chat, so it builds up again from the start next time.
+    const leave = () => {
+      stop();
+      setStep(0);
     };
     const play = () => {
       stop();
@@ -44,7 +51,7 @@ function useTimeline(times: readonly number[], loop: number) {
       timers.push(window.setTimeout(play, loop));
     };
 
-    const observer = new IntersectionObserver(([entry]) => (entry.isIntersecting ? play() : stop()), { threshold: 0.35 });
+    const observer = new IntersectionObserver(([entry]) => (entry.isIntersecting ? play() : leave()), { threshold: 0.35 });
     observer.observe(element);
     return () => {
       observer.disconnect();
@@ -55,12 +62,31 @@ function useTimeline(times: readonly number[], loop: number) {
   return { ref, step };
 }
 
+/** Every bubble shown, the typing dots hidden: the finished conversation. */
+const FINISHED = "[data-timeline] *{opacity:1!important;translate:none!important;scale:none!important;transition:none!important}[data-timeline] [data-dots]{opacity:0!important}";
+
+/**
+ * The chats start empty. Visitors who asked for less motion, and browsers that do not run
+ * JavaScript (search engines reading the page that way among them), get the finished
+ * conversation instead.
+ */
+function FinishedChat() {
+  return (
+    <>
+      <style>{`@media (prefers-reduced-motion: reduce){${FINISHED}}`}</style>
+      <noscript>
+        <style>{FINISHED}</style>
+      </noscript>
+    </>
+  );
+}
+
 /** Fades and lifts its content in when `shown`; keeps its space when not. */
 const appear = (shown: boolean) => cn("transition-[opacity,translate,scale] duration-500 ease-out", shown ? "opacity-100" : "translate-y-2 scale-[0.98] opacity-0");
 
 function Dots({ className }: { className?: string }) {
   return (
-    <span className={cn("flex gap-1", className)}>
+    <span data-dots className={cn("flex gap-1", className)}>
       {[0, 1, 2].map((i) => (
         <span key={i} className="size-1.5 animate-bounce rounded-full bg-current" style={{ animationDelay: `${i * 0.15}s`, animationDuration: "0.9s" }} />
       ))}
@@ -128,7 +154,8 @@ export function KnowledgeChat({ demo }: { demo: SiteContent["home"]["demo"] }) {
   };
 
   return (
-    <div ref={ref} className="min-w-0">
+    <div ref={ref} data-timeline className="min-w-0">
+      <FinishedChat />
       {/* Phones: the same conversation as the customer sees it, in the chat window on a website. */}
       <WidgetOnSite demo={demo} step={step} exchanges={exchanges} className="sm:hidden" />
 
@@ -276,7 +303,8 @@ export function HandoverLive({ t }: { t: SiteContent["home"]["handover"] }) {
   const needsHuman = step >= 3;
 
   return (
-    <div ref={ref} aria-hidden className="flex flex-col rounded-[1.75rem] bg-accent p-3 sm:p-5">
+    <div ref={ref} data-timeline aria-hidden className="flex flex-col rounded-[1.75rem] bg-accent p-3 sm:p-5">
+      <FinishedChat />
       <div className="flex flex-1 flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_48px_-28px_rgb(220_38_38/0.55)] ring-1 ring-black/5">
         <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
           <span className="flex min-w-0 items-center gap-2.5">
