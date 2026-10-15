@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/site/json-ld";
-import { CtaBand, Eyebrow, FaqList, PageHero, Section, SectionHeading } from "@/components/site/sections";
+import { ContactSection, CtaBand, Eyebrow, FaqList, PageHero, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, type SiteContent, type TopicPage } from "@/content/site";
 import { APP_NAME, SITE_URL, WIDGET_URL } from "@/lib/config";
@@ -297,6 +297,7 @@ export function FaqPageView({ lang: rawLang }: { lang: string }) {
           </div>
         </Section>
       ))}
+      <ContactSection lang={lang} />
       <CtaBand lang={lang} />
     </SiteShell>
   );

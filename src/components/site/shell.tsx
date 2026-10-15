@@ -1,4 +1,4 @@
-import { ArrowRight, Languages } from "lucide-react";
+import { ArrowRight, Languages, Mail } from "lucide-react";
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
@@ -60,6 +60,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
     { href: href("/industries"), label: t.nav.industries },
     { href: href("/pricing"), label: t.nav.pricing },
     { href: href("/blog"), label: t.topics.labels.guides },
+    { href: href("/contact"), label: t.footer.contact },
   ];
   const login = { href: appLink("/login"), label: t.nav.login };
   const start = { href: appLink("/signup"), label: t.nav.start };
@@ -114,6 +115,12 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               <Brand tone="light" className="text-xl" />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-white/65 sm:text-[15px]">{t.footer.tagline}</p>
+            {CONTACT_EMAIL && (
+              <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="flex items-center gap-2 text-sm font-medium text-white/85 transition-colors hover:text-white sm:text-[15px]">
+                <Mail className="size-4 text-white/55" />
+                {CONTACT_EMAIL}
+              </a>
+            )}
             <div className="flex w-full gap-2.5 sm:w-auto sm:gap-3">
               <CtaLink href={start.href} arrow className="max-sm:flex-1 max-sm:px-3">
                 {start.label}
@@ -152,11 +159,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               <FooterColumn title={t.footer.company}>
                 <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
                 <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
-                {CONTACT_EMAIL && (
-                  <FooterLink href={`mailto:${CONTACT_EMAIL}`} external>
-                    {t.footer.contact}
-                  </FooterLink>
-                )}
+                <FooterLink href={href("/contact")}>{t.footer.contact}</FooterLink>
               </FooterColumn>
             </div>
             <FooterColumn title={t.topics.labels.guides} className="col-span-2 sm:col-span-3 lg:col-span-1">

@@ -4,6 +4,7 @@ import { HeadlineStroke, HeroStage, PlatformMarquee } from "@/components/site/he
 import { FeatureList, FeatureRows, StepsTimeline } from "@/components/site/home-sections";
 import {
   ArrowLink,
+  ContactSection,
   CtaBand,
   FaqList,
   HandoverSection,
@@ -15,7 +16,7 @@ import {
 } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, SITE_PLANS } from "@/content/site";
-import { APP_NAME, SITE_URL } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL, SITE_URL } from "@/lib/config";
 import { sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
 
@@ -40,6 +41,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       logo: `${SITE_URL}/apple-icon.png`,
       description: t.footer.tagline,
       areaServed: "Worldwide",
+      ...(CONTACT_EMAIL && {
+        email: CONTACT_EMAIL,
+        contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: CONTACT_EMAIL, availableLanguage: ["English", "Arabic"] },
+      }),
     },
     { "@context": "https://schema.org", "@type": "WebSite", name: APP_NAME, url: siteUrl(lang, ""), inLanguage: lang },
     softwareJsonLd(lang, home.meta.description, SITE_PLANS.map((plan) => ({ name: t.pricingPage.plans[plan.id].name, price: plan.price }))),
@@ -142,6 +147,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <FaqList items={home.faq.items} />
         </div>
       </Section>
+
+      {/* ---- Contact */}
+      <ContactSection lang={lang} tone="muted" />
 
       <CtaBand lang={lang} />
     </SiteShell>

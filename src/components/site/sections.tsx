@@ -1,7 +1,8 @@
-import { ArrowRight, Check, ChevronDown } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Mail } from "lucide-react";
 import Link from "next/link";
 import { DotPattern } from "@/components/illustrations";
 import { getSiteContent, PLAN_CURRENCY, SITE_PLANS, type Faq } from "@/content/site";
+import { CONTACT_EMAIL } from "@/lib/config";
 import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
@@ -338,6 +339,34 @@ export function FaqList({ items }: { items: Faq[] }) {
         </details>
       ))}
     </div>
+  );
+}
+
+/** "Get in touch" panel with the contact email. Anchored at #contact so other pages can link to it. */
+export function ContactSection({ lang, tone = "white" }: { lang: SiteLang; tone?: "white" | "muted" }) {
+  const t = getSiteContent(lang).contact;
+  if (!CONTACT_EMAIL) return null;
+  return (
+    <Section id="contact" tone={tone}>
+      <div className="flex flex-col gap-8 rounded-[2rem] border border-border/80 bg-white p-6 shadow-[0_12px_30px_-20px_rgb(27_27_32/0.35)] sm:p-10 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:p-12">
+        <div className="flex max-w-xl flex-col items-start gap-4">
+          <Eyebrow>{t.eyebrow}</Eyebrow>
+          <h2 className="text-[1.75rem] leading-[1.15] font-bold tracking-tight text-balance sm:text-4xl">{t.title}</h2>
+          <p className="text-lg leading-relaxed text-pretty text-muted-foreground">{t.sub}</p>
+        </div>
+        <div className="flex flex-col items-start gap-4 lg:items-end">
+          <a href={`mailto:${CONTACT_EMAIL}`} dir="ltr" className="flex items-center gap-3 text-xl font-semibold break-all text-foreground hover:text-primary sm:text-2xl">
+            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-accent text-primary">
+              <Mail className="size-5" />
+            </span>
+            {CONTACT_EMAIL}
+          </a>
+          <CtaLink href={`mailto:${CONTACT_EMAIL}`} arrow className="w-full sm:w-auto">
+            {t.button}
+          </CtaLink>
+        </div>
+      </div>
+    </Section>
   );
 }
 

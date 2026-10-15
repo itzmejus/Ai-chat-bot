@@ -426,6 +426,29 @@ export const en: SiteContent = {
     },
   },
 
+  contact: {
+    eyebrow: "Contact",
+    title: "Questions? Talk to us",
+    sub: "Sales, support, partnerships or help setting up your assistant: send us an email and a person will get back to you.",
+    button: "Email us",
+  },
+
+  contactPage: {
+    meta: {
+      title: "Contact us",
+      description: "Get in touch with the {name} team about sales, support, partnerships or setting up your AI assistant. Email us and a person will reply.",
+    },
+    h1: "Get in touch with the {name} team",
+    sub: "Whether you have a question before signing up or need help with your assistant, send us an email and a person will get back to you.",
+    reasonsTitle: "How can we help?",
+    reasons: [
+      { title: "Sales and pricing", text: "Questions about plans, limits or which plan suits your business.", subject: "Sales question" },
+      { title: "Help and support", text: "Setting up your assistant, adding the widget to your site, or something not working as expected.", subject: "Support request" },
+      { title: "Partnerships", text: "Agencies, website builders and resellers who want to offer {name} to their clients.", subject: "Partnership enquiry" },
+    ],
+    selfServe: { title: "Looking for a quick answer?", sub: "Most questions are already answered in our FAQ and setup guides." },
+  },
+
   footer: {
     tagline: "AI customer support for businesses worldwide, in your customers' language.",
     product: "Product",

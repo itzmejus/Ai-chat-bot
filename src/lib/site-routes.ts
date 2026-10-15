@@ -43,6 +43,7 @@ export const SITE_PAGES = [
   ...INDUSTRY_SLUGS.map((slug) => `/industries/${slug}`),
   ...Object.values(TOPIC_GROUPS).flatMap((group) => [group.base, ...group.slugs.map((slug) => `${group.base}/${slug}`)]),
   "/faq",
+  "/contact",
   "/privacy",
   "/terms",
 ] as const;

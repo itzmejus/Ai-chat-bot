@@ -132,6 +132,17 @@ export type SiteContent = {
     privacy: { meta: Meta; title: string; intro: string; sections: { h: string; p: string[] }[] };
     terms: { meta: Meta; title: string; intro: string; sections: { h: string; p: string[] }[] };
   };
+  /** The "get in touch" panel shown on the home, pricing and FAQ pages. */
+  contact: { eyebrow: string; title: string; sub: string; button: string };
+  /** The /contact page. Each reason opens an email with its subject already filled in. */
+  contactPage: {
+    meta: Meta;
+    h1: string;
+    sub: string;
+    reasonsTitle: string;
+    reasons: { title: string; text: string; subject: string }[];
+    selfServe: { title: string; sub: string };
+  };
   footer: { tagline: string; product: string; industries: string; company: string; privacy: string; terms: string; contact: string; rights: string; madeIn: string };
   breadcrumbHome: string;
   /** Setup pages per website builder, use cases and blog articles. */

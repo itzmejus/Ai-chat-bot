@@ -33,8 +33,8 @@ export const REDIRECT_HOSTS = (process.env.REDIRECT_HOSTS || "")
  */
 export const SITE_WIDGET_KEY = process.env.SITE_WIDGET_KEY || "";
 
-/** Shown on the public site (footer, legal pages) when set. */
-export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "";
+/** Shown on the public site (contact section, footer, legal pages, structured data) and in the dashboard billing note. */
+export const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "hello@siteselo.com";
 
 export const googleAuthEnabled = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 

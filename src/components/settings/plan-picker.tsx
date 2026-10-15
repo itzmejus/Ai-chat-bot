@@ -13,7 +13,7 @@ export type PlanOption = { id: string; name: string; monthlyMessages: number; ma
  * The available plans and their limits. Payments are not built yet: switching is
  * only offered when the server allows free plan changes (development and demos).
  */
-export function PlanPicker({ plans, currentId, canSwitch }: { plans: PlanOption[]; currentId: string; canSwitch: boolean }) {
+export function PlanPicker({ plans, currentId, canSwitch, contactEmail }: { plans: PlanOption[]; currentId: string; canSwitch: boolean; contactEmail?: string }) {
   const t = useTranslations("settings");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +72,17 @@ export function PlanPicker({ plans, currentId, canSwitch }: { plans: PlanOption[
           {tAll(error)}
         </p>
       )}
-      <p className="text-xs text-muted-foreground">{canSwitch ? t("planDemoNote") : t("planContactNote")}</p>
+      <p className="text-xs text-muted-foreground">
+        {canSwitch ? t("planDemoNote") : t("planContactNote")}
+        {!canSwitch && contactEmail && (
+          <>
+            {" "}
+            <a href={`mailto:${contactEmail}`} dir="ltr" className="font-medium text-primary hover:underline">
+              {contactEmail}
+            </a>
+          </>
+        )}
+      </p>
     </div>
   );
 }

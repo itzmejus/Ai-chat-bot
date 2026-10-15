@@ -1,5 +1,5 @@
 import { getSiteContent } from "@/content/site";
-import { APP_NAME } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
 import { INDUSTRY_SLUGS, TOPIC_GROUPS, type TopicGroup } from "@/lib/site-routes";
 import { siteUrl } from "@/lib/site-seo";
 
@@ -43,6 +43,10 @@ export function GET() {
     "",
     "## Languages",
     `- Arabic version of every page: ${siteUrl("ar", "")}`,
+    "",
+    "## Contact",
+    link(t.footer.contact, "/contact", t.contactPage.meta.description),
+    ...(CONTACT_EMAIL ? [`- Email: ${CONTACT_EMAIL}`] : []),
     "",
   ].join("\n");
 

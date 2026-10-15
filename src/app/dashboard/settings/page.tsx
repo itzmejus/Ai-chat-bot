@@ -6,6 +6,7 @@ import { PageHero } from "@/components/page-hero";
 import { NotificationForm } from "@/components/settings/notification-form";
 import { PlanPicker } from "@/components/settings/plan-picker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CONTACT_EMAIL } from "@/lib/config";
 import { DEFAULT_WORKING_HOURS, type WorkingHours } from "@/lib/validation";
 import { requireWorkspace } from "@/server/auth/session";
 import { freePlanChangeAllowed, listPlans } from "@/server/billing";
@@ -118,7 +119,7 @@ export default async function SettingsPage() {
       <Card>
         <SectionHeader icon={CreditCard} title={t("settings.planTitle")} description={t("settings.planSubtitle")} color="#7c4dff" />
         <CardContent>
-          <PlanPicker plans={plans} currentId={workspace.planId} canSwitch={canEdit && freePlanChangeAllowed()} />
+          <PlanPicker plans={plans} currentId={workspace.planId} canSwitch={canEdit && freePlanChangeAllowed()} contactEmail={CONTACT_EMAIL} />
         </CardContent>
       </Card>
     </div>

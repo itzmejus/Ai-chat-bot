@@ -55,7 +55,7 @@ the server, so new migrations are applied on every deploy.
 | `WIDGET_URL` | `https://chat.siteselo.com` |
 | `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
 | `REDIRECT_HOSTS` | former hostnames to redirect to the current address, comma separated; optional |
-| `CONTACT_EMAIL` | address shown in the site footer and legal pages; optional |
+| `CONTACT_EMAIL` | address shown in the site contact section, footer, legal pages and dashboard billing note; defaults to hello@siteselo.com |
 | `SITE_WIDGET_KEY` | public key (`pk_...`) of the workspace whose chat widget appears on the public site as a live demo; optional |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `service_role` key from the same page; a secret |

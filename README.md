@@ -108,7 +108,7 @@ All are documented in `.env.example`. Secrets live only in the environment, neve
 | `APP_URL`, `NEXTAUTH_URL` | in production | public address of the dashboard |
 | `WIDGET_URL` | no | separate hostname for the widget; defaults to `APP_URL` |
 | `SITE_URL` | no | separate hostname for the public marketing site; defaults to `APP_URL` |
-| `CONTACT_EMAIL` | no | shown in the site footer and legal pages |
+| `CONTACT_EMAIL` | no | shown in the site contact section, footer, legal pages and dashboard billing note (default hello@siteselo.com) |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | no | Supabase Storage for product photos; without them products have no pictures |
 | `APP_NAME` | no | product name shown everywhere, default "Selo Assist" |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | no | enables "Continue with Google" |

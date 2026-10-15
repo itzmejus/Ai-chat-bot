@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/site/json-ld";
-import { CtaBand, FaqList, IncludedInEveryPlan, PageHero, PlanComparison, PricingCards, Section, SectionHeading } from "@/components/site/sections";
+import { ContactSection, CtaBand, FaqList, IncludedInEveryPlan, PageHero, PlanComparison, PricingCards, Section, SectionHeading } from "@/components/site/sections";
 import { SiteShell } from "@/components/site/shell";
 import { getSiteContent, SITE_PLANS } from "@/content/site";
 import type { SiteLang } from "@/lib/site-routes";
@@ -47,6 +47,8 @@ export default async function PricingPage({ params }: PageProps<"/[lang]/pricing
           <FaqList items={page.faq.items} />
         </div>
       </Section>
+
+      <ContactSection lang={lang} />
 
       <CtaBand lang={lang} />
     </SiteShell>
