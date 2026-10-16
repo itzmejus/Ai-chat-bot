@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
     return [
       { source: "/:path*", headers: always },
       {
+        // Site pictures in public/images. Next.js serves public files with max-age=0 because they
+        // can change under the same name; these rarely do, so browsers may keep them for a week
+        // (and use a stale copy for a day while fetching a fresh one). Give a changed picture a new name.
+        source: "/images/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }],
+      },
+      {
         // No other website may show these pages inside a frame (clickjacking). The chat iframe
         // (/embed/...) is left out: customers' websites must frame it, and it sets its own
         // frame-ancestors from the business's list of approved websites.
