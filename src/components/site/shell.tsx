@@ -159,6 +159,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               <FooterColumn title={t.footer.company}>
                 <FooterLink href={href("/privacy")}>{t.footer.privacy}</FooterLink>
                 <FooterLink href={href("/terms")}>{t.footer.terms}</FooterLink>
+                <FooterLink href={href("/refund")}>{t.footer.refund}</FooterLink>
                 <FooterLink href={href("/contact")}>{t.footer.contact}</FooterLink>
               </FooterColumn>
             </div>

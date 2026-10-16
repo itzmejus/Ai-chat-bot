@@ -46,6 +46,7 @@ export const SITE_PAGES = [
   "/contact",
   "/privacy",
   "/terms",
+  "/refund",
 ] as const;
 
 /** Public URL path of a page in a language: sitePath("ar", "/pricing") is "/ar/pricing". */

@@ -6,7 +6,7 @@ import { siteUrl } from "@/lib/site-seo";
 // (the Docker image is built without it).
 export const dynamic = "force-dynamic";
 
-const PRIORITY: Record<string, number> = { "": 1, "/features": 0.9, "/pricing": 0.9, "/industries": 0.8, "/integrations": 0.8, "/use-cases": 0.8, "/blog": 0.8, "/faq": 0.6, "/contact": 0.5, "/privacy": 0.2, "/terms": 0.2 };
+const PRIORITY: Record<string, number> = { "": 1, "/features": 0.9, "/pricing": 0.9, "/industries": 0.8, "/integrations": 0.8, "/use-cases": 0.8, "/blog": 0.8, "/faq": 0.6, "/contact": 0.5, "/privacy": 0.2, "/terms": 0.2, "/refund": 0.2 };
 
 /** Every public page in both languages, each pointing at its translation. */
 export default function sitemap(): MetadataRoute.Sitemap {

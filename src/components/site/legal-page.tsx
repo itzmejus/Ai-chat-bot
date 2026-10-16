@@ -5,8 +5,8 @@ import { CONTACT_EMAIL } from "@/lib/config";
 import type { SiteLang } from "@/lib/site-routes";
 import { breadcrumbJsonLd } from "@/lib/site-seo";
 
-/** Privacy policy and terms of service share one plain, readable layout. */
-export function LegalPage({ lang, kind }: { lang: SiteLang; kind: "privacy" | "terms" }) {
+/** Privacy policy, terms of service and refund policy share one plain, readable layout. */
+export function LegalPage({ lang, kind }: { lang: SiteLang; kind: "privacy" | "terms" | "refund" }) {
   const t = getSiteContent(lang);
   const doc = t.legal[kind];
   const page = `/${kind}`;
