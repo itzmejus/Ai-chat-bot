@@ -66,9 +66,16 @@ function dodo(): DodoPayments {
   client ??= new DodoPayments({
     bearerToken: process.env.DODO_PAYMENTS_API_KEY,
     webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY ?? null,
-    environment: process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode",
+    environment: paymentsMode(),
   });
   return client;
+}
+
+export const paymentsMode = () => (process.env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode");
+
+/** One cheap authenticated call, to show in the admin health page that the API key works. */
+export async function pingPayments() {
+  await dodo().products.list({ page_size: 1 });
 }
 
 const SETTINGS_URL = () => `${APP_URL}/dashboard/settings`;

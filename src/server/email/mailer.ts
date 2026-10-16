@@ -26,7 +26,12 @@ function getTransporter(): Transporter {
   return transporter;
 }
 
-const escapeHtml = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+/** Connect and log in to the SMTP server without sending anything. Throws if it fails. */
+export async function verifyEmailServer() {
+  await getTransporter().verify();
+}
+
+const escapeHtml =(text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export type EmailContent = {
   subject: string;

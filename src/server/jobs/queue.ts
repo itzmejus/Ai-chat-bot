@@ -53,6 +53,18 @@ export async function startIngestWorker() {
   console.log("[jobs] ingestion worker started");
 }
 
+/** Backlog and recent failures of the ingestion queue, and whether this process runs the worker. */
+export async function ingestQueueStatus() {
+  const boss = await getBoss();
+  const queue = await boss.getQueue(INGEST_QUEUE);
+  return {
+    ready: queue?.readyCount ?? 0,
+    active: queue?.activeCount ?? 0,
+    failed: queue?.failedCount ?? 0,
+    workerInProcess: Boolean(globalForWorker.ingestWorkerStarted),
+  };
+}
+
 export async function stopJobs() {
   const boss = await globalForBoss.pgBoss?.catch(() => undefined);
   await boss?.stop();

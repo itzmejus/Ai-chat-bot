@@ -46,6 +46,14 @@ async function ensureBucket() {
   bucketReady = true;
 }
 
+/** Whether the storage API answers with these credentials. "missing" means the bucket is not created yet. */
+export async function pingStorage(): Promise<"ok" | "missing"> {
+  const res = await call(`/bucket/${BUCKET}`);
+  if (res.ok) return "ok";
+  if (res.status === 400 || res.status === 404) return "missing"; // created on the first upload
+  throw new Error(`storage answered ${res.status}`);
+}
+
 /** Address anyone can load the image from. */
 export const publicImageUrl = (path: string) => `${baseUrl()}/storage/v1/object/public/${BUCKET}/${path}`;
 

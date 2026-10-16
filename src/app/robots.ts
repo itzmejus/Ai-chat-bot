@@ -14,7 +14,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   if (host && host !== siteHost) return { rules: { userAgent: "*", disallow: "/" } };
 
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/dashboard", "/api/", "/embed/", "/onboarding", "/invite/", "/login", "/signup"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/dashboard", "/admin","/api/", "/embed/", "/onboarding", "/invite/", "/login", "/signup"] },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

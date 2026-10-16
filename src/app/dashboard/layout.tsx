@@ -10,6 +10,7 @@ import { Meter } from "@/components/meter";
 import { Button } from "@/components/ui/button";
 import { catalogVariant } from "@/lib/catalog";
 import { signOutAction } from "@/server/actions/auth";
+import { isAdmin } from "@/server/admin/access";
 import { requireWorkspace } from "@/server/auth/session";
 import { getAiMessagesUsed } from "@/server/limits/usage";
 import { VerifyEmailBanner } from "@/components/auth/account-forms";
@@ -71,6 +72,11 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             </div>
 
             <div className="flex items-center gap-1.5">
+              {isAdmin(user) && (
+                <Link href="/admin" className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
+                  Admin
+                </Link>
+              )}
               <LanguageSwitcher />
               <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
               <div className="flex items-center gap-2.5">
