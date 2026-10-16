@@ -171,7 +171,8 @@ policy and terms, each in English and Arabic (22 pages).
 - **Text.** Everything is in `src/content/site/en.ts` and `ar.ts`, which share one type, so a missing
   translation is a compile error. `{name}` is replaced by `APP_NAME`.
 - **Prices.** `SITE_PLANS` in `src/content/site/index.ts`. The limits are checked against the
-  database by a test; **the prices are placeholders** until billing is built.
+  database by a test. Four plans: Free, Starter €19, Growth €49 and Pro €149; nothing charges
+  them until billing is built.
 - **SEO.** Every page has its own title, description, canonical address, `hreflang` links between the
   two languages, and Open Graph / Twitter tags (`src/lib/site-seo.ts`). `sitemap.xml` and `robots.txt`
   are generated (`src/app/sitemap.ts`, `robots.ts`); the dashboard, login and APIs are marked

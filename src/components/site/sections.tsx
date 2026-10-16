@@ -123,26 +123,26 @@ function Tick({ tone = "light" }: { tone?: "light" | "dark" }) {
 }
 
 /**
- * The three plans side by side, the recommended one on a dark raised card.
+ * The plans side by side (two per row on tablets), the recommended one on a dark raised card.
  * Prices and limits come from SITE_PLANS.
  */
 export function PricingCards({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).pricingPage;
   const number = planNumber(lang);
   return (
-    <ul className="mx-auto grid max-w-md items-stretch gap-5 lg:max-w-none lg:grid-cols-3 lg:gap-6">
+    <ul className="mx-auto grid max-w-md items-stretch gap-5 sm:max-w-none sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
       {SITE_PLANS.map((plan, i) => {
         const dark = Boolean(plan.popular);
         return (
           <li
             key={plan.id}
             className={cn(
-              "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7 sm:p-8",
+              "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7",
               dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(220_38_38/0.7)] lg:-my-3" : "border border-border/80 bg-white",
             )}
           >
             <div className="flex items-start justify-between gap-3">
-              <PlanArt level={(i + 1) as 1 | 2 | 3} className={dark ? "text-white" : "text-primary"} />
+              <PlanArt level={(i + 1) as 1 | 2 | 3 | 4} className={dark ? "text-white" : "text-primary"} />
               {plan.popular && <span className="rounded-full bg-[#fbbf24] px-3 py-1 text-xs font-bold text-[#1b1b20]">{t.popular}</span>}
             </div>
             <div className="flex flex-col gap-1">
@@ -150,20 +150,9 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
               <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
             </div>
             <p className="flex flex-wrap items-baseline gap-2">
-              {/* Says why a price is crossed out. Every card keeps the line, so the prices stay level. */}
-              <span className={cn("min-h-5 w-full text-xs font-bold tracking-wide uppercase", dark ? "text-[#fbbf24]" : "text-primary")}>{plan.was ? t.launch : ""}</span>
-              <span dir="ltr" className="flex items-baseline gap-2">
-                {plan.was && (
-                  // The regular price, crossed out; <s> tells screen readers it no longer applies.
-                  <s className={cn("text-xl font-semibold", dark ? "text-white/45" : "text-muted-foreground/70")}>
-                    {PLAN_CURRENCY.symbol}
-                    {number.format(plan.was)}
-                  </s>
-                )}
-                <span className="text-5xl font-bold tracking-tight">
-                  {PLAN_CURRENCY.symbol}
-                  {number.format(plan.price)}
-                </span>
+              <span dir="ltr" className="text-5xl font-bold tracking-tight">
+                {PLAN_CURRENCY.symbol}
+                {number.format(plan.price)}
               </span>
               <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
             </p>
@@ -223,13 +212,7 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
         p.price === 0 ? (
           t.free
         ) : (
-          <span key={p.id} dir="ltr" className="inline-flex items-baseline gap-1.5">
-            {p.was && (
-              <s className="text-sm font-normal text-muted-foreground">
-                {PLAN_CURRENCY.symbol}
-                {number.format(p.was)}
-              </s>
-            )}
+          <span key={p.id} dir="ltr">
             {PLAN_CURRENCY.symbol}
             {number.format(p.price)}
           </span>
@@ -251,7 +234,7 @@ export function PlanComparison({ lang }: { lang: SiteLang }) {
               {t.compare.feature}
             </th>
             {SITE_PLANS.map((plan) => (
-              <th key={plan.id} scope="col" className={cn("w-[19%] p-2.5 text-center text-[13px] font-bold sm:w-auto sm:p-4 sm:text-base", plan.popular && "bg-accent text-accent-foreground")}>
+              <th key={plan.id} scope="col" className={cn("w-[16%] p-2 text-center text-[13px] font-bold sm:w-auto sm:p-4 sm:text-base", plan.popular && "bg-accent text-accent-foreground")}>
                 {t.plans[plan.id].name}
               </th>
             ))}

@@ -278,7 +278,7 @@ export async function seedDemo({ password, embed = true }: { password: string; e
   const db = tenantDb(workspaceId);
 
   // Starter plan, so the Team page has free seats to invite into.
-  await db.workspace.update({ where: { id: workspaceId }, data: { publicKey: DEMO_PUBLIC_KEY, planId: "starter" } });
+  await db.workspace.update({ where: { id: workspaceId }, data: { publicKey: DEMO_PUBLIC_KEY, planId: "growth" } });
   await db.assistantSettings.update({
     where: { workspaceId },
     data: {

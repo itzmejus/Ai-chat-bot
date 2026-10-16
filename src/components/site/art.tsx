@@ -418,9 +418,10 @@ export const STEP_ART = [SourcesArt, CodeArt, ChatArt];
 export const RELAY_ART = [GroundedArt, AlertArt, HandoverArt];
 
 /** Plan size as a stack of chat bubbles: one, two or three. */
-export function PlanArt({ level, className }: { level: 1 | 2 | 3; className?: string }) {
+export function PlanArt({ level, className }: { level: 1 | 2 | 3 | 4; className?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 56 48" fill="none" className={cn("h-12 w-14 shrink-0", className)}>
+      {level >= 4 && <Spark x={7} y={8} size={0.4} fill={AMBER} />}
       {level >= 3 && <rect x="20" y="2" width="34" height="18" rx="9" fill="currentColor" fillOpacity="0.25" />}
       {level >= 2 && <rect x="11" y="13" width="34" height="18" rx="9" fill="currentColor" fillOpacity="0.5" />}
       <path d="M11 24h16a9 9 0 0 1 9 9 9 9 0 0 1-9 9H14l-6 5v-6.500A9 9 0 0 1 2 33a9 9 0 0 1 9-9Z" fill="currentColor" />

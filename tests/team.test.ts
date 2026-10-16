@@ -57,7 +57,7 @@ beforeEach(() => {
 /** Emails are sent without being awaited by the chat; give them a moment to land. */
 const settle = () => new Promise((resolve) => setTimeout(resolve, 60));
 
-async function setup(name: string, plan = "starter") {
+async function setup(name: string, plan = "growth") {
   const t = await createTenant(name);
   await prisma.workspace.update({ where: { id: t.workspace.id }, data: { planId: plan } });
   const { maxAgents } = await prisma.plan.findUniqueOrThrow({ where: { id: plan } });
@@ -117,7 +117,7 @@ describe("team invitations", () => {
     await expect(inviteMember(free.scope, unique("a"), "agent", free.inviter)).rejects.toMatchObject({ code: "limit" });
     expect(sent).toHaveLength(0);
 
-    const starter = await setup("Team Starter", "starter"); // 3 seats
+    const starter = await setup("Team Growth", "growth"); // 3 seats
     await inviteMember(starter.scope, unique("a"), "agent", starter.inviter);
     const second = unique("b");
     await inviteMember(starter.scope, second, "agent", starter.inviter);

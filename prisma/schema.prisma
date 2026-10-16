@@ -125,7 +125,7 @@ model AuthToken {
 }
 
 model Plan {
-  id                String @id // "free" | "starter" | "pro"
+  id                String @id // "free" | "starter" | "growth" | "pro"
   name              String
   monthlyMessages   Int
   maxKnowledgePages Int

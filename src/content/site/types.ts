@@ -11,7 +11,7 @@ export type Faq = { q: string; a: string };
 export type Meta = { title: string; description: string };
 
 export type FeatureKey = "grounded" | "bilingual" | "leads" | "products" | "handover" | "inbox" | "insights" | "widget" | "security";
-export type PlanId = "free" | "starter" | "pro";
+export type PlanId = "free" | "starter" | "growth" | "pro";
 
 /** A hub page (list of pages in a group) or the FAQ page: its search listing and heading. */
 export type Hub = { meta: Meta; h1: string; sub: string };
@@ -114,8 +114,6 @@ export type SiteContent = {
     h1: string;
     sub: string;
     perMonth: string;
-    /** Label beside a crossed-out regular price. */
-    launch: string;
     free: string;
     popular: string;
     plans: Record<PlanId, { name: string; tagline: string; cta: string }>;
