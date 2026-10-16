@@ -6,8 +6,8 @@ import { PLATFORM_LOGOS } from "./platform-logos";
 /**
  * The picture at the top of the home page: a photo of a customer with her phone, standing
  * inside a set of arches, with the conversation she is having floating around her.
- * The photo is public/images/hero-person.png; the two web-sized copies next to it are what
- * the page loads (regenerate them if the photo is replaced).
+ * The photo is public/images/hero-person.png; the web-sized copies next to it (400, 600 and
+ * 800 px wide, WebP) are what the page loads. Regenerate them if the photo is replaced.
  */
 
 const SPARKLE = "M0-10C1.5-3 3-1.5 10 0 3 1.5 1.5 3 0 10-1.5 3-3 1.5-10 0-3-1.5-1.5-3 0-10Z";
@@ -163,14 +163,14 @@ export function HeroStage({ home }: { home: SiteContent["home"] }) {
       {/* The photo keeps its proportions and always fits: as tall as the stage allows, never wider than the screen. */}
       {/* eslint-disable-next-line @next/next/no-img-element -- a fixed, pre-sized hero picture; srcSet picks the right file */}
       <img
-        src="/images/hero-person-900.webp"
-        srcSet="/images/hero-person-480.webp 480w, /images/hero-person-900.webp 900w"
-        sizes="(min-width: 640px) 400px, 300px"
-        width={900}
-        height={1143}
+        src="/images/hero-person-800.webp"
+        srcSet="/images/hero-person-400.webp 400w, /images/hero-person-600.webp 600w, /images/hero-person-800.webp 800w"
+        sizes="(min-width: 640px) 400px, 305px"
+        width={800}
+        height={1017}
         alt=""
+        // The largest thing on the first screen: fetched first, and drawn as soon as it arrives.
         fetchPriority="high"
-        decoding="async"
         className="absolute inset-x-0 bottom-0 mx-auto h-[97%] w-auto max-w-full object-contain object-bottom"
       />
 
