@@ -57,6 +57,12 @@ export async function pingStorage(): Promise<"ok" | "missing"> {
 /** Address anyone can load the image from. */
 export const publicImageUrl = (path: string) => `${baseUrl()}/storage/v1/object/public/${BUCKET}/${path}`;
 
+/** The storage path of an address made by publicImageUrl(), or null for an image hosted anywhere else. */
+export function storedImagePath(url: string | null | undefined): string | null {
+  const prefix = publicImageUrl("");
+  return url && baseUrl() && url.startsWith(prefix) ? url.slice(prefix.length) : null;
+}
+
 /** Store an image and return its public address. `path` is "<workspaceId>/<file>.webp". */
 export async function uploadImage(path: string, bytes: Uint8Array, contentType: string): Promise<string> {
   if (!storageConfigured()) throw new StorageError("notConfigured");

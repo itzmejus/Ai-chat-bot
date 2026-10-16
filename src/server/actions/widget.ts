@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { widgetSettingsSchema } from "@/lib/validation";
 import { normalizeDomain } from "@/lib/widget-domains";
 import { requireWorkspace } from "@/server/auth/session";
+import { forgetOldLogo } from "@/server/widget/logo";
 import type { FormState } from "./auth";
 
 const MAX_DOMAINS = 20;
@@ -43,11 +44,14 @@ export async function saveWidgetSettingsAction(_prev: FormState, formData: FormD
 
   const { assistantName, greeting, ...widget } = parsed.data;
   const workspaceId = workspace.id;
+  const previous = await db.widgetSettings.findFirst({ select: { logoUrl: true } });
   await db.widgetSettings.upsert({
     where: { workspaceId },
     update: { ...widget, allowedDomains: domains },
     create: { workspaceId, ...widget, allowedDomains: domains },
   });
+  // An uploaded logo replaced by an address (or cleared) is no longer needed.
+  await forgetOldLogo(previous?.logoUrl, widget.logoUrl);
   await db.assistantSettings.upsert({
     where: { workspaceId },
     update: { assistantName, greeting },

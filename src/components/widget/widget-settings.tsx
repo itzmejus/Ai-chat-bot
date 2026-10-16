@@ -64,12 +64,15 @@ export function WidgetSettings({
   embedCode,
   previewUrl,
   widgetOrigin,
+  canUpload,
 }: {
   initial: WidgetSettingsValues;
   canEdit: boolean;
   embedCode: string;
   previewUrl: string;
   widgetOrigin: string;
+  /** Whether image storage is set up, so a logo file can be uploaded instead of linked. */
+  canUpload: boolean;
 }) {
   const t = useTranslations();
   const [values, setValues] = useState(initial);
@@ -104,6 +107,42 @@ export function WidgetSettings({
 
   const dirty = !sameSettings(values, saved);
   const set = <K extends keyof WidgetSettingsValues>(key: K, value: WidgetSettingsValues[K]) => setValues((v) => ({ ...v, [key]: value }));
+
+  // Uploading or removing a logo is saved straight away, so it also moves the saved baseline.
+  const logoInput = useRef<HTMLInputElement>(null);
+  const [logoBusy, setLogoBusy] = useState(false);
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const applyLogo = (logoUrl: string) => {
+    setValues((v) => ({ ...v, logoUrl }));
+    setSaved((s) => ({ ...s, logoUrl }));
+    setSubmitted((s) => ({ ...s, logoUrl }));
+  };
+  async function logoRequest(init: RequestInit) {
+    setLogoBusy(true);
+    setLogoError(null);
+    try {
+      const res = await fetch("/api/branding/logo", init);
+      const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok) setLogoError(t(body.error ?? "errors.generic"));
+      return res.ok ? body : null;
+    } catch {
+      setLogoError(t("errors.generic"));
+      return null;
+    } finally {
+      setLogoBusy(false);
+      if (logoInput.current) logoInput.current.value = "";
+    }
+  }
+  async function uploadLogo(file: File | undefined) {
+    if (!file) return;
+    const form = new FormData();
+    form.append("file", file);
+    const body = await logoRequest({ method: "POST", body: form });
+    if (body?.url) applyLogo(body.url);
+  }
+  async function removeLogo() {
+    if (await logoRequest({ method: "DELETE" })) applyLogo("");
+  }
 
   // Push the current (possibly unsaved) settings to the preview.
   const pushPreview = useCallback(() => {
@@ -260,16 +299,39 @@ export function WidgetSettings({
                       required
                     />
                   </FormField>
-                  <FormField id="logoUrl" label={t("widget.logoUrl")} hint={t("common.optional")} error={errors.logoUrl}>
-                    <Input
-                      id="logoUrl"
-                      name="logoUrl"
-                      dir="ltr"
-                      type="url"
-                      placeholder="https://"
-                      value={values.logoUrl}
-                      onChange={(e) => set("logoUrl", e.target.value)}
-                    />
+                  <FormField id="logoUrl" label={t("widget.logoUrl")} hint={t("common.optional")} error={logoError ?? errors.logoUrl}>
+                    <div className="flex items-center gap-2">
+                      <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted" style={{ backgroundColor: values.logoUrl ? undefined : values.brandColor }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element -- any https address the owner chose */}
+                        {values.logoUrl.trim() && <img src={values.logoUrl.trim()} alt="" className="size-full object-cover" />}
+                      </span>
+                      <Input
+                        id="logoUrl"
+                        name="logoUrl"
+                        dir="ltr"
+                        type="url"
+                        placeholder="https://"
+                        value={values.logoUrl}
+                        onChange={(e) => set("logoUrl", e.target.value)}
+                      />
+                    </div>
+                    {canEdit && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {canUpload && (
+                          <>
+                            <input ref={logoInput} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif" className="hidden" onChange={(e) => uploadLogo(e.target.files?.[0])} />
+                            <Button type="button" variant="outline" size="sm" disabled={logoBusy} onClick={() => logoInput.current?.click()}>
+                              {logoBusy ? t("widget.logoUploading") : t("widget.logoUpload")}
+                            </Button>
+                          </>
+                        )}
+                        {values.logoUrl && (
+                          <Button type="button" variant="ghost" size="sm" disabled={logoBusy} onClick={removeLogo}>
+                            {t("widget.logoRemove")}
+                          </Button>
+                        )}
+                      </div>
+                    )}
                   </FormField>
                 </div>
                 <p className="-mt-3 text-xs text-muted-foreground">{t("widget.logoHint")}</p>

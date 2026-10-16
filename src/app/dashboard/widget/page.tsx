@@ -4,6 +4,7 @@ import { ChatScene, DotPattern } from "@/components/illustrations";
 import { WidgetSettings } from "@/components/widget/widget-settings";
 import { APP_URL, WIDGET_URL } from "@/lib/config";
 import { requireWorkspace } from "@/server/auth/session";
+import { storageConfigured } from "@/server/storage";
 import { createWidgetToken } from "@/server/widget/token";
 
 export const metadata = { title: "Widget" };
@@ -59,6 +60,7 @@ export default async function WidgetPage() {
         embedCode={embedCode}
         previewUrl={previewUrl}
         widgetOrigin={new URL(WIDGET_URL).origin}
+        canUpload={storageConfigured()}
       />
     </div>
   );

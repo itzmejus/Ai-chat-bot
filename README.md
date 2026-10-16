@@ -462,6 +462,5 @@ The inbox, takeover, leads, limits and analytics then apply to that channel with
 4. **Instagram and Messenger** through the same channel adapter.
 5. **Lead quality.** Normalise UAE phone numbers to one format, merge repeat leads from the same
    person, and push new leads to a CRM or a webhook (Zapier, Make).
-6. **Logo upload.** The widget logo is a URL today; add file upload with Supabase Storage.
-7. **Monitoring.** Error tracking (Sentry), a health-check endpoint and uptime alerts.
-8. **Scheduled re-sync** of website sources, so the knowledge base follows changes to the site.
+6. **Monitoring.** Error tracking (Sentry), a health-check endpoint and uptime alerts.
+7. **Scheduled re-sync** of website sources, so the knowledge base follows changes to the site.

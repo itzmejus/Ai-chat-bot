@@ -125,6 +125,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 [dir="rtl"] .mw-detail-back svg{transform:scaleX(-1)}
 .mw-detail-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .mw-detail-img{width:100%;aspect-ratio:4/3;max-height:240px}
+/* The whole picture, letterboxed on the canvas colour, rather than a crop of it. */
+.mw-detail-img img{object-fit:contain}
 .mw-detail-img.empty svg{width:56px;height:56px}
 .mw-detail-body{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px}
 .mw-detail-body h2{margin:0;font-size:19px;line-height:1.3;font-weight:700}
@@ -165,6 +167,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
    screen. The launcher hides while it is open (the header's arrow closes it) to leave room for the conversation. */
 .mw[data-mobile="true"][data-open="true"]{padding:12px 12px 14px}
 .mw[data-mobile="true"][data-open="true"] .mw-launcher{display:none}
+/* The sheet is full width but short, so a full-width 4:3 picture would push the details out of view. */
+.mw[data-mobile="true"] .mw-detail-img{max-height:min(170px,28vh)}
 /* Touch screens zoom the page when a focused field's text is smaller than 16px. */
 @media (pointer:coarse){.mw-composer textarea,.mw-form input{font-size:16px}}
 /* Dashboard preview: the window is always shown inside a fixed frame. */

@@ -25,7 +25,7 @@ import { storageConfigured } from "@/server/storage";
 const OWNER_EMAIL = process.env.SITE_ASSISTANT_EMAIL || "hello@siteselo.com";
 const SITE = "https://www.assist.siteselo.com";
 const CONTACT = "hello@siteselo.com";
-/** Optional plan pictures (1:1 PNG), e.g. selo-assist-starter.png; skipped when not found. */
+/** Optional folder of plan pictures (1:1 PNG): selo-assist-free.png, -starter, -growth, -pro; skipped when not found. */
 const IMAGE_DIR = process.env.SITE_ASSISTANT_IMAGES || "";
 
 const plan = (id: string) => SITE_PLANS.find((p) => p.id === id)!;
@@ -170,7 +170,7 @@ async function main() {
 
   for (const p of products) {
     const input = productSchema.parse({ name: p.name, description: p.description, category: "Plans", price: p.price, url: p.price === "0" ? `${SITE}/signup` : `${SITE}/pricing`, available: true });
-    const imageFile = IMAGE_DIR && path.join(IMAGE_DIR, p.id === "free" ? "selo-assist-logo-512.png" : `selo-assist-${p.id}.png`);
+    const imageFile = IMAGE_DIR && path.join(IMAGE_DIR, `selo-assist-${p.id}.png`);
     const image = imageFile && storageConfigured() && fs.existsSync(imageFile) ? new Uint8Array(fs.readFileSync(imageFile)) : undefined;
     const row = await createProduct(scope, input, image);
     // Products default to AED; the plans are in euros. Saving again re-indexes it with the right price.
