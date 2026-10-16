@@ -147,6 +147,14 @@ model Workspace {
   planId          String   @default("free")
   createdAt       DateTime @default(now())
 
+  // Paid plans are Dodo Payments subscriptions, kept in sync by its webhook (src/server/billing).
+  dodoCustomerId     String?
+  dodoSubscriptionId String?   @unique
+  billingStatus      String? // the subscription's status at Dodo: "active", "past_due", "on_hold"...
+  billingPeriodEnd   DateTime? // next renewal, or the day a cancelled subscription ends
+  cancelAtPeriodEnd  Boolean   @default(false)
+  billingEventAt     DateTime? // time of the last webhook applied, so a late, older event is ignored
+
   plan                 Plan                  @relation(fields: [planId], references: [id])
   memberships          Membership[]
   invites              Invite[]

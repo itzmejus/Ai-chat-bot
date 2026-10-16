@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CONTACT_EMAIL } from "@/lib/config";
 import { DEFAULT_WORKING_HOURS, type WorkingHours } from "@/lib/validation";
 import { requireWorkspace } from "@/server/auth/session";
-import { freePlanChangeAllowed, listPlans } from "@/server/billing";
+import { freePlanChangeAllowed, listPlans, paymentsConfigured } from "@/server/billing";
 import { emailConfigured } from "@/server/email/mailer";
 import { whatsappConfigured } from "@/server/whatsapp/client";
 import { knowledgePagesUsed } from "@/server/knowledge";
@@ -35,7 +35,7 @@ function SectionHeader({ icon: Icon, title, description, color }: { icon: Lucide
 }
 
 /** Settings: business profile and hours, notifications (email and WhatsApp), usage, the person's own account, and the plan. */
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: PageProps<"/dashboard/settings">) {
   const { db, workspace, role, user } = await requireWorkspace();
   const t = await getTranslations();
   const canEdit = role === "owner";
@@ -127,7 +127,21 @@ export default async function SettingsPage() {
       <Card>
         <SectionHeader icon={CreditCard} title={t("settings.planTitle")} description={t("settings.planSubtitle")} color="#7c4dff" />
         <CardContent>
-          <PlanPicker plans={plans} currentId={workspace.planId} canSwitch={canEdit && freePlanChangeAllowed()} contactEmail={CONTACT_EMAIL} />
+          <PlanPicker
+            plans={plans}
+            currentId={workspace.planId}
+            canEdit={canEdit}
+            mode={paymentsConfigured() ? "payments" : freePlanChangeAllowed() ? "demo" : "contact"}
+            billing={{
+              status: workspace.billingStatus,
+              periodEnd: workspace.billingPeriodEnd?.toISOString() ?? null,
+              cancelAtPeriodEnd: workspace.cancelAtPeriodEnd,
+              hasCustomer: Boolean(workspace.dodoCustomerId),
+              hasSubscription: Boolean(workspace.dodoSubscriptionId),
+            }}
+            justPaid={(await searchParams).billing === "success"}
+            contactEmail={CONTACT_EMAIL}
+          />
         </CardContent>
       </Card>
     </div>

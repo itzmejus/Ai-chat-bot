@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { parseWorkspaceForm } from "@/lib/workspace-form";
 import { requireWorkspace } from "@/server/auth/session";
-import { freePlanChangeAllowed, setWorkspacePlan } from "@/server/billing";
+import { billingPortalUrl, freePlanChangeAllowed, paymentsConfigured, setWorkspacePlan, startCheckout } from "@/server/billing";
 import type { FormState } from "./auth";
 
 const PAGE = "/dashboard/settings";
@@ -72,14 +72,42 @@ export async function updateNotificationsAction(_prev: FormState, formData: Form
 }
 
 /**
- * Switch plan without payment. Only available when ALLOW_FREE_PLAN_CHANGE=true
- * (development and demos); real upgrades will go through Stripe, see src/server/billing.
+ * Change plan. With payments configured this goes through Dodo Payments (see src/server/billing):
+ * the result is a checkout or portal URL to send the owner to, or an immediate plan change for a
+ * workspace that already pays. Without payments it only works in demo mode
+ * (ALLOW_FREE_PLAN_CHANGE=true), where the plan is switched for free.
  */
-export async function changePlanAction(planId: string): Promise<{ error?: string }> {
-  const { workspace, role } = await requireWorkspace();
+export async function changePlanAction(planId: string): Promise<{ error?: string; url?: string }> {
+  const { workspace, role, user } = await requireWorkspace();
   if (role !== "owner") return { error: "errors.ownerOnly" };
+
+  if (paymentsConfigured()) {
+    try {
+      const result = await startCheckout(workspace.id, planId, { email: user.email, name: user.name });
+      if ("error" in result) return { error: result.error };
+      revalidatePath("/dashboard", "layout");
+      return "url" in result ? { url: result.url } : {};
+    } catch (err) {
+      console.error("[billing] plan change failed", err);
+      return { error: "settings.billingError" };
+    }
+  }
+
   if (!freePlanChangeAllowed()) return { error: "settings.planChangeUnavailable" };
   if (!(await setWorkspacePlan(workspace.id, planId))) return { error: "errors.generic" };
   revalidatePath("/dashboard", "layout");
   return {};
+}
+
+/** Link to Dodo's customer portal (cancel, change card, invoices). Owners only. */
+export async function billingPortalAction(): Promise<{ error?: string; url?: string }> {
+  const { workspace, role } = await requireWorkspace();
+  if (role !== "owner") return { error: "errors.ownerOnly" };
+  try {
+    const url = await billingPortalUrl(workspace.id);
+    return url ? { url } : { error: "errors.generic" };
+  } catch (err) {
+    console.error("[billing] portal failed", err);
+    return { error: "settings.billingError" };
+  }
 }

@@ -212,7 +212,7 @@ src/server/analytics.ts overview numbers, daily counts, question grouping
 src/server/team.ts      members, roles, invitations
 src/server/notifications.ts  lead and needs-human emails
 src/server/email/       SMTP mailer and email layout
-src/server/billing/     plan changes; placeholder for Stripe
+src/server/billing/     plan changes and Dodo Payments subscriptions
 src/server/widget/      widget tokens and public chat helpers
 src/lib/widget-domains.ts  domain whitelist rules
 src/proxy.ts            keeps the site, app and widget hosts to their own paths; routes marketing pages
@@ -421,10 +421,12 @@ recipients, usage against the plan, and the plans.
 | Knowledge pages | adding a source, and again when a website crawl finishes |
 | Team size | inviting a member (members plus pending invitations) |
 
-Payment is not built. `src/server/billing/index.ts` is the placeholder: it documents where Stripe
-checkout and the webhook plug in, and `setWorkspacePlan()` is the one function that changes a plan.
-Until then, `ALLOW_FREE_PLAN_CHANGE=true` lets owners switch plan from Settings without paying
-(development and demos only).
+Paid plans are monthly Dodo Payments subscriptions (`src/server/billing/index.ts`). Choosing a plan in
+Settings opens Dodo's hosted checkout; Dodo then calls `/api/billing/webhook`, which sets the plan from
+the subscription's status. A workspace that already pays moves plan straight away (prorated), and
+"Manage billing" opens Dodo's customer portal to cancel, change card or download invoices. Payments
+turn on when `DODO_PAYMENTS_API_KEY` and the three `DODO_PRODUCT_*` IDs are set (see `.env.example`).
+Without them, `ALLOW_FREE_PLAN_CHANGE=true` lets owners switch plan for free (development and demos only).
 
 ## Database changes
 
@@ -453,15 +455,13 @@ The inbox, takeover, leads, limits and analytics then apply to that channel with
 
 1. **WhatsApp Business integration.** The channel UAE customers use most. Connect through the
    WhatsApp Cloud API as described above; conversations land in the same inbox.
-2. **Stripe billing.** Checkout, the customer portal and a webhook that calls `setWorkspacePlan()`
-   (`src/server/billing/index.ts` marks the spots), then turn off `ALLOW_FREE_PLAN_CHANGE`.
-3. **Appointment booking.** Let the assistant offer real time slots and book them (Google
+2. **Appointment booking.** Let the assistant offer real time slots and book them (Google
    Calendar or Calendly first, clinic and salon systems later) instead of only taking a callback request.
-4. **Email verification and password reset.** Sign-up accepts an email address without
+3. **Email verification and password reset.** Sign-up accepts an email address without
    confirming it, and there is no "forgot password" flow yet. Do this before opening sign-up to the public.
-5. **Instagram and Messenger** through the same channel adapter.
-6. **Lead quality.** Normalise UAE phone numbers to one format, merge repeat leads from the same
+4. **Instagram and Messenger** through the same channel adapter.
+5. **Lead quality.** Normalise UAE phone numbers to one format, merge repeat leads from the same
    person, and push new leads to a CRM or a webhook (Zapier, Make).
-7. **Logo upload.** The widget logo is a URL today; add file upload with Supabase Storage.
-8. **Monitoring.** Error tracking (Sentry), a health-check endpoint and uptime alerts.
-9. **Scheduled re-sync** of website sources, so the knowledge base follows changes to the site.
+6. **Logo upload.** The widget logo is a URL today; add file upload with Supabase Storage.
+7. **Monitoring.** Error tracking (Sentry), a health-check endpoint and uptime alerts.
+8. **Scheduled re-sync** of website sources, so the knowledge base follows changes to the site.
