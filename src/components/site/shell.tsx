@@ -9,6 +9,7 @@ import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 import { GlobeMark } from "./art";
 import { MobileMenu } from "./mobile-menu";
+import { TryMeHint } from "./try-me-hint";
 
 /** Button-styled link used across the site. */
 export function CtaLink({
@@ -18,6 +19,7 @@ export function CtaLink({
   size = "md",
   className,
   arrow = false,
+  opensChat = false,
 }: {
   href: string;
   children: React.ReactNode;
@@ -25,10 +27,13 @@ export function CtaLink({
   size?: "md" | "lg";
   className?: string;
   arrow?: boolean;
+  /** Open the site's own chat widget instead of following `href` (which stays the fallback). */
+  opensChat?: boolean;
 }) {
   return (
     <a
       href={href}
+      data-chat-open={opensChat || undefined}
       className={cn(
         "group inline-flex items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-[background-color,box-shadow,transform] active:translate-y-px",
         size === "lg" ? "h-13 px-7 text-base" : "h-11 px-5 text-[15px]",
@@ -199,6 +204,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
 
       {/* The product's own chat widget on its own site, as a live demo. React moves an async script to <head>. */}
       {SITE_WIDGET_KEY && <script src={`${WIDGET_URL}/widget.js`} data-workspace={SITE_WIDGET_KEY} async />}
+      {SITE_WIDGET_KEY && <TryMeHint label={t.nav.tryMe} />}
     </div>
   );
 }

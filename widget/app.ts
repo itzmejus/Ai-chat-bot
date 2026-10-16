@@ -938,6 +938,9 @@ window.addEventListener("message", (event) => {
 
   if (data.type === "chat-widget:host") {
     root.dataset.mobile = String(Boolean(data.mobile));
+  } else if (data.type === "chat-widget:open") {
+    // A "Try it now" button on the host page.
+    if (!open) setOpen(true);
   } else if (data.type === "chat-widget:preview" && config.preview && event.origin === config.previewOrigin && data.config) {
     // Unsaved settings pushed by the dashboard's live preview.
     const c = data.config;

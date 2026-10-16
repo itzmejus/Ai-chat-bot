@@ -303,9 +303,20 @@
   }
 }
 
+/* The "Try me!" hint next to the chat bubble nudges towards it, down and to the side. */
+@utility site-try-me {
+  animation: site-try-me 1.8s ease-in-out infinite;
+}
+@keyframes site-try-me {
+  50% {
+    translate: 5px 6px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .site-pop,
-  .site-float {
+  .site-float,
+  .site-try-me {
     animation: none;
   }
 

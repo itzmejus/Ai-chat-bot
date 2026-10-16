@@ -16,7 +16,7 @@ import {
 } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, SITE_PLANS } from "@/content/site";
-import { APP_NAME, CONTACT_EMAIL, SITE_URL } from "@/lib/config";
+import { APP_NAME, CONTACT_EMAIL, SITE_URL, SITE_WIDGET_KEY } from "@/lib/config";
 import { sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
 
@@ -74,8 +74,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             <CtaLink href={appLink("/signup")} size="lg" arrow className="max-sm:h-12 max-sm:flex-1 max-sm:px-3 max-sm:text-[15px] sm:min-w-64">
               {home.ctaPrimary}
             </CtaLink>
-            <CtaLink href="#how-it-works" variant="outline" size="lg" className="max-sm:h-12 max-sm:flex-1 max-sm:px-3 max-sm:text-[15px]">
-              {home.ctaSecondary}
+            {/* With the site's own assistant on the page, the best demo is trying it. */}
+            <CtaLink href="#how-it-works" variant="outline" size="lg" opensChat={Boolean(SITE_WIDGET_KEY)} className="max-sm:h-12 max-sm:flex-1 max-sm:px-3 max-sm:text-[15px]">
+              {SITE_WIDGET_KEY ? home.ctaTry : home.ctaSecondary}
             </CtaLink>
           </div>
           <p className="mt-3 text-sm font-medium text-muted-foreground sm:mt-4">{home.ctaNote}</p>

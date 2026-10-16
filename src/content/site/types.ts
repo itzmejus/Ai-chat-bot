@@ -67,6 +67,8 @@ export type SiteContent = {
     /** Label of the link to the other language, written in that language. */
     otherLanguage: string;
     skip: string;
+    /** The hint pointing at the site's own chat bubble. */
+    tryMe: string;
   };
   home: {
     meta: Meta;
@@ -76,6 +78,8 @@ export type SiteContent = {
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    /** Hero button that opens the site's own assistant, shown when it is on the page. */
+    ctaTry: string;
     /** Reassurance under the hero buttons. */
     ctaNote: string;
     demo: { site: string; assistant: string; status: string; placeholder: string; chat: ChatLine[]; leadTitle: string; leadName: string; leadPhone: string; answered: string; /** Heading of the list of sources in the animated answer. */ knowledge: string };
@@ -114,6 +118,8 @@ export type SiteContent = {
     h1: string;
     sub: string;
     perMonth: string;
+    /** Under the plan cards: tax is added at checkout. */
+    vatNote: string;
     free: string;
     popular: string;
     plans: Record<PlanId, { name: string; tagline: string; cta: string }>;

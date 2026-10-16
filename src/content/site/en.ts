@@ -11,6 +11,7 @@ export const en: SiteContent = {
     menu: "Menu",
     otherLanguage: "العربية",
     skip: "Skip to content",
+    tryMe: "Try me!",
   },
 
   home: {
@@ -20,10 +21,11 @@ export const en: SiteContent = {
         "Add an AI assistant to your website in minutes. It answers customers 24/7 in their language from your own information, captures leads and calls in your team.",
     },
     badge: "For businesses anywhere in the world",
-    h1: ["AI customer support that speaks ", "your customers' language", ""],
-    sub: "An assistant for your website that answers customers day and night using only your business information, collects their contact details, and calls in your team when a person is needed.",
+    h1: ["Answer every customer, ", "even when you're closed", ""],
+    sub: "An AI assistant for your website that replies in seconds, in your customer's own language, using only your business information. It collects their contact details and calls in your team when a person is needed.",
     ctaPrimary: "Start free",
     ctaSecondary: "See how it works",
+    ctaTry: "Try it live",
     ctaNote: "Free plan · No card needed",
     demo: {
       site: "brightsmile.com",
@@ -209,6 +211,7 @@ export const en: SiteContent = {
     h1: "Simple plans that grow with your business",
     sub: "Start free. Every plan includes multilingual answers, lead capture, human takeover and the live inbox.",
     perMonth: "per month",
+    vatNote: "Prices exclude VAT or sales tax, which is added at checkout where it applies.",
     free: "Free",
     popular: "Most popular",
     plans: {

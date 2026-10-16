@@ -28,6 +28,7 @@
     "position:fixed;bottom:0;border:0;padding:0;margin:0;background:transparent;color-scheme:normal;z-index:2147483000;display:none;max-width:100vw;max-height:100dvh;";
 
   let open = false;
+  let ready = false; // the chat has loaded and this site is allowed to show it
   let side: "left" | "right" = "right";
 
   /** The part of the page not covered by the on-screen keyboard or browser bars. */
@@ -65,12 +66,26 @@
     const data = event.data as { type?: string; position?: "left" | "right"; open?: boolean };
     if (data?.type === "chat-widget:ready") {
       side = data.position === "left" ? "left" : "right";
+      ready = true;
       layout();
       iframe.style.display = "block";
     } else if (data?.type === "chat-widget:state") {
       open = Boolean(data.open);
       layout();
+    } else {
+      return;
     }
+    // Let the host page follow along (a "try me" hint pointing at the bubble, for example).
+    window.dispatchEvent(new CustomEvent("chat-widget", { detail: { ready, open, position: side } }));
+  });
+  // Any element on the host page marked `data-chat-open` opens the chat ("Try it now" buttons).
+  // Until the widget is ready, or where this site may not show it, the click does what it
+  // normally would, so a link can fall back to its own address.
+  document.addEventListener("click", (event) => {
+    const trigger = (event.target as Element | null)?.closest?.("[data-chat-open]");
+    if (!trigger || !ready) return;
+    event.preventDefault();
+    iframe.contentWindow?.postMessage({ type: "chat-widget:open" }, origin);
   });
   window.addEventListener("resize", layout);
   viewport?.addEventListener("resize", layout);

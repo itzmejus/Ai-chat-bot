@@ -130,55 +130,58 @@ export function PricingCards({ lang }: { lang: SiteLang }) {
   const t = getSiteContent(lang).pricingPage;
   const number = planNumber(lang);
   return (
-    <ul className="mx-auto grid max-w-md items-stretch gap-5 sm:max-w-none sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-      {SITE_PLANS.map((plan, i) => {
-        const dark = Boolean(plan.popular);
-        return (
-          <li
-            key={plan.id}
-            className={cn(
-              "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7",
-              dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(220_38_38/0.7)] lg:-my-3" : "border border-border/80 bg-white",
-            )}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <PlanArt level={(i + 1) as 1 | 2 | 3 | 4} className={dark ? "text-white" : "text-primary"} />
-              {plan.popular && <span className="rounded-full bg-[#fbbf24] px-3 py-1 text-xs font-bold text-[#1b1b20]">{t.popular}</span>}
-            </div>
-            <div className="flex flex-col gap-1">
-              <h3 className="text-xl font-bold">{t.plans[plan.id].name}</h3>
-              <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
-            </div>
-            <p className="flex flex-wrap items-baseline gap-2">
-              <span dir="ltr" className="text-5xl font-bold tracking-tight">
-                {PLAN_CURRENCY.symbol}
-                {number.format(plan.price)}
-              </span>
-              <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
-            </p>
-            <CtaLink href={appLink("/signup")} variant={dark ? "light" : "outline"} className="w-full">
-              {t.plans[plan.id].cta}
-            </CtaLink>
-            <ul className={cn("flex flex-col gap-3 border-t pt-6 text-[15px]", dark ? "border-white/15" : "border-border")}>
-              {(
-                [
-                  [plan.messages, t.limits.messages],
-                  [plan.pages, t.limits.pages],
-                  [plan.seats, plan.seats === 1 ? t.limits.seat : t.limits.seats],
-                ] as const
-              ).map(([value, label]) => (
-                <li key={label} className="flex items-start gap-3">
-                  <Tick tone={dark ? "dark" : "light"} />
-                  <span>
-                    <strong className="font-semibold">{number.format(value)}</strong> {label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul className="mx-auto grid max-w-md items-stretch gap-5 sm:max-w-none sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        {SITE_PLANS.map((plan, i) => {
+          const dark = Boolean(plan.popular);
+          return (
+            <li
+              key={plan.id}
+              className={cn(
+                "relative flex flex-col gap-6 overflow-hidden rounded-[1.75rem] p-7",
+                dark ? "hero-surface text-white shadow-[0_32px_64px_-28px_rgb(220_38_38/0.7)] lg:-my-3" : "border border-border/80 bg-white",
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <PlanArt level={(i + 1) as 1 | 2 | 3 | 4} className={dark ? "text-white" : "text-primary"} />
+                {plan.popular && <span className="rounded-full bg-[#fbbf24] px-3 py-1 text-xs font-bold text-[#1b1b20]">{t.popular}</span>}
+              </div>
+              <div className="flex flex-col gap-1">
+                <h3 className="text-xl font-bold">{t.plans[plan.id].name}</h3>
+                <p className={cn("text-[15px]", dark ? "text-white/70" : "text-muted-foreground")}>{t.plans[plan.id].tagline}</p>
+              </div>
+              <p className="flex flex-wrap items-baseline gap-2">
+                <span dir="ltr" className="text-5xl font-bold tracking-tight">
+                  {PLAN_CURRENCY.symbol}
+                  {number.format(plan.price)}
+                </span>
+                <span className={cn("text-sm", dark ? "text-white/70" : "text-muted-foreground")}>{t.perMonth}</span>
+              </p>
+              <CtaLink href={appLink("/signup")} variant={dark ? "light" : "outline"} className="w-full">
+                {t.plans[plan.id].cta}
+              </CtaLink>
+              <ul className={cn("flex flex-col gap-3 border-t pt-6 text-[15px]", dark ? "border-white/15" : "border-border")}>
+                {(
+                  [
+                    [plan.messages, t.limits.messages],
+                    [plan.pages, t.limits.pages],
+                    [plan.seats, plan.seats === 1 ? t.limits.seat : t.limits.seats],
+                  ] as const
+                ).map(([value, label]) => (
+                  <li key={label} className="flex items-start gap-3">
+                    <Tick tone={dark ? "dark" : "light"} />
+                    <span>
+                      <strong className="font-semibold">{number.format(value)}</strong> {label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-6 text-center text-sm text-muted-foreground">{t.vatNote}</p>
+    </>
   );
 }
 
