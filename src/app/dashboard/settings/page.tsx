@@ -1,5 +1,6 @@
-import { BellRing, Building2, CreditCard, type LucideIcon } from "lucide-react";
+import { BellRing, Building2, CreditCard, KeyRound, type LucideIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { ChangePasswordForm } from "@/components/auth/account-forms";
 import { Meter } from "@/components/meter";
 import { OnboardingForm } from "@/components/onboarding-form";
 import { PageHero } from "@/components/page-hero";
@@ -33,9 +34,9 @@ function SectionHeader({ icon: Icon, title, description, color }: { icon: Lucide
   );
 }
 
-/** Settings: business profile and hours, notifications (email and WhatsApp), plan and usage. */
+/** Settings: business profile and hours, notifications (email and WhatsApp), usage, the person's own account, and the plan. */
 export default async function SettingsPage() {
-  const { db, workspace, role } = await requireWorkspace();
+  const { db, workspace, role, user } = await requireWorkspace();
   const t = await getTranslations();
   const canEdit = role === "owner";
 
@@ -111,6 +112,13 @@ export default async function SettingsPage() {
                   <Meter value={u.value} max={u.max} warn={u.warn} />
                 </div>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <SectionHeader icon={KeyRound} title={t("settings.accountTitle")} description={t("settings.accountSubtitle")} color="#0d9488" />
+            <CardContent>
+              <ChangePasswordForm hasPassword={user.hasPassword} />
             </CardContent>
           </Card>
         </div>

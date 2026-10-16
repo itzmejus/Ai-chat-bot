@@ -30,7 +30,7 @@ vi.mock("@/server/ai/openai", async (original) => ({
 }));
 vi.mock("@/server/jobs/queue", () => ({ enqueueIngest: vi.fn(async () => {}) }));
 
-import { answerMessage, type AnswerResult } from "@/server/ai/answer";
+import { answerMessage, TEST_REPLIES_PER_DAY, type AnswerResult } from "@/server/ai/answer";
 import { buildSystemPrompt, languageHint, parseHeader } from "@/server/ai/prompt";
 import { replaceSourceChunks, searchChunks } from "@/server/db/chunks";
 import { prisma } from "@/server/db/prisma";
@@ -225,6 +225,33 @@ describe("answering service", () => {
     const arabic = await ask(t.workspaceId, t.conversationId, "كم السعر؟");
     expect(arabic.streamed).toMatch(/[؀-ۿ]/);
     expect(arabic.streamed).toContain("+971 4 111 2222");
+  });
+
+  it("does not count test chats against the plan, and caps them per day instead", async () => {
+    const t = await setup("Answer Test Chats", ["price"]);
+    const { monthlyMessages } = await prisma.plan.findUniqueOrThrow({ where: { id: "free" } });
+    const month = new Date().toISOString().slice(0, 7);
+    await t.db.usageCounter.create({ data: { workspaceId: t.workspaceId, month, aiMessages: monthlyMessages } });
+    const test = await t.db.conversation.create({ data: { workspaceId: t.workspaceId, visitorId: "test:owner", isTest: true } });
+
+    // The month's allowance is used up, but the owner can still try their assistant, and it costs them nothing.
+    const { result } = await ask(t.workspaceId, test.id, "What is the price?");
+    expect(result.skipped).toBeNull();
+    expect(mocks.streamChat).toHaveBeenCalledTimes(1);
+    expect(await getAiMessagesUsed(t.db)).toBe(monthlyMessages);
+
+    // A fresh workspace's test replies leave its counter untouched too.
+    const fresh = await setup("Answer Test Fresh", ["price"]);
+    const freshTest = await fresh.db.conversation.create({ data: { workspaceId: fresh.workspaceId, visitorId: "test:owner", isTest: true } });
+    await ask(fresh.workspaceId, freshTest.id, "What is the price?");
+    expect(await getAiMessagesUsed(fresh.db)).toBe(0);
+
+    // Once the daily test cap is spent, test chats get the fallback instead of the model.
+    for (let i = 0; i < TEST_REPLIES_PER_DAY; i++) await rateLimit(`test-chat:${t.workspaceId}`, TEST_REPLIES_PER_DAY, 86_400);
+    mocks.streamChat.mockClear();
+    const capped = await ask(t.workspaceId, test.id, "And parking?");
+    expect(capped.result.skipped).toBe("usage_limit");
+    expect(mocks.streamChat).not.toHaveBeenCalled();
   });
 
   it("falls back gracefully when OpenAI fails", async () => {

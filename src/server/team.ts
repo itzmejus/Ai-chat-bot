@@ -142,6 +142,8 @@ export async function acceptInvite(token: string, user: { id: string; email: str
       create: { userId: user.id, workspaceId: invite.workspaceId, role: invite.role },
     }),
     prisma.invite.update({ where: { id: invite.id }, data: { acceptedAt: new Date() } }),
+    // The invitation link was emailed to this address, so opening it proves they read that inbox.
+    prisma.user.updateMany({ where: { id: user.id, emailVerifiedAt: null }, data: { emailVerifiedAt: new Date() } }),
   ]);
   return { ok: true, workspaceId: invite.workspaceId };
 }

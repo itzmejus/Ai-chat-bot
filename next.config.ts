@@ -8,6 +8,28 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pg", "pg-boss", "undici", "unpdf", "mammoth", "js-tiktoken", "sharp"],
   // Keep the dev-mode indicator away from the sidebar controls in the bottom-left corner.
   devIndicators: { position: "bottom-right" },
+  async headers() {
+    const always = [
+      // Browsers use HTTPS for this host for a year (ignored over plain http, so local development is unaffected).
+      { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+    ];
+    return [
+      { source: "/:path*", headers: always },
+      {
+        // No other website may show these pages inside a frame (clickjacking). The chat iframe
+        // (/embed/...) is left out: customers' websites must frame it, and it sets its own
+        // frame-ancestors from the business's list of approved websites.
+        source: "/:path((?!embed/).*)",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

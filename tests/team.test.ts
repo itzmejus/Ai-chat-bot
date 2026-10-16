@@ -254,10 +254,20 @@ describe("email notifications", () => {
     const call = (route: (r: Request) => Promise<Response>, body: unknown) =>
       route(new Request("https://chat.example.com/api/widget/x", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${token}` }, body: JSON.stringify(body) }));
 
+    // While the business has the pre-chat form switched off, the form's address creates nothing:
+    // otherwise anyone could post to it to make fake leads and lead emails.
+    const off = await call(startRoute, { visitorId: "visitor_notify_000000001", name: "Layla", phone: "+971 55 111 2222" });
+    await settle();
+    expect(off.status).toBe(400);
+    expect(await t.db.lead.count()).toBe(0);
+    expect(sent).toHaveLength(0);
+
+    await t.db.widgetSettings.upsert({ where: { workspaceId: t.workspaceId }, update: { preChatForm: true }, create: { workspaceId: t.workspaceId, preChatForm: true } });
     await call(startRoute, { visitorId: "visitor_notify_000000001", name: "Layla", phone: "+971 55 111 2222" });
     await settle();
     expect(sent.map((m) => m.subject)).toEqual(["New lead for Notify Widget"]);
 
+    await t.db.widgetSettings.updateMany({ data: { preChatForm: false } });
     await call(humanRoute, { visitorId: "visitor_notify_000000002" });
     await settle();
     expect(sent.map((m) => m.subject)).toEqual(["New lead for Notify Widget", "A customer is waiting for Notify Widget"]);

@@ -19,11 +19,14 @@ export function AuthForm({
   googleEnabled,
   invite,
   defaultEmail,
+  notice,
 }: {
   mode: "login" | "signup";
   googleEnabled: boolean;
   invite?: string;
   defaultEmail?: string;
+  /** Translation key of a message shown above the form, e.g. after a password reset. */
+  notice?: string;
 }) {
   const t = useTranslations();
   const [state, formAction, pending] = useActionState<FormState, FormData>(mode === "login" ? loginAction : signupAction, undefined);
@@ -37,6 +40,11 @@ export function AuthForm({
         <CardDescription className="text-[15px]">{t(invite ? "auth.inviteSubtitle" : `auth.${mode}Subtitle`)}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
+        {notice && (
+          <p role="status" className="rounded-xl bg-[#e7f8ee] p-3.5 text-sm text-[#0a6b3a]">
+            {t(notice)}
+          </p>
+        )}
         <form action={formAction} className="flex flex-col gap-4">
           {invite && <input type="hidden" name="invite" value={invite} />}
           {mode === "signup" && (
@@ -63,6 +71,11 @@ export function AuthForm({
               aria-invalid={!!errors.password}
             />
           </FormField>
+          {mode === "login" && (
+            <Link href="/forgot-password" className="-mt-2 self-end text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+              {t("auth.forgotLink")}
+            </Link>
+          )}
 
           {state?.error && (
             <p role="alert" className="text-sm text-destructive">

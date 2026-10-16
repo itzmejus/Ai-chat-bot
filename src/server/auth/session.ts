@@ -8,16 +8,22 @@ import { tenantDb } from "@/server/db/tenant";
 
 /**
  * The signed-in user, verified against the database (a JWT can outlive its user).
+ * A session issued before the last password change no longer counts: changing or resetting
+ * the password signs the account out on every other device.
  * Cached per request.
  */
 export const getCurrentUser = cache(async () => {
   const session = await auth();
   const id = session?.user?.id;
   if (!id) return null;
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, email: true, name: true, image: true },
+    select: { id: true, email: true, name: true, image: true, emailVerifiedAt: true, passwordHash: true, sessionVersion: true },
   });
+  if (!user || user.sessionVersion !== (session.user.sv ?? 0)) return null;
+  const { passwordHash, sessionVersion, ...rest } = user;
+  void sessionVersion;
+  return { ...rest, hasPassword: passwordHash !== null };
 });
 
 export async function requireUser() {

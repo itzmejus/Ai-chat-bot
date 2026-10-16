@@ -7,8 +7,9 @@ import { INVITE_TOKEN_PATTERN } from "@/server/team";
 export const metadata = { title: "Log in" };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
-  const { invite } = await searchParams;
+  const { invite, reset, changed } = await searchParams;
   const token = typeof invite === "string" && INVITE_TOKEN_PATTERN.test(invite) ? invite : undefined;
   if (await getCurrentUser()) redirect(token ? `/invite/${token}` : "/dashboard");
-  return <AuthForm mode="login" googleEnabled={googleAuthEnabled} invite={token} />;
+  const notice = reset ? "auth.resetDone" : changed ? "auth.changedDone" : undefined;
+  return <AuthForm mode="login" googleEnabled={googleAuthEnabled} invite={token} notice={notice} />;
 }

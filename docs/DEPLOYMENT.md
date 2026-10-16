@@ -55,6 +55,7 @@ the server, so new migrations are applied on every deploy.
 | `WIDGET_URL` | `https://chat.siteselo.com` |
 | `SITE_URL` | leave unset: the public site is then served on `APP_URL` |
 | `REDIRECT_HOSTS` | former hostnames to redirect to the current address, comma separated; optional |
+| `CLIENT_IP_HEADER` | leave unset on Render (Cloudflare's `cf-connecting-ip` is used); on another host, the header it sets to the visitor's real IP |
 | `CONTACT_EMAIL` | address shown in the site contact section, footer, legal pages and dashboard billing note; defaults to hello@siteselo.com |
 | `SITE_WIDGET_KEY` | public key (`pk_...`) of the workspace whose chat widget appears on the public site as a live demo; optional |
 | `SUPABASE_URL` | `https://<project-ref>.supabase.co` (Supabase > Project Settings > API); needed for product photos |
@@ -130,10 +131,11 @@ them up from there.
 Set the real plan prices in `src/content/site/index.ts` before launch, and have the privacy policy
 and terms in `src/content/site/en.ts` and `ar.ts` reviewed for your company.
 
-## 4. Email (optional but recommended)
+## 4. Email (needed for password reset)
 
-Without SMTP settings, invitations show a link for the owner to copy and notifications are only
-written to the server log. Any SMTP provider works (Resend, Brevo, Amazon SES, Postmark, Zoho):
+Without SMTP settings, invitations show a link for the owner to copy, and notifications, password
+reset links and email-confirmation links are only written to the server log. That means **nobody
+can reset a forgotten password** until email is set up, so configure it before real users sign up. Any SMTP provider works (Resend, Brevo, Amazon SES, Postmark, Zoho):
 
 | Variable | Example |
 | --- | --- |
@@ -248,7 +250,8 @@ To remove it, delete the "Bright Smile Dental Clinic" workspace and that user fr
 - [ ] `ALLOW_FREE_PLAN_CHANGE` is not set
 - [ ] Render instance is a paid type (does not sleep)
 - [ ] Supabase and Render are in nearby regions
-- [ ] SMTP configured and the sending domain verified
+- [ ] SMTP configured and the sending domain verified (password reset and email confirmation depend on it)
+- [ ] After the first deploy, "Forgot password?" sends an email and its link sets a new password
 - [ ] OpenAI account has a spending limit and a usage alert
 - [ ] No demo account in the production database, or it has a strong password
 - [ ] Supabase backups enabled

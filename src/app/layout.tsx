@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
+import { headers } from "next/headers";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import "./globals.css";
 
@@ -37,6 +38,10 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
+  // Public marketing pages (the proxy marks them with x-site-locale) take their words from
+  // src/content/site on the server and use no dashboard translations in the browser, so they
+  // are not sent the dashboard's translation file (about 30 KB on every page).
+  const sitePage = (await headers()).has("x-site-locale");
 
   return (
     <html
@@ -45,7 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${arabic.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={sitePage ? {} : undefined}>{children}</NextIntlClientProvider>
       </body>
     </html>
   );

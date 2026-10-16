@@ -28,7 +28,26 @@
     "point1": "Answers only from your own business information",
     "point2": "Replies in your customers' language, around the clock",
     "point3": "Hands over to your team when a person is needed",
-    "inviteSubtitle": "Sign in to accept your team invitation"
+    "inviteSubtitle": "Sign in to accept your team invitation",
+    "forgotLink": "Forgot password?",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "Enter your email address and we will send you a link to choose a new password.",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "If an account exists for that address, a reset link is on its way. It works for one hour. Check your spam folder if you don't see it.",
+    "backToLogin": "Back to log in",
+    "resetTitle": "Choose a new password",
+    "resetSubtitle": "Enter a new password for your account. You will be logged out on your other devices.",
+    "newPassword": "New password",
+    "resetSubmit": "Save new password",
+    "resetInvalid": "This link is invalid or has expired. Ask for a new one.",
+    "requestNewLink": "Ask for a new link",
+    "resetDone": "Your password has been changed. Log in with your new password.",
+    "changedDone": "Password changed. Log in again with your new password.",
+    "verifyOkTitle": "Email confirmed",
+    "verifyOkText": "Thank you. Your email address is confirmed.",
+    "verifyBadTitle": "This link has expired",
+    "verifyBadText": "The confirmation link is invalid or was already used. You can ask for a new one from your dashboard.",
+    "goToDashboard": "Go to the dashboard"
   },
   "onboarding": {
     "title": "Tell us about your business",
@@ -102,7 +121,10 @@
     },
     "shortCatalog": {
       "menu": "Menu"
-    }
+    },
+    "verifyEmail": "Please confirm your email address. We sent a link to {email}.",
+    "resendVerification": "Send it again",
+    "verificationSent": "Sent. Check your inbox."
   },
   "roles": {
     "owner": "Owner",
@@ -307,7 +329,8 @@
     "tooManyEmails": "You can list up to 5 addresses",
     "whatsappNumber": "Enter each number in international format, e.g. +971 50 123 4567",
     "tooManyNumbers": "You can list up to 3 numbers",
-    "tooLong": "This is too long"
+    "tooLong": "This is too long",
+    "wrongPassword": "The current password is not correct"
   },
   "widget": {
     "title": "Chat widget",
@@ -511,7 +534,14 @@
     "planAgents": "{count, plural, one {# team member} other {# team members}}",
     "planDemoNote": "Demo mode: plans can be switched freely because online payment is not connected yet.",
     "planContactNote": "Online payment is coming soon. Contact us to change your plan.",
-    "planChangeUnavailable": "Plans cannot be changed here yet. Contact us to change your plan."
+    "planChangeUnavailable": "Plans cannot be changed here yet. Contact us to change your plan.",
+    "accountTitle": "Your account",
+    "accountSubtitle": "Change the password you log in with.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "changePasswordHint": "You will be logged out on every device, then log in again with the new password.",
+    "noPassword": "You sign in with Google, so there is no password to change. To add one, use “Forgot password?” on the login page."
   },
   "products": {
     "variants": {

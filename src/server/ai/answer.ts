@@ -1,7 +1,11 @@
 import { searchChunks, type ChunkMatch } from "@/server/db/chunks";
 import { saveQuestionEmbedding } from "@/server/analytics";
 import { tenantDb } from "@/server/db/tenant";
+import { rateLimit } from "@/server/limits/rate-limit";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
+
+/** Replies a workspace's test chats may get per day (they do not count against the plan). */
+export const TEST_REPLIES_PER_DAY = 200;
 import { notifyLeadCaptured, notifyNeedsHuman } from "@/server/notifications";
 import { formatPrice, getProducts, searchProducts, toCard, type ProductCard, type ProductRow } from "@/server/products";
 import { publish } from "@/server/realtime/bus";
@@ -142,7 +146,13 @@ export async function* answerMessage(input: {
   };
 
   // Plan limit reached: do not call the model; point the customer to the team instead.
-  if ((await getAiMessagesUsed(db)) >= workspace.plan.monthlyMessages) {
+  // Test chats (the dashboard's test chat and the widget preview) are not counted against the
+  // plan, so an owner trying out the assistant never uses up what their customers need. They
+  // have a daily cap of their own instead, to keep the AI cost of testing bounded.
+  const allowed = conversation.isTest
+    ? await rateLimit(`test-chat:${workspaceId}`, TEST_REPLIES_PER_DAY, 86_400)
+    : (await getAiMessagesUsed(db)) < workspace.plan.monthlyMessages;
+  if (!allowed) {
     yield* finishWithFallback("usage_limit");
     return;
   }
@@ -274,7 +284,7 @@ export async function* answerMessage(input: {
     },
   });
   if (needsHuman) alertTeam();
-  await recordAiMessage(db, workspaceId);
+  if (!conversation.isTest) await recordAiMessage(db, workspaceId);
   await announce(message.id);
 
   yield {

@@ -33,19 +33,58 @@ for (const [prefix, bits] of [
 }
 for (const [prefix, bits] of [
   ["::", 127], // :: and ::1
+  ["64:ff9b:1::", 48], // local-use NAT64
+  ["100::", 64], // discard
+  ["2001::", 32], // Teredo tunnels
+  ["2001:db8::", 32], // documentation
   ["fc00::", 7], // unique local
   ["fe80::", 10], // link-local
+  ["fec0::", 10], // site-local (deprecated, still routed on some networks)
   ["ff00::", 8], // multicast
 ] as const) {
   blocked.addSubnet(prefix, bits, "ipv6");
 }
 
+/** The eight 16-bit groups of an IPv6 address, or null if it is not one. Handles "::" and a dotted IPv4 ending. */
+function ipv6Groups(ip: string): number[] | null {
+  let text = ip.toLowerCase().split("%")[0]; // drop a zone id such as %eth0
+  const dotted = /(\d+\.\d+\.\d+\.\d+)$/.exec(text);
+  if (dotted) {
+    if (!net.isIPv4(dotted[1])) return null;
+    const [a, b, c, d] = dotted[1].split(".").map(Number);
+    text = text.slice(0, -dotted[1].length) + ((a << 8) | b).toString(16) + ":" + ((c << 8) | d).toString(16);
+  }
+  const halves = text.split("::");
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+  const missing = 8 - head.length - tail.length;
+  if (halves.length === 1 ? missing !== 0 : missing < 1) return null;
+  const groups = [...head, ...Array<string>(halves.length === 2 ? missing : 0).fill("0"), ...tail].map((group) =>
+    /^[0-9a-f]{1,4}$/.test(group) ? parseInt(group, 16) : NaN,
+  );
+  return groups.some(Number.isNaN) ? null : groups;
+}
+
+const ipv4From = (high: number, low: number) => `${high >> 8}.${high & 255}.${low >> 8}.${low & 255}`;
+
+/**
+ * True for any address the crawler must not reach. IPv6 forms that carry an IPv4 address
+ * inside them are judged by that IPv4 address, whichever way they are written:
+ * "::ffff:127.0.0.1" and "::ffff:7f00:1" (mapped), "::127.0.0.1" (the old "compatible" form),
+ * "64:ff9b::7f00:1" (NAT64) and "2002:7f00:1::" (6to4).
+ */
 export function isPrivateAddress(ip: string): boolean {
-  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(ip);
-  if (mapped) return isPrivateAddress(mapped[1]);
   if (net.isIPv4(ip)) return blocked.check(ip, "ipv4");
-  if (net.isIPv6(ip)) return blocked.check(ip, "ipv6");
-  return true; // not an IP at all
+  if (!net.isIPv6(ip)) return true; // not an IP at all
+  const g = ipv6Groups(ip);
+  if (!g) return true;
+  const zerosUpTo = (n: number) => g.slice(0, n).every((x) => x === 0);
+  const mapped = zerosUpTo(5) && g[5] === 0xffff;
+  const nat64 = g[0] === 0x64 && g[1] === 0xff9b && g.slice(2, 6).every((x) => x === 0);
+  if (mapped || zerosUpTo(6) || nat64) return isPrivateAddress(ipv4From(g[6], g[7]));
+  if (g[0] === 0x2002) return isPrivateAddress(ipv4From(g[1], g[2]));
+  return blocked.check(ip, "ipv6");
 }
 
 export class BlockedUrlError extends Error {

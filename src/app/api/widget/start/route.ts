@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { authenticateWidget, clientIp, errorJson, visitorIdSchema } from "@/server/widget/service";
+import { authenticateWidget, clientIp, errorJson, visitorIdSchema, visitorText } from "@/server/widget/service";
 import { rateLimit } from "@/server/limits/rate-limit";
 import { notifyLeadCaptured } from "@/server/notifications";
 
 const bodySchema = z.object({
   visitorId: visitorIdSchema,
-  name: z.string().trim().min(1).max(80),
+  name: visitorText(80),
   phone: z
     .string()
     .trim()
@@ -15,6 +15,8 @@ const bodySchema = z.object({
 /**
  * POST /api/widget/start — the optional pre-chat form (name and phone).
  * Starts the conversation and records the visitor as a lead straight away.
+ * Only while the business has the form switched on: otherwise anyone could post here to
+ * create leads (and lead emails) without ever chatting.
  */
 export async function POST(request: Request) {
   const widget = authenticateWidget(request);
@@ -27,6 +29,9 @@ export async function POST(request: Request) {
   if (!(await rateLimit(`start:${widget.workspaceId}:${clientIp(request)}`, 10, 600))) return errorJson("rate_limited", 429);
 
   const { db, workspaceId, preview } = widget;
+  const settings = await db.widgetSettings.findFirst({ select: { preChatForm: true } });
+  if (!settings?.preChatForm) return errorJson("form_disabled", 400);
+
   const conversation = await db.conversation.create({
     data: { workspaceId, visitorId, visitorName: name, visitorPhone: phone, isTest: preview, unread: false },
     select: { id: true },

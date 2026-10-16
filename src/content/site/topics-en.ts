@@ -24,8 +24,8 @@ export const topicsEn: TopicContent = {
   hubs: {
     integrations: {
       meta: {
-        title: "Integrations: add an AI chatbot to WordPress, Shopify, Wix, Webflow and more",
-        description: "{name} works on any website. Step-by-step instructions for adding the AI chat widget to WordPress, Shopify, Wix, Webflow and Squarespace with one line of code.",
+        title: "Add an AI chatbot to WordPress, Shopify, Wix and more",
+        description: "{name} works on any website. Step-by-step guides to add the AI chat widget to WordPress, Shopify, Wix, Webflow and Squarespace with one line of code.",
       },
       h1: "Works with the website you already have",
       sub: "The chat widget is one line of code, so it runs on every website builder and on custom sites. Pick yours for the exact steps.",
@@ -33,7 +33,7 @@ export const topicsEn: TopicContent = {
     useCases: {
       meta: {
         title: "Use cases: what businesses use an AI website assistant for",
-        description: "How businesses use {name}: answering customer questions automatically, capturing leads from website visitors, supporting customers in their own language, and replying after hours.",
+        description: "How businesses use {name}: answering questions automatically, capturing leads, supporting customers in their own language and replying after hours.",
       },
       h1: "What you can use it for",
       sub: "One assistant on your website, doing the jobs that otherwise wait for someone to be free.",
@@ -41,7 +41,7 @@ export const topicsEn: TopicContent = {
     guides: {
       meta: {
         title: "Blog: AI chatbots for business websites, explained plainly",
-        description: "Practical guides from {name}: how to add an AI chatbot to a website, how to train it on your own content, how it compares with live chat, and how to capture leads with it.",
+        description: "Practical guides from {name}: adding an AI chatbot to a website, training it on your content, comparing it with live chat and capturing leads.",
       },
       h1: "Blog",
       sub: "Short, practical guides for business owners. No jargon.",
@@ -49,7 +49,7 @@ export const topicsEn: TopicContent = {
     faq: {
       meta: {
         title: "Frequently asked questions about {name}",
-        description: "Answers to common questions about {name}: how the AI assistant works, which languages it supports, how setup, pricing and message limits work, and how your data is handled.",
+        description: "Common questions about {name}: how the AI assistant works, which languages it speaks, setup, pricing and message limits, and how your data is handled.",
       },
       h1: "Frequently asked questions",
       sub: "How it works, what it costs, and what happens to your data.",
@@ -62,7 +62,7 @@ export const topicsEn: TopicContent = {
       short: "Add the widget to any WordPress theme in a few minutes.",
       meta: {
         title: "AI chatbot for WordPress: add it with one line of code",
-        description: "How to add the {name} AI chatbot to a WordPress site. Paste one line of code into your theme's footer or a code-snippet plugin and it answers visitors from your own content.",
+        description: "How to add the {name} AI chatbot to WordPress: paste one line of code into your footer or a snippet plugin, and it answers visitors from your content.",
       },
       h1: "An AI chatbot for your WordPress site",
       sub: "No dedicated plugin to maintain. Paste one line of code and the assistant answers your visitors from your own pages, files and FAQs.",
@@ -93,7 +93,7 @@ export const topicsEn: TopicContent = {
       short: "Answer delivery, returns and product questions on your store.",
       meta: {
         title: "AI chatbot for Shopify stores: answer shoppers automatically",
-        description: "How to add the {name} AI chatbot to a Shopify store. Paste one line of code into theme.liquid and it answers questions about products, delivery and returns in the shopper's language.",
+        description: "How to add the {name} AI chatbot to Shopify: paste one line into theme.liquid, and it answers questions on products, delivery and returns.",
       },
       h1: "An AI chatbot for your Shopify store",
       sub: "Shoppers with an unanswered question leave. The assistant replies in seconds with your delivery times, return policy and product details.",
@@ -124,7 +124,7 @@ export const topicsEn: TopicContent = {
       short: "Add the widget through Wix's custom code setting.",
       meta: {
         title: "AI chatbot for Wix websites: setup in a few steps",
-        description: "How to add the {name} AI chatbot to a Wix website using Custom Code. The assistant answers visitors from your own business information and collects their contact details.",
+        description: "How to add the {name} AI chatbot to a Wix website with Custom Code. It answers visitors from your own information and collects their contact details.",
       },
       h1: "An AI chatbot for your Wix website",
       sub: "Paste one line into Wix's Custom Code setting and your site answers visitors by itself.",
@@ -154,7 +154,7 @@ export const topicsEn: TopicContent = {
       short: "Paste the code into your site's footer code setting.",
       meta: {
         title: "AI chatbot for Webflow sites: add it in the footer code",
-        description: "How to add the {name} AI chatbot to a Webflow site. Paste one line into the site's custom code footer, publish, and the assistant answers visitors from your own content.",
+        description: "How to add the {name} AI chatbot to Webflow: paste one line into the footer code and publish. It answers visitors from your own content.",
       },
       h1: "An AI chatbot for your Webflow site",
       sub: "A widget that matches your design, added through Webflow's custom code setting.",
@@ -184,7 +184,7 @@ export const topicsEn: TopicContent = {
       short: "Add the widget with Squarespace's code injection.",
       meta: {
         title: "AI chatbot for Squarespace websites: add it with code injection",
-        description: "How to add the {name} AI chatbot to a Squarespace website using Code Injection. The assistant answers visitors from your own information and saves their contact details as leads.",
+        description: "How to add the {name} AI chatbot to Squarespace with Code Injection. It answers visitors from your information and saves their details as leads.",
       },
       h1: "An AI chatbot for your Squarespace site",
       sub: "One line in Code Injection, and your site answers enquiries while you work.",
@@ -216,8 +216,8 @@ export const topicsEn: TopicContent = {
       name: "Lead generation",
       short: "Turn website visitors into names and numbers you can call.",
       meta: {
-        title: "AI chatbot for lead generation: capture website visitors automatically",
-        description: "Use {name} to capture leads from your website. The AI assistant answers a visitor's questions, asks for their name and phone number when they are ready, and saves them to a leads list.",
+        title: "AI chatbot for lead generation: capture website visitors",
+        description: "Capture leads from your website with {name}. The AI assistant answers questions, asks for a name and phone number when ready, and saves the lead.",
       },
       h1: "Turn website visitors into leads, automatically",
       sub: "Most visitors leave without filling in a form. An assistant that answers their question first is far more likely to get their details.",
@@ -241,8 +241,8 @@ export const topicsEn: TopicContent = {
       name: "Customer support automation",
       short: "Answer the repeated questions without adding staff.",
       meta: {
-        title: "Automate customer support with an AI assistant trained on your business",
-        description: "Use {name} to answer repeated customer questions automatically. The AI assistant replies from your own information, flags chats it cannot answer, and lets your team take over.",
+        title: "Automate customer support with an AI assistant",
+        description: "Answer repeated customer questions automatically with {name}. It replies from your information, flags what it can't answer and lets your team take over.",
       },
       h1: "Answer the repeated questions without adding staff",
       sub: "Prices, opening hours, policies, directions. The assistant handles them instantly and your team handles the rest.",
@@ -267,7 +267,7 @@ export const topicsEn: TopicContent = {
       short: "Reply to every customer in the language they write in.",
       meta: {
         title: "Multilingual AI chatbot: answer customers in their own language",
-        description: "{name} replies in the language each customer writes in, including Arabic, Spanish, French, German, Hindi, Urdu and Russian, from information you provide in one language.",
+        description: "{name} replies in each customer's language, including Arabic, Spanish, French, German, Hindi and Russian, from information you give in one language.",
       },
       h1: "Reply to every customer in their own language",
       sub: "Write your information once. The assistant answers in whatever language the customer uses.",
@@ -292,7 +292,7 @@ export const topicsEn: TopicContent = {
       short: "Answer and capture enquiries when you are closed.",
       meta: {
         title: "After-hours customer support with an AI assistant",
-        description: "Use {name} to answer website visitors when your business is closed. The assistant replies at any hour, takes booking requests and contact details, and has them ready for your team in the morning.",
+        description: "Answer website visitors when you are closed. {name} replies at any hour, takes booking requests and contact details, and has them ready for your team.",
       },
       h1: "Stay open on your website when your doors are closed",
       sub: "People look for services in the evening and at weekends. The assistant answers them then, and your team follows up the next day.",
@@ -319,7 +319,7 @@ export const topicsEn: TopicContent = {
       short: "The four steps, and what to check before you go live.",
       meta: {
         title: "How to add an AI chatbot to your website (step by step)",
-        description: "A plain guide to adding an AI chatbot to a business website: give it your information, test its answers, paste one line of code, and check it on your phone. No developer needed.",
+        description: "A plain guide to adding an AI chatbot to a business website: give it your information, test it, paste one line of code and check it on a phone.",
       },
       h1: "How to add an AI chatbot to your website",
       sub: "You do not need a developer. You need your business information, about fifteen minutes, and access to your website's settings.",
@@ -366,7 +366,7 @@ export const topicsEn: TopicContent = {
       short: "What each is good at, and why most businesses end up using both.",
       meta: {
         title: "AI chatbot vs live chat: which does a small business need?",
-        description: "A practical comparison of AI chatbots and live chat for small businesses: response time, cost, accuracy and when a person is needed. Most businesses are best served by both together.",
+        description: "AI chatbot or live chat? A practical comparison for small businesses on speed, cost, accuracy and when a person is needed. Most need both.",
       },
       h1: "AI chatbot vs live chat: which do you need?",
       sub: "They are not rivals. One answers instantly and never gets tired; the other handles what a machine should not.",
@@ -389,7 +389,7 @@ export const topicsEn: TopicContent = {
       short: "Why chat converts better than a form, and how to set it up well.",
       meta: {
         title: "How to capture more leads with a website chatbot",
-        description: "Why a chatbot captures more leads than a contact form, when to ask for contact details, what to ask for, and how to follow up. Practical advice for small businesses.",
+        description: "Why a chatbot captures more leads than a contact form, when to ask for contact details, what to ask for and how to follow up. Practical advice.",
       },
       h1: "How to capture leads with a website chatbot",
       sub: "A form asks for details before giving anything. A chat answers first, and that changes how many people leave their number.",

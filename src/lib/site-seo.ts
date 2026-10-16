@@ -13,6 +13,9 @@ const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: `${AP
 
 const OG_LOCALE: Record<SiteLang, string> = { en: "en_US", ar: "ar_AR" };
 
+/** Longest title search results show in full, roughly; longer ones are cut off. */
+export const TITLE_MAX = 65;
+
 /**
  * Metadata for one marketing page: title, description, canonical address, the
  * English/Arabic alternates search engines use to pick the right language, and
@@ -20,9 +23,12 @@ const OG_LOCALE: Record<SiteLang, string> = { en: "en_US", ar: "ar_AR" };
  */
 export function siteMetadata(lang: SiteLang, page: string, meta: { title: string; description: string }): Metadata {
   const url = siteUrl(lang, page);
-  // The home page title already contains the product name; other pages get it appended.
-  const title = page === "" ? { absolute: meta.title } : meta.title;
-  const fullTitle = page === "" ? meta.title : `${meta.title} · ${APP_NAME}`;
+  // The home page title already contains the product name; other pages get it appended, unless
+  // that would make the title longer than search results show (about 65 characters), in which
+  // case the page's own words matter more than the name.
+  const branded = `${meta.title} · ${APP_NAME}`;
+  const fullTitle = page === "" || branded.length > TITLE_MAX ? meta.title : branded;
+  const title = { absolute: fullTitle };
 
   return {
     title,

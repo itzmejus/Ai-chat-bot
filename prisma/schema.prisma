@@ -89,15 +89,39 @@ enum LeadStatus {
 // ---------------------------------------------------------------- global tables
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  image        String?
-  passwordHash String? // null for Google-only accounts
-  createdAt    DateTime @default(now())
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  image           String?
+  passwordHash    String? // null for Google-only accounts
+  /// When the person proved they own the address; null until they do.
+  emailVerifiedAt DateTime?
+  /// Raised on a password change; sessions issued with an older value stop working.
+  sessionVersion  Int       @default(0)
+  createdAt       DateTime  @default(now())
 
   memberships Membership[]
   messages    Message[]
+  authTokens  AuthToken[]
+}
+
+enum AuthTokenKind {
+  verify_email
+  reset_password
+}
+
+/// One-time links sent by email (verify the address, reset the password). Only a hash is stored.
+model AuthToken {
+  id        String        @id @default(cuid())
+  userId    String
+  kind      AuthTokenKind
+  tokenHash String        @unique
+  expiresAt DateTime
+  createdAt DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, kind])
 }
 
 model Plan {

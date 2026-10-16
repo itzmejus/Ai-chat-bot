@@ -16,10 +16,15 @@ const email = z
   .toLowerCase()
   .pipe(z.email({ error: "errors.email" }));
 
+/** A new password. 72 is bcrypt's limit: anything longer would be silently cut. */
+export const passwordSchema = z.string().min(8, "errors.passwordLength").max(72, "errors.passwordLength");
+
+export const emailSchema = email;
+
 export const signupSchema = z.object({
   name: z.string().trim().min(2, "errors.name").max(80, "errors.name"),
   email,
-  password: z.string().min(8, "errors.passwordLength").max(72, "errors.passwordLength"),
+  password: passwordSchema,
 });
 
 export const loginSchema = z.object({

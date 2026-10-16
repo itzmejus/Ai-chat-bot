@@ -9,14 +9,15 @@ import {
   errorJson,
   findVisitorConversation,
   visitorIdSchema,
+  visitorText,
 } from "@/server/widget/service";
 
 const bodySchema = z.object({
   visitorId: visitorIdSchema,
   conversationId: conversationIdSchema.optional(),
-  text: z.string().trim().min(1).max(2000),
+  text: visitorText(2000),
   /** The product the visitor has open, when they ask about it. */
-  productId: z.string().min(1).max(64).optional(),
+  productId: conversationIdSchema.optional(),
 });
 
 /**

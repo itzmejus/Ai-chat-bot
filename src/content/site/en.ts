@@ -15,9 +15,9 @@ export const en: SiteContent = {
 
   home: {
     meta: {
-      title: "{name}: AI customer support chatbot for your website, in your customers' language",
+      title: "{name}: AI chatbot that answers in your customers' language",
       description:
-        "Add an AI assistant to your website in minutes. It answers customers 24/7 in their own language using only your business information, captures leads, and hands over to your team when needed.",
+        "Add an AI assistant to your website in minutes. It answers customers 24/7 in their language from your own information, captures leads and calls in your team.",
     },
     badge: "For businesses anywhere in the world",
     h1: ["AI customer support that speaks ", "your customers' language", ""],
@@ -132,7 +132,7 @@ export const en: SiteContent = {
     meta: {
       title: "Features: AI chatbot, live inbox, lead capture and human takeover",
       description:
-        "Everything in {name}: an AI assistant trained on your business information, a multilingual chat widget, a live team inbox, human takeover, lead capture with CSV export, and analytics on what customers ask.",
+        "Everything in {name}: an AI assistant trained on your information, a multilingual chat widget, live inbox, human takeover, lead capture and analytics.",
     },
     eyebrow: "Features",
     h1: "One assistant, one inbox, every customer answered",
@@ -237,8 +237,8 @@ export const en: SiteContent = {
 
   industriesPage: {
     meta: {
-      title: "AI chatbot by industry: clinics, real estate, salons, restaurants, vehicle and coach hire",
-      description: "See how {name} answers customers in your industry. Sample questions and conversations for clinics, real estate agencies, salons, restaurants, car rental companies, bus and coach hire operators and shops.",
+      title: "AI chatbot by industry: clinics, coach hire, salons and more",
+      description: "See how {name} answers customers in your industry, with sample chats for clinics, real estate, salons, restaurants, car rental, coach hire and shops.",
     },
     h1: "An assistant that already knows your kind of business",
     sub: "Pick your industry to see the questions it answers and how a conversation goes.",
@@ -253,7 +253,7 @@ export const en: SiteContent = {
       short: "Prices, insurance, doctors and appointment requests.",
       meta: {
         title: "AI chatbot for dental and medical clinics",
-        description: "An AI assistant for dental and medical clinics. It answers questions about prices, insurance, doctors and opening hours in your customers' language, and collects appointment requests around the clock.",
+        description: "An AI assistant for dental and medical clinics. It answers questions on prices, insurance and hours in your patients' language and takes appointment requests.",
       },
       h1: "An AI receptionist for your clinic, in your patients' language",
       sub: "Patients ask the same questions every day: prices, insurance, opening hours, which doctor. Let the assistant answer them instantly and pass appointment requests to your reception.",
@@ -273,7 +273,7 @@ export const en: SiteContent = {
       short: "Listings, viewings and payment plans, with every enquiry saved.",
       meta: {
         title: "AI chatbot for real estate agencies and developers",
-        description: "An AI assistant for real estate brokers and developers. It answers questions about listings, payment plans and viewings in your customers' language, and captures every buyer and tenant enquiry as a lead.",
+        description: "An AI assistant for real estate agencies. It answers questions on listings, payment plans and viewings in your clients' language and captures every enquiry.",
       },
       h1: "Capture every property enquiry, even at midnight",
       sub: "Buyers and tenants browse at all hours and from every time zone. The assistant answers their first questions and gives your agents a name and number to call.",
@@ -293,7 +293,7 @@ export const en: SiteContent = {
       short: "Services, prices, availability and booking requests.",
       meta: {
         title: "AI chatbot for salons, barbers and spas",
-        description: "An AI assistant for beauty salons, barbers and spas. It answers questions about services, prices and opening hours in your customers' language and collects booking requests while you work.",
+        description: "An AI assistant for salons, barbers and spas. It answers questions on services, prices and hours in your customers' language and takes booking requests.",
       },
       h1: "Answer booking questions while your hands are busy",
       sub: "Your team is with clients, not on the phone. The assistant replies to price and availability questions instantly and collects booking requests for you to confirm.",
@@ -313,7 +313,7 @@ export const en: SiteContent = {
       short: "Menus, hours, location, reservations and catering enquiries.",
       meta: {
         title: "AI chatbot for restaurants and cafes",
-        description: "An AI assistant for restaurants and cafes. It answers questions about the menu, opening hours, location, parking and catering in your customers' language, and takes reservation requests.",
+        description: "An AI assistant for restaurants and cafes. It answers questions on the menu, hours, location and catering in your guests' language and takes reservations.",
       },
       h1: "Answer every \"are you open?\" without picking up the phone",
       sub: "Menu, hours, location, parking, allergens, group bookings. The assistant handles the questions that interrupt service and collects reservation and catering requests.",
@@ -333,7 +333,7 @@ export const en: SiteContent = {
       short: "Rates, requirements, deposits and delivery, any time of day.",
       meta: {
         title: "AI chatbot for car rental companies",
-        description: "An AI assistant for car rental companies. It answers questions about daily and monthly rates, deposits, required documents and delivery in your customers' language, and captures booking enquiries around the clock.",
+        description: "An AI assistant for car rental companies. It answers questions on rates, deposits, documents and delivery in your customers' language and captures bookings.",
       },
       h1: "Quote rates and requirements the moment a customer asks",
       sub: "Tourists and residents compare several rental companies at once. The first clear answer usually wins the booking.",
@@ -353,7 +353,7 @@ export const en: SiteContent = {
       short: "Quotes, vehicle sizes, routes and group bookings.",
       meta: {
         title: "AI chatbot for bus, coach and minibus hire companies",
-        description: "An AI assistant for bus, coach and minibus hire companies. It answers questions about vehicle sizes, prices, routes and availability in your customers' language, and collects quote requests around the clock.",
+        description: "An AI assistant for bus, coach and minibus hire. It answers questions on vehicle sizes, prices and routes in your customers' language and takes quote requests.",
       },
       h1: "Turn every quote request into a booking, even after hours",
       sub: "Group travel enquiries arrive at all hours and usually go to whoever replies first. The assistant answers questions about vehicles, routes and prices, then collects the trip details your team needs to send a quote.",
@@ -373,7 +373,7 @@ export const en: SiteContent = {
       short: "Products, delivery, returns and stock questions.",
       meta: {
         title: "AI chatbot for retail shops and online stores",
-        description: "An AI assistant for shops and online stores. It answers questions about products, delivery, returns and payment in your customers' language, and captures customers who are ready to buy.",
+        description: "An AI assistant for shops and online stores. It answers questions on products, delivery, returns and payment, and captures customers who are ready to buy.",
       },
       h1: "Answer product and delivery questions before the customer leaves",
       sub: "Shoppers with an unanswered question abandon the page. The assistant replies in seconds with your delivery times, return policy and product details.",

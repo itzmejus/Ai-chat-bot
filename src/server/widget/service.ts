@@ -3,6 +3,7 @@ import { APP_NAME, SITE_URL } from "@/lib/config";
 import { prisma } from "@/server/db/prisma";
 import { tenantDb, type TenantDb } from "@/server/db/tenant";
 import { rateLimit } from "@/server/limits/rate-limit";
+import { clientIpFrom } from "@/server/limits/client-ip";
 import { verifyWidgetToken } from "./token";
 
 /** Settings the chat iframe needs to draw itself. Everything here is public. */
@@ -54,7 +55,18 @@ export async function getWidgetWorkspace(publicKey: string) {
 
 /** The visitor id is a random value the widget keeps for the browser session. It acts as the visitor's secret. */
 export const visitorIdSchema = z.string().regex(/^[A-Za-z0-9_-]{16,64}$/);
-export const conversationIdSchema = z.string().min(1).max(64);
+/** Record ids are cuids; anything else (a null character, say) is refused before it reaches the database. */
+export const conversationIdSchema = z.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+
+/**
+ * Free text from a visitor. Null characters are removed first: PostgreSQL refuses to store
+ * them, so one hidden in a message would otherwise turn the request into a server error.
+ */
+export const visitorText = (max: number) =>
+  z
+    .string()
+    .transform((value) => value.replaceAll("\u0000", ""))
+    .pipe(z.string().trim().min(1).max(max));
 
 export type WidgetRequest = { workspaceId: string; preview: boolean; db: TenantDb };
 
@@ -67,7 +79,7 @@ export function authenticateWidget(request: Request): WidgetRequest | null {
 }
 
 export function clientIp(request: Request): string {
-  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  return clientIpFrom(request.headers);
 }
 
 /**
