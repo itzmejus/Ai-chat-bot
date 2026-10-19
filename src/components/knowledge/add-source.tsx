@@ -19,7 +19,7 @@ const TAB_ICONS = { url: Globe, file: FileUp, faq: MessageCircleQuestion, notes:
 
 // Keep in step with the server-side limits in src/server/ingest/parsers.ts.
 const FILE_TYPES = ["pdf", "docx", "txt"] as const;
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const MAX_FILE_BYTES = 4 * 1024 * 1024; // MAX_UPLOAD_BYTES: under Vercel's 4.5 MB request limit
 
 function formatBytes(bytes: number) {
   return bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -167,7 +167,8 @@ function FileForm() {
         setState({ ok: true });
         router.refresh();
       } else {
-        setState({ error: json.error ?? "errors.generic" });
+        // A 413 without our JSON comes from the host refusing the body before the app sees it.
+        setState({ error: json.error ?? (res.status === 413 ? "knowledge.errors.tooLarge" : "errors.generic") });
       }
     } catch {
       setState({ error: "errors.generic" });

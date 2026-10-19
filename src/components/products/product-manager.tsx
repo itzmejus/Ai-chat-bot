@@ -29,7 +29,8 @@ type ApiResult = { ok?: boolean; error?: string; fieldErrors?: Record<string, st
 async function send(url: string, init: RequestInit): Promise<ApiResult> {
   try {
     const res = await fetch(url, init);
-    return (await res.json().catch(() => ({ error: "errors.generic" }))) as ApiResult;
+    // A bare 413 is the host refusing the body (too big a photo) before the app sees it.
+    return (await res.json().catch(() => ({ error: res.status === 413 ? "products.errors.imageTooLarge" : "errors.generic" }))) as ApiResult;
   } catch {
     return { error: "errors.generic" };
   }
@@ -272,7 +273,8 @@ function ProductForm({
   const choose = (chosen: File | undefined) => {
     if (!chosen) return;
     if (!chosen.type.startsWith("image/")) return setResult({ error: "products.errors.imageUnsupported" });
-    if (chosen.size > 8 * 1024 * 1024) return setResult({ error: "products.errors.imageTooLarge" });
+    // MAX_IMAGE_BYTES on the server: under Vercel's 4.5 MB request limit.
+    if (chosen.size > 4 * 1024 * 1024) return setResult({ error: "products.errors.imageTooLarge" });
     setResult({});
     setFile(chosen);
     setRemoveImage(false);

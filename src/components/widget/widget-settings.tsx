@@ -123,10 +123,11 @@ export function WidgetSettings({
     try {
       const res = await fetch("/api/branding/logo", init);
       const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
-      if (!res.ok) setLogoError(t(body.error ?? "errors.generic"));
+      // Translation keys: FormField translates the error. A bare 413 is the host refusing the body.
+      if (!res.ok) setLogoError(body.error ?? (res.status === 413 ? "errors.logoTooLarge" : "errors.generic"));
       return res.ok ? body : null;
     } catch {
-      setLogoError(t("errors.generic"));
+      setLogoError("errors.generic");
       return null;
     } finally {
       setLogoBusy(false);
@@ -135,6 +136,12 @@ export function WidgetSettings({
   }
   async function uploadLogo(file: File | undefined) {
     if (!file) return;
+    // Same limit as MAX_LOGO_BYTES on the server; checked here for instant feedback.
+    if (file.size > 2 * 1024 * 1024) {
+      setLogoError("errors.logoTooLarge");
+      if (logoInput.current) logoInput.current.value = "";
+      return;
+    }
     const form = new FormData();
     form.append("file", file);
     const body = await logoRequest({ method: "POST", body: form });
