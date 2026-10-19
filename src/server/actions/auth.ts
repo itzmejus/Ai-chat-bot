@@ -8,6 +8,7 @@ import { googleAuthEnabled } from "@/lib/config";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { emailSchema, loginSchema, passwordSchema, signupSchema } from "@/lib/validation";
+import { notifyAdminsOfSignup } from "@/server/admin/admins";
 import { AUTH_TOKEN_PATTERN, changePassword, requestPasswordReset, resetPassword, sendVerificationEmail } from "@/server/auth/account";
 import { getCurrentUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
@@ -53,6 +54,7 @@ export async function signupAction(_prev: FormState, formData: FormData): Promis
   });
   // Ask them to confirm the address. Sending happens in the background: a mail problem must not block signing up.
   void sendVerificationEmail(user).catch((err) => console.error("[auth] verification email failed", err));
+  void notifyAdminsOfSignup(user, "password", INVITE_TOKEN_PATTERN.test(String(formData.get("invite") ?? "")));
 
   // signIn redirects by throwing, so it must stay outside any try/catch that swallows errors.
   await signIn("credentials", { email, password, redirectTo: afterAuth(formData, "/onboarding") });
