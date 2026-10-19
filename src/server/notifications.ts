@@ -7,7 +7,7 @@ import { sendWhatsAppTemplate } from "@/server/whatsapp/client";
  * Notifications to the business: a lead was captured (email), or a customer
  * needs a person (email and WhatsApp). Each respects the workspace's notification settings.
  *
- * Callers do not wait for these (`void notify…`): a notification must never delay or
+ * Callers do not wait for these (they run them with inBackground()): a notification must never delay or
  * break a customer's chat. Failures are logged by the mailer and the WhatsApp client.
  */
 

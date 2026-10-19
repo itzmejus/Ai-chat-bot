@@ -1,5 +1,6 @@
 import { searchChunks, type ChunkMatch } from "@/server/db/chunks";
 import { saveQuestionEmbedding } from "@/server/analytics";
+import { inBackground } from "@/server/background";
 import { tenantDb } from "@/server/db/tenant";
 import { rateLimit } from "@/server/limits/rate-limit";
 import { getAiMessagesUsed, recordAiMessage } from "@/server/limits/usage";
@@ -85,7 +86,7 @@ export async function* answerMessage(input: {
    */
   const alertTeam = () => {
     if (!conversation || conversation.isTest || conversation.status === "needs_human") return;
-    void notifyNeedsHuman(workspaceId, conversationId).catch((err) => console.error("[notify] needs-human email failed", err));
+    inBackground("notify needs-human", () => notifyNeedsHuman(workspaceId, conversationId));
   };
   /** Tell the inbox (and the customer's widget) that the conversation changed. */
   const announce = async (messageId: string) => {
@@ -269,7 +270,7 @@ export async function* answerMessage(input: {
     if (existing) await db.lead.update({ where: { id: existing.id }, data: details });
     else {
       const lead = await db.lead.create({ data: { workspaceId, conversationId, ...details }, select: { id: true } });
-      void notifyLeadCaptured(workspaceId, lead.id).catch((err) => console.error("[notify] lead email failed", err));
+      inBackground("notify lead", () => notifyLeadCaptured(workspaceId, lead.id));
     }
     leadCaptured = !existing;
   }

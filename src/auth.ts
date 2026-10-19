@@ -6,6 +6,7 @@ import Google from "next-auth/providers/google";
 import { googleAuthEnabled } from "@/lib/config";
 import { loginSchema } from "@/lib/validation";
 import { notifyAdminsOfSignup } from "@/server/admin/admins";
+import { inBackground } from "@/server/background";
 import { prisma } from "@/server/db/prisma";
 import { clientIpFrom } from "@/server/limits/client-ip";
 import { rateLimit } from "@/server/limits/rate-limit";
@@ -101,7 +102,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               data: { email, name: profile.name ?? null, image: image ?? null, emailVerifiedAt: new Date() },
               select: { id: true, sessionVersion: true },
             });
-        if (!existing) void notifyAdminsOfSignup({ email, name: profile.name ?? null }, "google");
+        if (!existing) inBackground("signup alert", () => notifyAdminsOfSignup({ email, name: profile.name ?? null }, "google"));
         token.sub = dbUser.id;
         token.sv = dbUser.sessionVersion;
       } else if (user?.id) {

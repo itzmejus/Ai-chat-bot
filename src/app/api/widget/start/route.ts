@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { authenticateWidget, clientIp, errorJson, visitorIdSchema, visitorText } from "@/server/widget/service";
+import { inBackground } from "@/server/background";
 import { rateLimit } from "@/server/limits/rate-limit";
 import { notifyLeadCaptured } from "@/server/notifications";
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   // Preview chats from the dashboard are not real leads.
   if (!preview) {
     const lead = await db.lead.create({ data: { workspaceId, conversationId: conversation.id, name, phone }, select: { id: true } });
-    void notifyLeadCaptured(workspaceId, lead.id).catch((err) => console.error("[notify] lead email failed", err));
+    inBackground("notify lead", () => notifyLeadCaptured(workspaceId, lead.id));
   }
 
   return Response.json({ conversationId: conversation.id });
