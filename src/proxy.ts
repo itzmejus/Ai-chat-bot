@@ -31,6 +31,10 @@ export function proxy(request: NextRequest) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
   const path = request.nextUrl.pathname;
 
+  // No address of ours contains a backslash. Bots that scrape links out of the page's scripts
+  // ask for "/pricing\" and the like; answer them plainly instead of letting them reach a route.
+  if (path.includes("\\") || /%5c/i.test(path)) return new NextResponse("Not found", { status: 404 });
+
   // ---- former hostnames: same path on the current address, so old links and bookmarks keep working
   if (REDIRECT_HOSTS.includes(host.toLowerCase())) {
     const target = matchSitePath(path) || isSiteFile(path) ? SITE_URL : APP_URL;

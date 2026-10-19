@@ -20,6 +20,9 @@ const bodySchema = z.object({
   productId: conversationIdSchema.optional(),
 });
 
+// Room for a full AI answer to stream, with retries.
+export const maxDuration = 120;
+
 /**
  * POST /api/widget/message — a customer message from the web widget.
  * Streams the assistant's reply as Server-Sent Events:

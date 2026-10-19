@@ -15,7 +15,8 @@ import { deleteImages, uploadImage } from "@/server/storage";
 
 /** A generous ceiling per workspace; plan-based limits come with AI import. */
 export const MAX_PRODUCTS = 500;
-export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+// Under Vercel's 4.5 MB request limit, with room for the rest of the form.
+export const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 export class ProductError extends Error {
   constructor(public code: "notFound" | "limit" | "imageUnsupported" | "imageTooLarge") {

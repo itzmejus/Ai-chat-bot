@@ -3,6 +3,9 @@ import { getWorkspaceContext } from "@/server/auth/session";
 import { extractFileText, FileParseError, MAX_UPLOAD_BYTES } from "@/server/ingest/parsers";
 import { addFileSource, KnowledgeLimitError } from "@/server/knowledge";
 
+// Embedding the file may run in this function after the response (see jobMode()).
+export const maxDuration = 300;
+
 /**
  * POST /api/sources/upload — multipart upload of a PDF, DOCX or TXT file.
  * Text is extracted here; chunking and embedding happen in the background job.

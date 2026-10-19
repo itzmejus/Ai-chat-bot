@@ -152,13 +152,15 @@ Postgres with pgvector (PGlite) with every migration applied, and OpenAI is mock
 
 ## Deploy
 
-The app is one Docker web service plus a Postgres database. The step-by-step guide for
-**Render + Supabase**, including the two hostnames (`app.` for the dashboard, `chat.` for the
-widget), email, Google login and a go-live checklist, is in **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+The app is one Next.js project plus a Postgres database. The step-by-step guide for
+**Vercel + Supabase**, including the hostnames (`www.assist.` for the site and dashboard, `chat.`
+for the widget), payments, email, Google login and a go-live checklist, is in
+**[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
-In short: create a Supabase project, create a Render web service from this repository's
-`Dockerfile`, set the environment variables above, and add both hostnames as custom domains.
-Migrations are applied automatically each time the container starts.
+In short: create a Supabase project, import this repository into Vercel (`vercel.json` sets the
+region and build command), set the environment variables above, and add the hostnames as
+domains. Migrations are applied automatically on each production deployment. The `Dockerfile`
+still works for hosting on a server that keeps running (Render, Fly, a VPS).
 
 ## Public site and SEO
 

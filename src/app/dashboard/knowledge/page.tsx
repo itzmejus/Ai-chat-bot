@@ -11,6 +11,9 @@ import { requireWorkspace } from "@/server/auth/session";
 import { getNotes, knowledgePagesUsed, listSources, MAX_CRAWL_PAGES } from "@/server/knowledge";
 
 export const metadata = { title: "Knowledge base" };
+// Adding or re-reading a source from this page can read it in the same function (on Vercel, see
+// jobMode() in src/server/jobs/queue.ts); a website takes up to a few minutes.
+export const maxDuration = 300;
 
 /** Card header with a tinted icon badge beside the title. */
 function SectionHeader({ icon: Icon, title, description, color }: { icon: LucideIcon; title: string; description?: string; color: string }) {

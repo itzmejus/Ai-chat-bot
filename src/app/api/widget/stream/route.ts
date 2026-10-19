@@ -3,6 +3,9 @@ import { streamEvents } from "@/server/realtime/bus";
 import { sseResponse } from "@/server/realtime/sse";
 import { authenticateWidget, conversationIdSchema, errorJson, findVisitorConversation, visitorIdSchema } from "@/server/widget/service";
 
+// A live stream: held open until it ends itself (STREAM_MAX_MS) a little before this limit.
+export const maxDuration = 300;
+
 /**
  * GET /api/widget/stream?visitorId=…&conversationId=… — live updates for the
  * customer's widget while a conversation is open:

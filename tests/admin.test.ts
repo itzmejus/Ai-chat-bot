@@ -10,7 +10,7 @@ vi.mock("@/server/ai/openai", async (original) => ({
   ...(await original<typeof import("@/server/ai/openai")>()),
   getOpenAI: () => ({ models: { retrieve: fakes.retrieveModel } }),
 }));
-vi.mock("@/server/jobs/queue", () => ({ ingestQueueStatus: fakes.queue }));
+vi.mock("@/server/jobs/queue", () => ({ ingestQueueStatus: fakes.queue, jobMode: () => "worker" }));
 
 import { isAdmin, requireAdmin } from "@/server/admin/access";
 import { adminOverview, adminUsers, adminWorkspaces } from "@/server/admin/data";

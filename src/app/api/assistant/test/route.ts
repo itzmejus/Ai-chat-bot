@@ -9,6 +9,9 @@ const bodySchema = z.object({
   conversationId: z.string().min(1).max(64).optional(),
 });
 
+// Room for a full AI answer to stream, with retries.
+export const maxDuration = 120;
+
 /**
  * POST /api/assistant/test — the dashboard's "Test your assistant" chat.
  * Streams the reply as Server-Sent Events:

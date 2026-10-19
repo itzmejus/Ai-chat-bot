@@ -2,6 +2,9 @@ import { getWorkspaceContext } from "@/server/auth/session";
 import { streamEvents } from "@/server/realtime/bus";
 import { sseResponse } from "@/server/realtime/sse";
 
+// A live stream: held open until it ends itself (STREAM_MAX_MS) a little before this limit.
+export const maxDuration = 300;
+
 /**
  * GET /api/inbox/stream — live updates for the dashboard inbox.
  * Sends `change {conversationId, type}` whenever a conversation in this

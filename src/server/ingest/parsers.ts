@@ -1,6 +1,7 @@
 import { cleanText } from "./html";
 
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+// Vercel refuses request bodies over 4.5 MB, so files (with the form around them) stay under it.
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const UPLOAD_EXTENSIONS = ["pdf", "docx", "txt"] as const;
 const MAX_TEXT_CHARS = 600_000;
 

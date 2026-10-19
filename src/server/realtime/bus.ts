@@ -96,10 +96,28 @@ async function ensureListening() {
   }
 }
 
+/** How long the LISTEN connection stays open after the last subscriber leaves. */
+const IDLE_CLOSE_MS = 30_000;
+let idleTimer: ReturnType<typeof setTimeout> | undefined;
+
 export function subscribe(listener: Listener): () => void {
   state.listeners.add(listener);
+  clearTimeout(idleTimer);
   void ensureListening();
-  return () => state.listeners.delete(listener);
+  return () => {
+    state.listeners.delete(listener);
+    if (state.listeners.size > 0) return;
+    // Nobody is listening here any more: give the session-pooler connection back, so that
+    // instances without open inboxes or chats (many, on serverless hosts) hold none.
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      if (state.listeners.size > 0 || !state.client) return;
+      const client = state.client;
+      state.client = undefined;
+      client.removeAllListeners();
+      client.end().catch(() => {});
+    }, IDLE_CLOSE_MS);
+  };
 }
 
 export async function publish(event: Omit<ChatEvent, "id">) {
@@ -118,6 +136,9 @@ export async function publish(event: Omit<ChatEvent, "id">) {
  * the client disconnects. A ping every 25 seconds keeps proxies from closing
  * an idle connection.
  */
+/** Longest one stream stays open; under the stream routes' maxDuration (300 s). */
+export const STREAM_MAX_MS = 240_000;
+
 export function streamEvents(
   send: (event: string, data: unknown) => void,
   signal: AbortSignal,
@@ -130,8 +151,12 @@ export function streamEvents(
       Promise.resolve(onEvent(event)).catch((err) => console.error("[realtime] forwarding failed", err));
     });
     const ping = setInterval(() => send("ping", {}), 25_000);
+    // End the stream before the host's time limit cuts it (Vercel stops functions after
+    // maxDuration). The inbox and the widget reconnect on their own and catch up.
+    const lifetime = setTimeout(() => stop(), STREAM_MAX_MS);
     const stop = () => {
       clearInterval(ping);
+      clearTimeout(lifetime);
       unsubscribe();
       resolve();
     };

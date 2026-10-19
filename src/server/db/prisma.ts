@@ -11,7 +11,12 @@ import { PrismaClient } from "@/generated/prisma/client";
 function createClient() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) throw new Error("DATABASE_URL is not set");
-  return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+  // On serverless hosts (Vercel) there are many short-lived instances, each with its own pool,
+  // so each keeps a few connections and lets idle ones go quickly.
+  const serverless = Boolean(process.env.VERCEL);
+  return new PrismaClient({
+    adapter: new PrismaPg({ connectionString, max: serverless ? 5 : 10, idleTimeoutMillis: serverless ? 10_000 : 30_000 }),
+  });
 }
 
 // One client per process, reused across hot reloads in development.

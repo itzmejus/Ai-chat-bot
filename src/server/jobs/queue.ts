@@ -1,12 +1,21 @@
 import { PgBoss } from "pg-boss";
 
 /**
- * Background jobs, stored in Postgres by pg-boss (no Redis needed).
+ * Background jobs: reading a knowledge source (crawl, chunk, embed). WORKER_MODE picks where:
  *
- * The web app enqueues; a worker processes. By default the worker runs inside
- * the Next.js server process (see src/instrumentation.ts). Set
- * WORKER_MODE=external and run `npm run worker` to move it to its own process.
+ *   ""          a worker inside the Next.js server process (see src/instrumentation.ts); jobs are
+ *               queued in Postgres by pg-boss. The default on a server that keeps running (Render).
+ *   "external"  queued the same way, processed by `npm run worker` running as its own service.
+ *   "request"   no queue: the source is processed straight after the response of the request that
+ *               added it, within that function's time limit (Next.js `after`). The default on Vercel,
+ *               where nothing keeps running between requests to poll a queue, and where each
+ *               instance holding pg-boss connections would quickly use up the database pooler.
  */
+export function jobMode(): "worker" | "external" | "request" {
+  const mode = process.env.WORKER_MODE;
+  if (mode === "external" || mode === "request") return mode;
+  return process.env.VERCEL ? "request" : "worker";
+}
 
 const INGEST_QUEUE = "ingest-source";
 type IngestJob = { workspaceId: string; sourceId: string };
@@ -34,6 +43,15 @@ function getBoss(): Promise<PgBoss> {
 
 /** Queue a knowledge source for crawling/chunking/embedding. */
 export async function enqueueIngest(workspaceId: string, sourceId: string) {
+  if (jobMode() === "request") {
+    const { after } = await import("next/server");
+    after(async () => {
+      const { processSource } = await import("@/server/ingest/process");
+      // processSource records its own failures on the source; this only catches the unexpected.
+      await processSource(workspaceId, sourceId).catch((err) => console.error("[jobs] processing failed", sourceId, err));
+    });
+    return;
+  }
   const boss = await getBoss();
   await boss.send(INGEST_QUEUE, { workspaceId, sourceId } satisfies IngestJob);
 }
@@ -55,6 +73,7 @@ export async function startIngestWorker() {
 
 /** Backlog and recent failures of the ingestion queue, and whether this process runs the worker. */
 export async function ingestQueueStatus() {
+  if (jobMode() === "request") return { ready: 0, active: 0, failed: 0, workerInProcess: false };
   const boss = await getBoss();
   const queue = await boss.getQueue(INGEST_QUEUE);
   return {

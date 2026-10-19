@@ -199,7 +199,7 @@
     "urlLabel": "Website address",
     "urlHelp": "We read up to {max} pages on this domain and respect robots.txt.",
     "urlSubmit": "Crawl website",
-    "fileLabel": "PDF, DOCX or TXT (max 10 MB)",
+    "fileLabel": "PDF, DOCX or TXT (max 4 MB)",
     "fileHelp": "Price lists, menus, policies. Only the text is kept; the file itself is not stored.",
     "fileSubmit": "Upload",
     "uploading": "Uploading…",
@@ -241,7 +241,7 @@
       "openaiKey": "The AI service is not configured yet (missing OpenAI API key).",
       "generic": "Something went wrong while processing this source.",
       "unsupported": "Only PDF, DOCX and TXT files are supported.",
-      "tooLarge": "The file is larger than 10 MB.",
+      "tooLarge": "The file is larger than 4 MB.",
       "noText": "No text was found in this file. Scanned documents are not supported.",
       "unreadable": "The file could not be read. It may be damaged or password-protected.",
       "noFile": "Choose a file first."
@@ -259,7 +259,7 @@
     "addSubtitle": "Choose a source type. Processing happens in the background.",
     "dropTitle": "Drag a file here, or click to browse",
     "dropActive": "Drop the file to add it",
-    "maxSize": "up to 10 MB",
+    "maxSize": "up to 4 MB",
     "removeFile": "Remove file",
     "faqFromQuestion": "Answer this customer question so the assistant can handle it next time.",
     "warnings": {
@@ -608,7 +608,7 @@
     "confirmDelete": "Delete \"{name}\"? Customers will no longer see it in the chat.",
     "noPrice": "No price",
     "photo": "Photo",
-    "photoHint": "JPG, PNG or WebP, up to 8 MB. It is resized for you.",
+    "photoHint": "JPG, PNG or WebP, up to 4 MB. It is resized for you.",
     "photoChoose": "Choose a photo",
     "photoDrop": "or drop it here",
     "photoReplace": "Replace",
@@ -636,7 +636,7 @@
       "notFound": "This item no longer exists.",
       "limit": "You have reached the maximum number of items.",
       "imageUnsupported": "This file is not a photo we can read. Use JPG, PNG or WebP.",
-      "imageTooLarge": "The photo is larger than 8 MB.",
+      "imageTooLarge": "The photo is larger than 4 MB.",
       "storageNotConfigured": "Photo upload is not set up yet. Save without a photo, or ask your administrator to configure storage.",
       "storageFailed": "The photo could not be uploaded. Please try again."
     }

@@ -2,7 +2,7 @@ import { prisma } from "@/server/db/prisma";
 import { chatModel, getOpenAI } from "@/server/ai/openai";
 import { freePlanChangeAllowed, paymentsConfigured, paymentsMode, pingPayments } from "@/server/billing";
 import { emailConfigured, verifyEmailServer } from "@/server/email/mailer";
-import { ingestQueueStatus } from "@/server/jobs/queue";
+import { ingestQueueStatus, jobMode } from "@/server/jobs/queue";
 import { pingStorage, storageConfigured } from "@/server/storage";
 import { whatsappConfigured } from "@/server/whatsapp/client";
 
@@ -99,7 +99,12 @@ const checkJobs = () =>
       prisma.knowledgeSource.count({ where: { status: "processing", createdAt: { lt: new Date(Date.now() - STUCK_AFTER_MS) } } }),
       prisma.knowledgeSource.count({ where: { status: "failed" } }),
     ]);
-    const external = process.env.WORKER_MODE === "external";
+    const mode = jobMode();
+    if (mode === "request") {
+      const facts = [`${failed} source(s) failed to read`, "sources are read in the request that adds them"];
+      return { status: stuck > 0 ? "warn" : "ok", detail: [...facts, stuck > 0 && `${stuck} source(s) processing for over 30 min: re-read them from the Knowledge page`].filter(Boolean).join(" · ") };
+    }
+    const external = mode === "external";
     const problems = [
       !external && !queue.workerInProcess && "the worker is not running in this process",
       queue.ready > 20 && `${queue.ready} jobs waiting`,
@@ -119,7 +124,7 @@ export function serverInfo() {
     node: process.version,
     uptime: uptime > 86400 ? `${Math.floor(uptime / 86400)} d ${Math.floor((uptime % 86400) / 3600)} h` : `${Math.floor(uptime / 3600)} h ${Math.floor((uptime % 3600) / 60)} min`,
     memory: mb(process.memoryUsage().rss),
-    commit: (process.env.RENDER_GIT_COMMIT ?? "").slice(0, 7) || null,
+    commit: (process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.RENDER_GIT_COMMIT ?? "").slice(0, 7) || null,
     environment: process.env.NODE_ENV ?? "development",
   };
 }
