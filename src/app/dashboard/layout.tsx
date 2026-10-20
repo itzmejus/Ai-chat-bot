@@ -1,4 +1,4 @@
-import { LogOut, TriangleAlert } from "lucide-react";
+import { LogOut, ShieldCheck, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Avatar, Brand } from "@/components/brand";
@@ -56,7 +56,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         <header className="sticky top-0 z-20 border-b border-border/70 bg-background/95 backdrop-blur">
           <div className="flex h-14 items-center justify-between gap-3 px-4 md:h-16 md:px-8">
             <div className="flex min-w-0 items-center gap-3">
-              <Brand className="md:hidden" />
+              <Brand className="text-base whitespace-nowrap md:hidden" />
               <div className="hidden min-w-0 md:block">
                 {memberships.length > 1 ? (
                   <WorkspaceSwitcher
@@ -71,13 +71,20 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            {/* On phones the admin link and the language switch are icons, so the row fits beside the logo. */}
+            <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
               {isAdmin(user) && (
-                <Link href="/admin" className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
-                  Admin
+                <Link
+                  href="/admin"
+                  title="Admin"
+                  aria-label="Admin"
+                  className="flex h-8 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground sm:px-2.5"
+                >
+                  <ShieldCheck className="size-4" />
+                  <span className="hidden sm:inline">Admin</span>
                 </Link>
               )}
-              <LanguageSwitcher />
+              <LanguageSwitcher compact />
               <div className="mx-1 hidden h-6 w-px bg-border sm:block" />
               <div className="flex items-center gap-2.5">
                 <Avatar name={displayName} className="size-8 md:size-9" />
