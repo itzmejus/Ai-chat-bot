@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/site/json-ld";
+import { CardImage, PageFigure, pageImage } from "@/components/site/page-image";
 import { ContactSection, CtaBand, Eyebrow, FaqList, PageHero, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, type SiteContent, type TopicPage } from "@/content/site";
@@ -35,8 +36,11 @@ export function hubMetadata(lang: string, group: TopicGroup): Metadata {
 }
 
 export function topicMetadata(lang: string, group: TopicGroup, slug: string): Metadata {
-  const { topic, page } = find(asLang(lang), group, slug);
-  return topic ? siteMetadata(asLang(lang), page, topic.meta) : {};
+  const l = asLang(lang);
+  const { topic, page } = find(l, group, slug);
+  if (!topic) return {};
+  const image = pageImage(page);
+  return siteMetadata(l, page, topic.meta, image ? { url: image.og, alt: image.alt[l] } : undefined);
 }
 
 // ---------------------------------------------------------------- shared pieces
@@ -67,15 +71,22 @@ function Breadcrumbs({ lang, trail }: { lang: SiteLang; trail: { name: string; p
   );
 }
 
-/** Cards linking to the pages of a group. */
-function TopicCards({ lang, group, exclude }: { lang: SiteLang; group: TopicGroup; exclude?: string }) {
+/** How many related pages an entry links to: its neighbours in the group, so every page is linked from several others. */
+const RELATED = 6;
+
+/** The pages after `slug` in its group, wrapping round to the start. */
+function neighbours(slugs: readonly string[], slug: string) {
+  const at = slugs.indexOf(slug);
+  return Array.from({ length: Math.min(RELATED, slugs.length - 1) }, (_, i) => slugs[(at + 1 + i) % slugs.length]);
+}
+
+/** Cards linking to the pages of a group: all of them, or the pages related to `relatedTo`. */
+function TopicCards({ lang, group, relatedTo }: { lang: SiteLang; group: TopicGroup; relatedTo?: string }) {
   const t = getSiteContent(lang);
   const { base, slugs } = TOPIC_GROUPS[group];
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {slugs
-        .filter((slug) => slug !== exclude)
-        .map((slug) => {
+      {(relatedTo ? neighbours(slugs, relatedTo) : slugs).map((slug) => {
           const topic = pagesOf(t, group)[slug];
           return (
             <li key={slug}>
@@ -83,6 +94,7 @@ function TopicCards({ lang, group, exclude }: { lang: SiteLang; group: TopicGrou
                 href={sitePath(lang, `${base}/${slug}`)}
                 className="group flex h-full flex-col gap-2.5 rounded-3xl border border-border/80 bg-white p-6 transition-[box-shadow,translate,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(220_38_38/0.5)]"
               >
+                <CardImage lang={lang} page={`${base}/${slug}`} className="mb-2" />
                 <h3 className="text-lg leading-snug font-semibold text-balance">{topic.name}</h3>
                 <p className="text-[15px] leading-relaxed text-muted-foreground">{topic.short}</p>
                 <span className="mt-auto flex items-center gap-1.5 pt-2 text-sm font-semibold text-primary">
@@ -137,6 +149,7 @@ export function TopicPageView({ lang: rawLang, group, slug }: { lang: string; gr
   const base = TOPIC_GROUPS[group].base;
   const article = group === "guides";
   const embedCode = `<script src="${WIDGET_URL}/widget.js" data-workspace="pk_..." async></script>`;
+  const image = pageImage(page);
 
   return (
     <SiteShell lang={lang} page={page}>
@@ -158,7 +171,7 @@ export function TopicPageView({ lang: rawLang, group, slug }: { lang: string; gr
             datePublished: SITE_UPDATED,
             dateModified: SITE_UPDATED,
             mainEntityOfPage: siteUrl(lang, page),
-            image: `${SITE_URL}/opengraph-image`,
+            image: image ? `${SITE_URL}${image.og}` : `${SITE_URL}/opengraph-image`,
             author: { "@type": "Organization", name: APP_NAME, url: SITE_URL },
             publisher: { "@type": "Organization", name: APP_NAME, url: SITE_URL, logo: { "@type": "ImageObject", url: `${SITE_URL}/apple-icon.png` } },
           }}
@@ -190,6 +203,7 @@ export function TopicPageView({ lang: rawLang, group, slug }: { lang: string; gr
       </div>
 
       <article className="mx-auto flex max-w-3xl flex-col gap-10 px-4 py-12 sm:px-6 sm:py-16">
+        <PageFigure lang={lang} page={page} />
         <div className="flex flex-col gap-4">
           {topic.intro.map((paragraph) => (
             <p key={paragraph} className="text-lg leading-relaxed text-foreground/85">
@@ -263,7 +277,7 @@ export function TopicPageView({ lang: rawLang, group, slug }: { lang: string; gr
       <Section>
         <SectionHeading title={labels.related} />
         <div className="mt-10">
-          <TopicCards lang={lang} group={group} exclude={slug} />
+          <TopicCards lang={lang} group={group} relatedTo={slug} />
         </div>
       </Section>
 

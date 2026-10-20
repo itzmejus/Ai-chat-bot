@@ -7,23 +7,101 @@
  */
 
 /** When the site's pages were last revised: shown on blog articles and given to search engines in the sitemap. */
-export const SITE_UPDATED = "2026-10-08";
+export const SITE_UPDATED = "2026-10-20";
 
 export const SITE_LANGS = ["en", "ar"] as const;
 export type SiteLang = (typeof SITE_LANGS)[number];
 
-export const INDUSTRY_SLUGS = ["clinics", "real-estate", "salons", "restaurants", "car-rental", "coach-hire", "retail"] as const;
+export const INDUSTRY_SLUGS = [
+  "clinics",
+  "real-estate",
+  "salons",
+  "restaurants",
+  "car-rental",
+  "coach-hire",
+  "retail",
+  "gyms",
+  "hotels",
+  "travel-agencies",
+  "training-centres",
+  "schools",
+  "law-firms",
+  "accounting-firms",
+  "car-service",
+  "home-services",
+  "event-venues",
+] as const;
 export type IndustrySlug = (typeof INDUSTRY_SLUGS)[number];
 
+/** The industries with their own illustration, shown in the home page tabs and the footer. The rest are on /industries. */
+export const FEATURED_INDUSTRY_SLUGS = ["clinics", "real-estate", "salons", "restaurants", "car-rental", "coach-hire", "retail"] as const satisfies readonly IndustrySlug[];
+export type FeaturedIndustrySlug = (typeof FEATURED_INDUSTRY_SLUGS)[number];
+
 /** Website builders with their own setup page. */
-export const INTEGRATION_SLUGS = ["wordpress", "shopify", "wix", "webflow", "squarespace"] as const;
+export const INTEGRATION_SLUGS = [
+  "wordpress",
+  "shopify",
+  "wix",
+  "webflow",
+  "squarespace",
+  "woocommerce",
+  "joomla",
+  "drupal",
+  "framer",
+  "bigcommerce",
+  "ghost",
+  "hubspot",
+  "weebly",
+  "google-tag-manager",
+  "html",
+] as const;
 export type IntegrationSlug = (typeof INTEGRATION_SLUGS)[number];
 
-export const USE_CASE_SLUGS = ["lead-generation", "customer-support", "multilingual-support", "after-hours-support"] as const;
+export const USE_CASE_SLUGS = [
+  "lead-generation",
+  "customer-support",
+  "multilingual-support",
+  "after-hours-support",
+  "appointment-requests",
+  "faq-automation",
+  "pre-sales-questions",
+  "quote-requests",
+  "arabic-chatbot",
+  "fewer-phone-calls",
+  "small-business-support",
+  "ecommerce-support",
+  "human-handover",
+  "customer-insights",
+] as const;
 export type UseCaseSlug = (typeof USE_CASE_SLUGS)[number];
 
 /** Blog articles. Each one is its own page at /blog/<slug>. */
-export const GUIDE_SLUGS = ["add-ai-chatbot-to-website", "train-chatbot-on-your-content", "ai-chatbot-vs-live-chat", "chatbot-lead-capture"] as const;
+export const GUIDE_SLUGS = [
+  "add-ai-chatbot-to-website",
+  "train-chatbot-on-your-content",
+  "ai-chatbot-vs-live-chat",
+  "chatbot-lead-capture",
+  "ai-chatbot-cost",
+  "write-faqs-for-chatbot",
+  "chatbot-greeting-messages",
+  "stop-chatbot-making-things-up",
+  "when-to-hand-over-to-a-human",
+  "chatbot-vs-contact-form",
+  "after-hours-customer-service",
+  "multilingual-customer-support",
+  "serving-arabic-speaking-customers",
+  "measure-chatbot-success",
+  "chatbot-data-privacy",
+  "reduce-customer-response-time",
+  "website-chatbot-best-practices",
+  "qualify-leads-with-chatbot",
+  "is-a-chatbot-worth-it-for-small-business",
+  "prepare-content-for-ai-chatbot",
+  "customer-service-in-the-uae",
+  "chatbot-mistakes-to-avoid",
+  "chat-on-mobile",
+  "what-is-ai-customer-support",
+] as const;
 export type GuideSlug = (typeof GUIDE_SLUGS)[number];
 
 /** The three groups of search-focused pages and the address each lives under. */

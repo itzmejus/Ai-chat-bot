@@ -1,3 +1,6 @@
+import { guidesMoreAr } from "./more/guides-ar";
+import { integrationsMoreAr } from "./more/integrations-ar";
+import { useCasesMoreAr } from "./more/use-cases-ar";
 import type { TopicContent } from "./types";
 
 /** Arabic version of topics-en.ts. Same pages, same structure. */
@@ -199,6 +202,7 @@ export const topicsAr: TopicContent = {
         { q: "هل يغني عن نموذج التواصل؟", a: "يعمل إلى جانبه. كثير من الزوار يفضّلون سؤالاً سريعاً في المحادثة، والمساعد يحفظ بيانات التواصل كما يفعل النموذج." },
       ],
     },
+    ...integrationsMoreAr,
   },
 
   useCases: {
@@ -293,6 +297,7 @@ export const topicsAr: TopicContent = {
         { q: "هل يستطيع تأكيد الحجوزات بنفسه؟", a: "يجمع الطلب وبيانات العميل لتؤكده أنت. الحجز المباشر في التقويم غير متاح بعد." },
       ],
     },
+    ...useCasesMoreAr,
   },
 
   guides: {
@@ -389,5 +394,6 @@ export const topicsAr: TopicContent = {
         { q: "كيف أحصل على بيانات العملاء المحتملين؟", a: "في {name} يظهر العملاء المحتملون في لوحة التحكم مع محادثاتهم، ويصلك بريد عند كل واحد جديد، وتستطيع تصدير القائمة كملف CSV." },
       ],
     },
+    ...guidesMoreAr,
   },
 };

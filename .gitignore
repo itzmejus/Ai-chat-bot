@@ -51,3 +51,6 @@ next-env.d.ts
 # built widget bundles (see widget/build.mjs)
 /public/widget.js
 /public/widget-app.js
+
+# originals of generated page pictures (scripts/generate-page-images.ts)
+/.cache

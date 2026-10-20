@@ -1,3 +1,6 @@
+import { guidesMoreEn } from "./more/guides-en";
+import { integrationsMoreEn } from "./more/integrations-en";
+import { useCasesMoreEn } from "./more/use-cases-en";
 import type { TopicContent } from "./types";
 
 /**
@@ -209,6 +212,7 @@ export const topicsEn: TopicContent = {
         { q: "Can it replace my contact form?", a: "It can work alongside it. Many visitors prefer to ask a quick question in chat, and the assistant saves their contact details the same way a form would." },
       ],
     },
+    ...integrationsMoreEn,
   },
 
   useCases: {
@@ -311,6 +315,7 @@ export const topicsEn: TopicContent = {
         { q: "Can it confirm bookings by itself?", a: "It collects the request and the customer's details for you to confirm. Booking directly into a calendar is not available yet." },
       ],
     },
+    ...useCasesMoreEn,
   },
 
   guides: {
@@ -407,5 +412,6 @@ export const topicsEn: TopicContent = {
         { q: "How do I get the leads out?", a: "In {name} leads are listed in your dashboard with their conversations, you are emailed for each new one, and you can export the list as a CSV file." },
       ],
     },
+    ...guidesMoreEn,
   },
 };

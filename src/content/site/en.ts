@@ -1,3 +1,4 @@
+import { industriesMoreEn } from "./more/industries-en";
 import { topicsEn } from "./topics-en";
 import type { SiteContent } from "./types";
 
@@ -391,6 +392,7 @@ export const en: SiteContent = {
         { from: "assistant", text: "Yes, we deliver nationwide in 1 to 2 working days, and delivery is free for orders over $50." },
       ],
     },
+    ...industriesMoreEn,
   },
 
   legal: {

@@ -1,3 +1,4 @@
+import { industriesMoreAr } from "./more/industries-ar";
 import { topicsAr } from "./topics-ar";
 import type { SiteContent } from "./types";
 
@@ -390,6 +391,7 @@ export const ar: SiteContent = {
         { from: "assistant", text: "نعم، نوصل إلى كل المدن خلال يوم إلى يومي عمل، والتوصيل مجاني للطلبات فوق 50 دولاراً." },
       ],
     },
+    ...industriesMoreAr,
   },
 
   legal: {

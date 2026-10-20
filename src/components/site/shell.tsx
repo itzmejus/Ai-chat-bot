@@ -4,7 +4,11 @@ import { Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
 import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL, SITE_WIDGET_KEY, WIDGET_URL } from "@/lib/config";
-import { GUIDE_SLUGS, INDUSTRY_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
+import { FEATURED_INDUSTRY_SLUGS, GUIDE_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
+
+// The footer lists a few of each group; the hub pages (/industries, /integrations, /blog) list them all.
+const FOOTER_INTEGRATIONS = INTEGRATION_SLUGS.slice(0, 6);
+const FOOTER_GUIDES = GUIDE_SLUGS.slice(0, 6);
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 import { GlobeMark } from "./art";
@@ -146,7 +150,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               <FooterLink href={href("/faq")}>{t.topics.labels.faq}</FooterLink>
             </FooterColumn>
             <FooterColumn title={t.footer.industries} className="max-sm:row-span-2">
-              {INDUSTRY_SLUGS.map((slug) => (
+              {FEATURED_INDUSTRY_SLUGS.map((slug) => (
                 <FooterLink key={slug} href={href(`/industries/${slug}`)}>
                   {t.industries[slug].name}
                 </FooterLink>
@@ -155,7 +159,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
             {/* two short lists share a column, so the row has no gap beside the long ones */}
             <div className="flex min-w-0 flex-col gap-7 sm:gap-10">
               <FooterColumn title={t.topics.labels.integrations}>
-                {INTEGRATION_SLUGS.map((slug) => (
+                {FOOTER_INTEGRATIONS.map((slug) => (
                   <FooterLink key={slug} href={href(`/integrations/${slug}`)}>
                     {t.topics.integrations[slug].name}
                   </FooterLink>
@@ -169,7 +173,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               </FooterColumn>
             </div>
             <FooterColumn title={t.topics.labels.guides} className="col-span-2 sm:col-span-3 lg:col-span-1">
-              {GUIDE_SLUGS.map((slug) => (
+              {FOOTER_GUIDES.map((slug) => (
                 <FooterLink key={slug} href={href(`/blog/${slug}`)}>
                   {t.topics.guides[slug].name}
                 </FooterLink>

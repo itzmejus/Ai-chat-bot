@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import type { ChatLine } from "@/content/site";
-import type { IndustrySlug } from "@/lib/site-routes";
+import type { FeaturedIndustrySlug } from "@/lib/site-routes";
 import { cn } from "@/lib/utils";
 import { INDUSTRY_ART } from "./art";
 
-type Item = { slug: IndustrySlug; name: string; short: string; title: string; questions: string[]; chat: ChatLine[]; href: string };
+type Item = { slug: FeaturedIndustrySlug; name: string; short: string; title: string; questions: string[]; chat: ChatLine[]; href: string };
 
 /**
  * Industries as tabs. Phones get a row of chips that scrolls sideways; wider screens a

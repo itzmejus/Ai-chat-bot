@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { INDUSTRY_ART } from "@/components/site/art";
+import { hasIndustryArt, INDUSTRY_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
 import { Bubble } from "@/components/site/mockups";
+import { PageFigure, pageImage } from "@/components/site/page-image";
 import { CtaBand, Eyebrow, IndustryCards, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent } from "@/content/site";
@@ -16,7 +17,9 @@ const isIndustry = (slug: string): slug is IndustrySlug => (INDUSTRY_SLUGS as re
 export async function generateMetadata({ params }: PageProps<"/[lang]/industries/[slug]">): Promise<Metadata> {
   const { lang, slug } = await params;
   if (!isIndustry(slug)) return {};
-  return siteMetadata(asLang(lang), `/industries/${slug}`, getSiteContent(asLang(lang)).industries[slug].meta);
+  const l = asLang(lang);
+  const image = pageImage(`/industries/${slug}`);
+  return siteMetadata(l, `/industries/${slug}`, getSiteContent(l).industries[slug].meta, image ? { url: image.og, alt: image.alt[l] } : undefined);
 }
 
 export default async function IndustryPage({ params }: PageProps<"/[lang]/industries/[slug]">) {
@@ -26,7 +29,7 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
   const t = getSiteContent(lang);
   const industry = t.industries[slug];
   const page = `/industries/${slug}`;
-  const Art = INDUSTRY_ART[slug];
+  const Art = hasIndustryArt(slug) ? INDUSTRY_ART[slug] : null;
 
   return (
     <SiteShell lang={lang} page={page}>
@@ -54,7 +57,7 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
       <section className="site-hero relative overflow-hidden border-b border-border/60">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <div className="flex flex-col items-start gap-6">
-            <Art className="-mb-1" />
+            {Art && <Art className="-mb-1" />}
             <Eyebrow>
               {t.industryPage.eyebrow} · {industry.name}
             </Eyebrow>
@@ -80,6 +83,13 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
           </div>
         </div>
       </section>
+
+      {/* ---- The page picture */}
+      {pageImage(page) && (
+        <div className="mx-auto max-w-4xl px-4 pt-14 sm:px-6 sm:pt-20">
+          <PageFigure lang={lang} page={page} />
+        </div>
+      )}
 
       {/* ---- Questions it answers */}
       <Section>

@@ -1,6 +1,6 @@
 import type { FeatureKey } from "@/content/site";
 import { LOGO_BUBBLE, LOGO_SPARK } from "@/lib/logo";
-import type { IndustrySlug } from "@/lib/site-routes";
+import type { FeaturedIndustrySlug, IndustrySlug } from "@/lib/site-routes";
 import { cn } from "@/lib/utils";
 
 /**
@@ -325,7 +325,8 @@ function RetailArt(props: ArtProps) {
   );
 }
 
-export const INDUSTRY_ART: Record<IndustrySlug, (props: ArtProps) => React.ReactElement> = {
+/** Hand-drawn art for the featured industries; the others are shown with their page picture. */
+export const INDUSTRY_ART: Record<FeaturedIndustrySlug, (props: ArtProps) => React.ReactElement> = {
   clinics: ClinicArt,
   "real-estate": RealEstateArt,
   salons: SalonArt,
@@ -334,6 +335,8 @@ export const INDUSTRY_ART: Record<IndustrySlug, (props: ArtProps) => React.React
   "coach-hire": CoachArt,
   retail: RetailArt,
 };
+
+export const hasIndustryArt = (slug: IndustrySlug): slug is FeaturedIndustrySlug => slug in INDUSTRY_ART;
 
 // ---------------------------------------------------------------- setup steps and the handover relay
 

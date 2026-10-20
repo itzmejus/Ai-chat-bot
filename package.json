@@ -17,7 +17,8 @@
     "postinstall": "prisma generate",
     "worker": "tsx worker/index.ts",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "images:pages": "tsx scripts/generate-page-images.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

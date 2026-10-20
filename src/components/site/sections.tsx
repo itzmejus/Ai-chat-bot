@@ -3,12 +3,13 @@ import Link from "next/link";
 import { DotPattern } from "@/components/illustrations";
 import { getSiteContent, PLAN_CURRENCY, SITE_PLANS, type Faq } from "@/content/site";
 import { CONTACT_EMAIL } from "@/lib/config";
-import { INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
+import { FEATURED_INDUSTRY_SLUGS, INDUSTRY_SLUGS, sitePath, type IndustrySlug, type SiteLang } from "@/lib/site-routes";
 import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
-import { INDUSTRY_ART, PlanArt, RELAY_ART } from "./art";
+import { hasIndustryArt, INDUSTRY_ART, PlanArt, RELAY_ART } from "./art";
 import { IndustryTabs } from "./industry-tabs";
 import { HandoverLive } from "./live-chat";
+import { CardImage, pageImage } from "./page-image";
 import { CtaLink } from "./shell";
 
 /** Page-width wrapper with consistent vertical rhythm. */
@@ -73,7 +74,7 @@ export function IndustryShowcase({ lang }: { lang: SiteLang }) {
       label={t.nav.industries}
       asks={t.industryPage.asks}
       more={t.home.industries.link}
-      items={INDUSTRY_SLUGS.map((slug) => {
+      items={FEATURED_INDUSTRY_SLUGS.map((slug) => {
         const industry = t.industries[slug];
         return { slug, name: industry.name, short: industry.short, title: industry.h1, questions: industry.questions.slice(0, 4), chat: industry.chat, href: sitePath(lang, `/industries/${slug}`) };
       })}
@@ -81,13 +82,13 @@ export function IndustryShowcase({ lang }: { lang: SiteLang }) {
   );
 }
 
-/** Industry cards linking to their pages, each with its illustration. */
+/** Industry cards linking to their pages, each with its page picture (or its drawing, without one). */
 export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: IndustrySlug }) {
   const t = getSiteContent(lang);
   return (
     <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {INDUSTRY_SLUGS.filter((slug) => slug !== exclude).map((slug) => {
-        const Art = INDUSTRY_ART[slug];
+        const Art = !pageImage(`/industries/${slug}`) && hasIndustryArt(slug) ? INDUSTRY_ART[slug] : null;
         const industry = t.industries[slug];
         return (
           <li key={slug}>
@@ -95,7 +96,7 @@ export function IndustryCards({ lang, exclude }: { lang: SiteLang; exclude?: Ind
               href={sitePath(lang, `/industries/${slug}`)}
               className="group flex h-full flex-col gap-3 rounded-3xl border border-border/80 bg-white p-6 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_18px_40px_-24px_rgb(220_38_38/0.5)]"
             >
-              <Art className="-ms-1 h-20 w-[6.25rem]" />
+              {Art ? <Art className="-ms-1 h-20 w-[6.25rem]" /> : <CardImage lang={lang} page={`/industries/${slug}`} className="mb-1" />}
               <h3 className="text-lg font-semibold">{industry.name}</h3>
               <p className="text-[15px] leading-relaxed text-muted-foreground">{industry.short}</p>
               <span className="mt-auto flex items-center gap-1.5 pt-2 text-sm font-semibold text-primary">

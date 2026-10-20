@@ -21,7 +21,9 @@ export const TITLE_MAX = 65;
  * English/Arabic alternates search engines use to pick the right language, and
  * the Open Graph / Twitter tags used for link previews.
  */
-export function siteMetadata(lang: SiteLang, page: string, meta: { title: string; description: string }): Metadata {
+/** `image` is the page's own preview picture; the shared one otherwise. */
+export function siteMetadata(lang: SiteLang, page: string, meta: { title: string; description: string }, image?: { url: string; alt: string }): Metadata {
+  const preview = image ? { url: image.url, width: 1200, height: 630, alt: image.alt } : OG_IMAGE;
   const url = siteUrl(lang, page);
   // The home page title already contains the product name; other pages get it appended, unless
   // that would make the title longer than search results show (about 65 characters), in which
@@ -45,9 +47,9 @@ export function siteMetadata(lang: SiteLang, page: string, meta: { title: string
       description: meta.description,
       locale: OG_LOCALE[lang],
       alternateLocale: OG_LOCALE[lang === "en" ? "ar" : "en"],
-      images: [OG_IMAGE],
+      images: [preview],
     },
-    twitter: { card: "summary_large_image", title: fullTitle, description: meta.description, images: [OG_IMAGE.url] },
+    twitter: { card: "summary_large_image", title: fullTitle, description: meta.description, images: [preview.url] },
     robots: { index: true, follow: true },
   };
 }
