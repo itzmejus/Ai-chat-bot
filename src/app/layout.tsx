@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { headers } from "next/headers";
+import { VercelAnalytics } from "@/components/vercel-analytics";
 import { APP_NAME, SITE_URL } from "@/lib/config";
 import "./globals.css";
 
@@ -51,6 +52,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={sitePage ? {} : undefined}>{children}</NextIntlClientProvider>
+        <VercelAnalytics />
       </body>
     </html>
   );
