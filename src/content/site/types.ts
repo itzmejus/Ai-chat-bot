@@ -148,7 +148,7 @@ export type SiteContent = {
     reasons: { title: string; text: string; subject: string }[];
     selfServe: { title: string; sub: string };
   };
-  footer: { tagline: string; product: string; industries: string; company: string; privacy: string; terms: string; refund: string; contact: string; rights: string; madeIn: string };
+  footer: { tagline: string; product: string; industries: string; company: string; privacy: string; terms: string; refund: string; contact: string; rights: string; madeIn: string; instagram: string };
   breadcrumbHome: string;
   /** Setup pages per website builder, use cases and blog articles. */
   topics: TopicContent;

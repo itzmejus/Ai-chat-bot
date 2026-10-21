@@ -2,8 +2,10 @@ import { ArrowRight, Languages, Mail } from "lucide-react";
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import { DotPattern } from "@/components/illustrations";
+import { InstagramIcon } from "@/components/site/instagram-icon";
 import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL, SITE_WIDGET_KEY, WIDGET_URL } from "@/lib/config";
+import { INSTAGRAM } from "@/lib/social";
 import { FEATURED_INDUSTRY_SLUGS, GUIDE_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
 
 // The footer lists a few of each group; the hub pages (/industries, /integrations, /blog) list them all.
@@ -130,6 +132,18 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
                 {CONTACT_EMAIL}
               </a>
             )}
+            <a
+              href={INSTAGRAM.url}
+              target="_blank"
+              rel="noopener"
+              dir="ltr"
+              title={t.footer.instagram}
+              aria-label={`${t.footer.instagram} (${INSTAGRAM.handle})`}
+              className="-mt-1 flex items-center gap-2 text-sm font-medium text-white/85 transition-colors hover:text-white sm:text-[15px]"
+            >
+              <InstagramIcon className="text-white/55" />
+              {INSTAGRAM.handle}
+            </a>
             <div className="flex w-full gap-2.5 sm:w-auto sm:gap-3">
               <CtaLink href={start.href} arrow className="max-sm:flex-1 max-sm:px-3">
                 {start.label}

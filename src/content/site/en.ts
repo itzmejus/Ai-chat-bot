@@ -481,6 +481,7 @@ export const en: SiteContent = {
     contact: "Contact",
     rights: "All rights reserved.",
     madeIn: "Made for businesses everywhere",
+    instagram: "Follow us on Instagram",
   },
   breadcrumbHome: "Home",
   topics: topicsEn,

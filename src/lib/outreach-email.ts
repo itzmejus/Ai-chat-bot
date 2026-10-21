@@ -7,6 +7,8 @@
  * Gmail, Outlook and Apple Mail.
  */
 
+import { INSTAGRAM } from "@/lib/social";
+
 export type OutreachFields = {
   firstName: string;
   businessName: string;
@@ -130,7 +132,7 @@ export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
   <p style="margin:0 0 16px 0;">${OFFER}</p>
   <p style="margin:0;">Best regards,<br>
     <strong style="color:${INK};">${escape(fields.senderName.trim() || "Your name")}</strong><br>
-    <span style="font-size:14px; color:${MUTED};">${app} &middot; <a href="mailto:${contact}" style="color:${MUTED}; text-decoration:underline;">${contact}</a></span>
+    <span style="font-size:14px; color:${MUTED};">${app} &middot; <a href="mailto:${contact}" style="color:${MUTED}; text-decoration:underline;">${contact}</a> &middot; <a href="${INSTAGRAM.url}" style="color:${MUTED}; text-decoration:underline;">Instagram</a></span>
   </p>
 </td></tr>
 
@@ -192,6 +194,7 @@ ${OFFER}
 Best regards,
 ${fields.senderName.trim() || "Your name"}
 ${s.appName} · ${s.contactEmail}
+Instagram: ${INSTAGRAM.url}
 
 --
 ${s.appName} · ${fields.senderAddress.trim() || "Your business address"}

@@ -4,8 +4,10 @@ import { JsonLd } from "@/components/site/json-ld";
 import { ArrowLink, CtaBand, PageHero, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent } from "@/content/site";
+import { InstagramIcon } from "@/components/site/instagram-icon";
 import { APP_NAME, CONTACT_EMAIL, SITE_URL } from "@/lib/config";
 import { sitePath, type SiteLang } from "@/lib/site-routes";
+import { INSTAGRAM, SOCIAL_PROFILES } from "@/lib/social";
 import { breadcrumbJsonLd, siteMetadata, siteUrl } from "@/lib/site-seo";
 
 const PAGE = "/contact";
@@ -42,6 +44,7 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
             url: SITE_URL,
             email: CONTACT_EMAIL,
             contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: CONTACT_EMAIL, availableLanguage: ["English", "Arabic"] },
+            sameAs: SOCIAL_PROFILES,
           },
         }}
       />
@@ -57,6 +60,16 @@ export default async function ContactPage({ params }: PageProps<"/[lang]/contact
           <CtaLink href={mailto()} size="lg" arrow className="w-full sm:w-auto">
             {t.contact.button}
           </CtaLink>
+          <a
+            href={INSTAGRAM.url}
+            target="_blank"
+            rel="noopener"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary sm:text-base"
+          >
+            <InstagramIcon />
+            {t.footer.instagram}
+            <span dir="ltr">{INSTAGRAM.handle}</span>
+          </a>
         </div>
       </PageHero>
 
