@@ -6,7 +6,7 @@ import { InstagramIcon } from "@/components/site/instagram-icon";
 import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL, SITE_WIDGET_KEY, WIDGET_URL } from "@/lib/config";
 import { INSTAGRAM } from "@/lib/social";
-import { FEATURED_INDUSTRY_SLUGS, GUIDE_SLUGS, INTEGRATION_SLUGS, sitePath, type SiteLang } from "@/lib/site-routes";
+import { FEATURED_INDUSTRY_SLUGS, GUIDE_SLUGS, INTEGRATION_SLUGS, isTranslated, sitePath, type SiteLang } from "@/lib/site-routes";
 
 // The footer lists a few of each group; the hub pages (/industries, /integrations, /blog) list them all.
 const FOOTER_INTEGRATIONS = INTEGRATION_SLUGS.slice(0, 6);
@@ -75,7 +75,8 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
   ];
   const login = { href: appLink("/login"), label: t.nav.login };
   const start = { href: appLink("/signup"), label: t.nav.start };
-  const language = { href: sitePath(other, page), label: t.nav.otherLanguage, lang: other };
+  // English-only pages (the local pages) have no Arabic version: their language link goes to the Arabic home page.
+  const language = { href: sitePath(other, isTranslated(page) ? page : ""), label: t.nav.otherLanguage, lang: other };
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-clip bg-white text-foreground">
@@ -162,6 +163,8 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
               <FooterLink href={href("/integrations")}>{t.topics.labels.integrations}</FooterLink>
               <FooterLink href={href("/use-cases")}>{t.topics.labels.useCases}</FooterLink>
               <FooterLink href={href("/faq")}>{t.topics.labels.faq}</FooterLink>
+              {/* The city pages are English only. */}
+              {lang === "en" && <FooterLink href={href("/locations")}>Locations</FooterLink>}
             </FooterColumn>
             <FooterColumn title={t.footer.industries} className="max-sm:row-span-2">
               {FEATURED_INDUSTRY_SLUGS.map((slug) => (

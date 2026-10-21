@@ -4,7 +4,7 @@ import sitemap from "@/app/sitemap";
 import { getSiteContent, SITE_PLANS } from "@/content/site";
 import { ar } from "@/content/site/ar";
 import { en } from "@/content/site/en";
-import { matchSitePath, SITE_PAGES, sitePath } from "@/lib/site-routes";
+import { LOCAL_PAGES, matchSitePath, SITE_PAGES, sitePath } from "@/lib/site-routes";
 import { siteMetadata, siteUrl } from "@/lib/site-seo";
 import { proxy } from "@/proxy";
 import { prisma } from "@/server/db/prisma";
@@ -92,12 +92,21 @@ describe("host routing", () => {
 });
 
 describe("search engine files", () => {
-  it("lists every page in both languages, each with its translation", () => {
+  it("lists every page in both languages, each with its translation, then the English-only local pages", () => {
     const entries = sitemap();
-    expect(entries).toHaveLength(SITE_PAGES.length * 2);
+    expect(entries).toHaveLength(SITE_PAGES.length * 2 + LOCAL_PAGES.length);
     expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
     const arabicPricing = entries.find((e) => e.url === "https://www.example.com/ar/pricing");
     expect(arabicPricing?.alternates?.languages).toEqual({ en: "https://www.example.com/pricing", ar: "https://www.example.com/ar/pricing" });
+    const local = entries.find((e) => e.url === "https://www.example.com/industries/clinics/dubai");
+    expect(local).toBeDefined();
+    expect(local?.alternates).toBeUndefined();
+    expect(entries.some((e) => e.url.includes("/ar/industries/clinics/"))).toBe(false);
+  });
+
+  it("does not point English-only pages at an Arabic version", () => {
+    const meta = siteMetadata("en", "/industries/clinics/dubai", { title: "T", description: "D" }, undefined, { englishOnly: true });
+    expect(meta.alternates?.languages).toEqual({ en: "https://www.example.com/industries/clinics/dubai", "x-default": "https://www.example.com/industries/clinics/dubai" });
   });
 
   it("gives each page a canonical address, language alternates and allows indexing", () => {
