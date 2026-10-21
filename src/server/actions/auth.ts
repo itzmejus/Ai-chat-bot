@@ -14,6 +14,7 @@ import { inBackground } from "@/server/background";
 import { getCurrentUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
 import { clientIpFrom } from "@/server/limits/client-ip";
+import { signupSource } from "@/server/outreach/tracking";
 import { rateLimit } from "@/server/limits/rate-limit";
 import { INVITE_TOKEN_PATTERN } from "@/server/team";
 
@@ -50,7 +51,7 @@ export async function signupAction(_prev: FormState, formData: FormData): Promis
   if (existing) return { fieldErrors: { email: "errors.emailTaken" } };
 
   const user = await prisma.user.create({
-    data: { name, email, passwordHash: await bcrypt.hash(password, 12) },
+    data: { name, email, passwordHash: await bcrypt.hash(password, 12), signupSource: await signupSource() },
     select: { id: true, email: true, name: true },
   });
   // Ask them to confirm the address. Sending happens in the background: a mail problem must not block signing up.

@@ -28,6 +28,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
             <Td>
               <p className="font-medium">{user.name ?? "—"}</p>
               <p className="text-xs text-muted-foreground">{user.email}</p>
+              {user.signupSource && <p className="mt-0.5 text-xs font-medium text-green-700">via {user.signupSource.replace(":", ": ")}</p>}
             </Td>
             <Td className="capitalize">{user.signIn}</Td>
             <Td>{user.emailVerifiedAt ? fmtDate(user.emailVerifiedAt) : <span className="text-muted-foreground">No</span>}</Td>

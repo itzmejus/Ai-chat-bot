@@ -10,6 +10,7 @@ import { inBackground } from "@/server/background";
 import { prisma } from "@/server/db/prisma";
 import { clientIpFrom } from "@/server/limits/client-ip";
 import { rateLimit } from "@/server/limits/rate-limit";
+import { signupSource } from "@/server/outreach/tracking";
 
 /**
  * Auth.js configuration: email/password plus optional Google login.
@@ -99,7 +100,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               select: { id: true, sessionVersion: true },
             })
           : await prisma.user.create({
-              data: { email, name: profile.name ?? null, image: image ?? null, emailVerifiedAt: new Date() },
+              data: { email, name: profile.name ?? null, image: image ?? null, emailVerifiedAt: new Date(), signupSource: await signupSource() },
               select: { id: true, sessionVersion: true },
             });
         if (!existing) inBackground("signup alert", () => notifyAdminsOfSignup({ email, name: profile.name ?? null }, "google"));

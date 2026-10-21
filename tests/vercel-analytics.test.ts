@@ -15,6 +15,13 @@ describe("Vercel Analytics and Speed Insights", () => {
     expect(view("https://www.example.com/ar/pricing")).toBe("https://www.example.com/ar/pricing");
   });
 
+  it("keeps UTM campaign tags and drops every other parameter", () => {
+    expect(view("https://app.example.com/signup?utm_source=outreach&utm_medium=email&token=secret&utm_campaign=bright-smile")).toBe(
+      "https://app.example.com/signup?utm_source=outreach&utm_medium=email&utm_campaign=bright-smile",
+    );
+    expect(view("https://www.example.com/invite/abc123secret?utm_source=outreach")).toBe("https://www.example.com/invite/[token]?utm_source=outreach");
+  });
+
   it("cleans speed measurements the same way, keeping the rest of the event", () => {
     const event = { type: "vital" as const, url: "https://www.example.com/invite/abc123secret?x=1", route: "/invite/[token]" };
     expect(redactVital(event)).toEqual({ type: "vital", url: "https://www.example.com/invite/[token]", route: "/invite/[token]" });

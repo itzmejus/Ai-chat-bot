@@ -98,6 +98,8 @@ model User {
   emailVerifiedAt DateTime?
   /// Raised on a password change; sessions issued with an older value stop working.
   sessionVersion  Int       @default(0)
+  /// Where the person came from when they signed up, e.g. "outreach:bright-smile-dental" (see src/server/outreach/tracking.ts).
+  signupSource    String?
   createdAt       DateTime  @default(now())
 
   memberships Membership[]
@@ -371,6 +373,20 @@ model UsageCounter {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, month])
+}
+
+// ------------------------------------------------------------------ outreach
+
+/// One click on a link in an outreach email (counted by /go). `business` is the slug the link was made for.
+model OutreachClick {
+  id        String   @id @default(cuid())
+  business  String
+  button    String
+  target    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([business])
 }
 
 // ------------------------------------------------------------------ infra
