@@ -15,6 +15,7 @@ import { appLink } from "@/lib/site-seo";
 import { cn } from "@/lib/utils";
 import { GlobeMark } from "./art";
 import { MobileMenu } from "./mobile-menu";
+import { TrustpilotReviewCollector } from "./trustpilot";
 import { TryMeHint } from "./try-me-hint";
 
 /** Button-styled link used across the site. */
@@ -153,6 +154,7 @@ export function SiteShell({ lang, page, children }: { lang: SiteLang; page: stri
                 {login.label}
               </CtaLink>
             </div>
+            <TrustpilotReviewCollector className="w-full max-w-60" />
           </div>
 
           <nav aria-label={t.footer.product} className="grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3 sm:gap-y-10 lg:grid-cols-[1fr_1fr_1fr_1.5fr]">
