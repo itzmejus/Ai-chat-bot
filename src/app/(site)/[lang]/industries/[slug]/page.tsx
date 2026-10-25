@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { hasIndustryArt, INDUSTRY_ART } from "@/components/site/art";
 import { JsonLd } from "@/components/site/json-ld";
+import { LinkList } from "@/components/site/link-list";
+import { industryCityLinks } from "@/content/site/local/pages";
 import { Bubble } from "@/components/site/mockups";
 import { PageFigure, pageImage } from "@/components/site/page-image";
 import { CtaBand, Eyebrow, IndustryCards, Section, SectionHeading } from "@/components/site/sections";
@@ -117,6 +119,16 @@ export default async function IndustryPage({ params }: PageProps<"/[lang]/indust
           ))}
         </ul>
       </Section>
+
+      {/* ---- The same industry in each city (English only, like those pages) */}
+      {lang === "en" && (
+        <Section tone="muted">
+          <SectionHeading title={`${industry.name} by city`} />
+          <div className="mt-10">
+            <LinkList links={industryCityLinks(slug)} columns={4} />
+          </div>
+        </Section>
+      )}
 
       {/* ---- Other industries */}
       <Section>

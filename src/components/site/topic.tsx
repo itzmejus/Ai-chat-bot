@@ -8,7 +8,9 @@ import { ContactSection, CtaBand, Eyebrow, FaqList, PageHero, Section, SectionHe
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent, type SiteContent, type TopicPage } from "@/content/site";
 import { APP_NAME, SITE_URL, WIDGET_URL } from "@/lib/config";
-import { SITE_UPDATED, sitePath, TOPIC_GROUPS, type SiteLang, type TopicGroup } from "@/lib/site-routes";
+import { LinkList } from "@/components/site/link-list";
+import { platformIndustryLinks } from "@/content/site/local/pages";
+import { SITE_UPDATED, sitePath, TOPIC_GROUPS, type IntegrationSlug, type SiteLang, type TopicGroup } from "@/lib/site-routes";
 import { appLink, breadcrumbJsonLd, faqJsonLd, siteMetadata, siteUrl } from "@/lib/site-seo";
 
 /**
@@ -46,7 +48,7 @@ export function topicMetadata(lang: string, group: TopicGroup, slug: string): Me
 // ---------------------------------------------------------------- shared pieces
 
 /** "Home > Blog > Article": links for visitors, and the same trail as structured data. */
-function Breadcrumbs({ lang, trail }: { lang: SiteLang; trail: { name: string; page: string }[] }) {
+export function Breadcrumbs({ lang, trail }: { lang: SiteLang; trail: { name: string; page: string }[] }) {
   const t = getSiteContent(lang);
   const items = [{ name: t.breadcrumbHome, page: "" }, ...trail];
   return (
@@ -273,6 +275,16 @@ export function TopicPageView({ lang: rawLang, group, slug }: { lang: string; gr
           <FaqList items={topic.faq} />
         </div>
       </Section>
+
+      {/* A setup page per industry for this website builder (English only, like those pages) */}
+      {group === "integrations" && lang === "en" && (
+        <Section>
+          <SectionHeading title={`${topic.name} for your industry`} />
+          <div className="mt-10">
+            <LinkList links={platformIndustryLinks(slug as IntegrationSlug)} />
+          </div>
+        </Section>
+      )}
 
       <Section>
         <SectionHeading title={labels.related} />

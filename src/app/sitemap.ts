@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_LANGS, SITE_PAGES, SITE_UPDATED } from "@/lib/site-routes";
+import { LOCAL_PAGES, SITE_LANGS, SITE_PAGES, SITE_UPDATED } from "@/lib/site-routes";
 import { siteUrl } from "@/lib/site-seo";
 
 // Built per request, so SITE_URL is read from the running server's environment
@@ -8,8 +8,18 @@ export const dynamic = "force-dynamic";
 
 const PRIORITY: Record<string, number> = { "": 1, "/features": 0.9, "/pricing": 0.9, "/industries": 0.8, "/integrations": 0.8, "/use-cases": 0.8, "/blog": 0.8, "/faq": 0.6, "/contact": 0.5, "/privacy": 0.2, "/terms": 0.2, "/refund": 0.2 };
 
-/** Every public page in both languages, each pointing at its translation. */
+/** Every public page in both languages, each pointing at its translation, then the English-only local pages. */
 export default function sitemap(): MetadataRoute.Sitemap {
+  const local = LOCAL_PAGES.map((page) => ({
+    url: siteUrl("en", page),
+    lastModified: SITE_UPDATED,
+    changeFrequency: "monthly" as const,
+    priority: page === "/locations" ? 0.7 : page.startsWith("/locations/") ? 0.6 : 0.5,
+  }));
+  return [...translated(), ...local];
+}
+
+function translated(): MetadataRoute.Sitemap {
   return SITE_PAGES.flatMap((page) =>
     SITE_LANGS.map((lang) => ({
       url: siteUrl(lang, page),

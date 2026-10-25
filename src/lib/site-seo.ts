@@ -21,8 +21,14 @@ export const TITLE_MAX = 65;
  * English/Arabic alternates search engines use to pick the right language, and
  * the Open Graph / Twitter tags used for link previews.
  */
-/** `image` is the page's own preview picture; the shared one otherwise. */
-export function siteMetadata(lang: SiteLang, page: string, meta: { title: string; description: string }, image?: { url: string; alt: string }): Metadata {
+/** `image` is the page's own preview picture; the shared one otherwise. `englishOnly` pages have no Arabic version to point to. */
+export function siteMetadata(
+  lang: SiteLang,
+  page: string,
+  meta: { title: string; description: string },
+  image?: { url: string; alt: string },
+  { englishOnly = false }: { englishOnly?: boolean } = {},
+): Metadata {
   const preview = image ? { url: image.url, width: 1200, height: 630, alt: image.alt } : OG_IMAGE;
   const url = siteUrl(lang, page);
   // The home page title already contains the product name; other pages get it appended, unless
@@ -37,7 +43,9 @@ export function siteMetadata(lang: SiteLang, page: string, meta: { title: string
     description: meta.description,
     alternates: {
       canonical: url,
-      languages: { en: siteUrl("en", page), ar: siteUrl("ar", page), "x-default": siteUrl("en", page) },
+      languages: englishOnly
+        ? { en: siteUrl("en", page), "x-default": siteUrl("en", page) }
+        : { en: siteUrl("en", page), ar: siteUrl("ar", page), "x-default": siteUrl("en", page) },
     },
     openGraph: {
       type: "website",
@@ -46,7 +54,7 @@ export function siteMetadata(lang: SiteLang, page: string, meta: { title: string
       title: fullTitle,
       description: meta.description,
       locale: OG_LOCALE[lang],
-      alternateLocale: OG_LOCALE[lang === "en" ? "ar" : "en"],
+      ...(!englishOnly && { alternateLocale: OG_LOCALE[lang === "en" ? "ar" : "en"] }),
       images: [preview],
     },
     twitter: { card: "summary_large_image", title: fullTitle, description: meta.description, images: [preview.url] },

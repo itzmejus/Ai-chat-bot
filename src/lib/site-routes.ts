@@ -112,6 +112,50 @@ export const TOPIC_GROUPS = {
 } as const;
 export type TopicGroup = keyof typeof TOPIC_GROUPS;
 
+/**
+ * Cities with their own pages (English only): a page per city, one per industry in each city,
+ * and one per website builder for each industry. The details of each city are in
+ * src/content/site/local/cities.ts.
+ */
+export const CITY_SLUGS = [
+  // United Arab Emirates
+  "dubai", "abu-dhabi", "sharjah", "ajman", "ras-al-khaimah", "al-ain",
+  // Saudi Arabia and the Gulf
+  "riyadh", "jeddah", "dammam", "doha", "kuwait-city", "manama", "muscat",
+  // Middle East and North Africa
+  "cairo", "alexandria", "amman", "beirut", "casablanca", "marrakech", "rabat", "tunis", "algiers", "istanbul",
+  // United Kingdom and Europe
+  "london", "manchester", "birmingham", "leeds", "liverpool", "edinburgh", "glasgow", "dublin",
+  "paris", "berlin", "munich", "frankfurt", "hamburg", "amsterdam", "brussels", "madrid", "barcelona", "lisbon",
+  "rome", "milan", "vienna", "zurich", "geneva", "stockholm", "copenhagen", "oslo", "helsinki", "warsaw", "prague", "athens",
+  // North America
+  "new-york", "los-angeles", "chicago", "houston", "miami", "san-francisco", "san-diego", "seattle", "boston",
+  "washington-dc", "atlanta", "dallas", "austin", "phoenix", "las-vegas", "denver", "philadelphia",
+  "toronto", "vancouver", "montreal", "calgary",
+  // Latin America
+  "mexico-city", "sao-paulo", "rio-de-janeiro", "buenos-aires", "bogota", "lima", "santiago",
+  // Asia Pacific
+  "singapore", "kuala-lumpur", "tokyo", "osaka", "seoul", "hong-kong", "taipei", "bangkok", "jakarta", "manila",
+  "ho-chi-minh-city", "sydney", "melbourne", "brisbane", "perth", "auckland",
+  // South Asia
+  "mumbai", "delhi", "bengaluru", "hyderabad", "chennai", "kolkata", "pune", "karachi", "lahore", "islamabad", "dhaka", "colombo",
+  // Africa
+  "johannesburg", "cape-town", "durban", "lagos", "abuja", "accra", "nairobi", "kampala", "kigali", "dar-es-salaam", "addis-ababa",
+] as const;
+export type CitySlug = (typeof CITY_SLUGS)[number];
+
+/** The English-only local pages: /locations, /locations/<city>, /industries/<industry>/<city>, /integrations/<platform>/<industry>. */
+export const LOCAL_PAGES = [
+  "/locations",
+  ...CITY_SLUGS.map((city) => `/locations/${city}`),
+  ...INDUSTRY_SLUGS.flatMap((industry) => CITY_SLUGS.map((city) => `/industries/${industry}/${city}`)),
+  ...INTEGRATION_SLUGS.flatMap((platform) => INDUSTRY_SLUGS.map((industry) => `/integrations/${platform}/${industry}`)),
+];
+const LOCAL_PAGE_SET = new Set<string>(LOCAL_PAGES);
+
+/** Whether a page exists in Arabic too (the local pages are English only). */
+export const isTranslated = (page: string) => !LOCAL_PAGE_SET.has(page);
+
 /** Every page of the site, as a path without language prefix. "" is the home page. */
 export const SITE_PAGES = [
   "",
@@ -140,5 +184,6 @@ export function matchSitePath(pathname: string): { lang: SiteLang; page: string 
   const path = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
   const lang: SiteLang = path === "/ar" || path.startsWith("/ar/") ? "ar" : "en";
   const page = lang === "ar" ? path.slice(3) : path === "/" ? "" : path;
-  return (SITE_PAGES as readonly string[]).includes(page) ? { lang, page } : null;
+  if ((SITE_PAGES as readonly string[]).includes(page)) return { lang, page };
+  return lang === "en" && LOCAL_PAGE_SET.has(page) ? { lang, page } : null;
 }

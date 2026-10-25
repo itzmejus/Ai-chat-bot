@@ -480,6 +480,7 @@ export const ar: SiteContent = {
     contact: "تواصل معنا",
     rights: "جميع الحقوق محفوظة.",
     madeIn: "صُنع للشركات في كل مكان",
+    instagram: "تابعنا على إنستغرام",
   },
   breadcrumbHome: "الرئيسية",
   topics: topicsAr,

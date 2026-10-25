@@ -82,6 +82,7 @@ export async function adminUsers({ q = "", page = 1 }: { q?: string; page?: numb
         createdAt: true,
         emailVerifiedAt: true,
         passwordHash: true,
+        signupSource: true,
         memberships: { select: { role: true, workspace: { select: { id: true, name: true, planId: true, billingStatus: true } } } },
       },
     }),

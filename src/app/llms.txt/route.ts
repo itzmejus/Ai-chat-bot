@@ -2,6 +2,7 @@ import { getSiteContent } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL } from "@/lib/config";
 import { INDUSTRY_SLUGS, TOPIC_GROUPS, type TopicGroup } from "@/lib/site-routes";
 import { siteUrl } from "@/lib/site-seo";
+import { INSTAGRAM } from "@/lib/social";
 
 // Built per request, so the addresses use the running server's SITE_URL.
 export const dynamic = "force-dynamic";
@@ -47,6 +48,7 @@ export function GET() {
     "## Contact",
     link(t.footer.contact, "/contact", t.contactPage.meta.description),
     ...(CONTACT_EMAIL ? [`- Email: ${CONTACT_EMAIL}`] : []),
+    `- Instagram: ${INSTAGRAM.url}`,
     "",
   ].join("\n");
 

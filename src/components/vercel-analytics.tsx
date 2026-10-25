@@ -6,13 +6,19 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 /** Paths whose last part is a secret one-time code (invitations, password reset, email confirmation). */
 const TOKEN_PATHS = /^\/(invite|reset-password|verify-email)\/[^/]+/;
 
+/** Campaign tags (e.g. from outreach email links) are the only query parameters kept. */
+const KEPT_PARAMS = /^utm_(source|medium|campaign|content|term)$/;
+
 /**
- * The address as it may be stored: without query string or fragment, and with one-time codes in
- * the path replaced, so links that grant access never end up in Vercel's dashboards.
+ * The address as it may be stored: without fragment or query string (except UTM campaign tags),
+ * and with one-time codes in the path replaced, so links that grant access never end up in
+ * Vercel's dashboards.
  */
 export function redactUrl(address: string): string {
   const url = new URL(address);
-  url.search = "";
+  for (const key of [...url.searchParams.keys()]) {
+    if (!KEPT_PARAMS.test(key)) url.searchParams.delete(key);
+  }
   url.hash = "";
   url.pathname = url.pathname.replace(TOKEN_PATHS, "/$1/[token]");
   return url.toString();

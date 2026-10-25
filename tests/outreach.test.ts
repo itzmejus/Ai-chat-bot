@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { outreachBody, outreachHtml, outreachSubject, outreachText, type OutreachFields } from "@/lib/outreach-email";
+import { INSTAGRAM } from "@/lib/social";
 
 const settings = { appName: "Selo Assist", siteUrl: "https://www.example.com", signupUrl: "https://app.example.com/signup", contactEmail: "hello@example.com" };
 const fields: OutreachFields = {
@@ -21,6 +22,8 @@ describe("outreach email", () => {
     expect(html).toContain('href="https://app.example.com/signup"');
     expect(html).toContain('src="https://www.example.com/images/email/hero.png"');
     expect(html).toContain("mailto:hello@example.com?subject=Unsubscribe");
+    expect(html).toContain(`href="${INSTAGRAM.url}"`);
+    expect(outreachText(fields, settings)).toContain(INSTAGRAM.url);
     expect(html).not.toMatch(/\{\{|\{FirstName\}/);
   });
 

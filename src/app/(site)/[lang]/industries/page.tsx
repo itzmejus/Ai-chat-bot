@@ -3,7 +3,9 @@ import { JsonLd } from "@/components/site/json-ld";
 import { CtaBand, IndustryCards, IndustryShowcase, PageHero, Section, SectionHeading } from "@/components/site/sections";
 import { CtaLink, SiteShell } from "@/components/site/shell";
 import { getSiteContent } from "@/content/site";
-import { INDUSTRY_SLUGS, type SiteLang } from "@/lib/site-routes";
+import { LinkList } from "@/components/site/link-list";
+import { CITIES } from "@/content/site/local/cities";
+import { CITY_SLUGS, INDUSTRY_SLUGS, type SiteLang } from "@/lib/site-routes";
 import { appLink, breadcrumbJsonLd, siteMetadata, siteUrl } from "@/lib/site-seo";
 
 const PAGE = "/industries";
@@ -53,6 +55,16 @@ export default async function IndustriesPage({ params }: PageProps<"/[lang]/indu
           <IndustryCards lang={lang} />
         </div>
       </Section>
+
+      {/* The city pages are English only. */}
+      {lang === "en" && (
+        <Section>
+          <SectionHeading title="Find your city" sub="See how the assistant works for businesses in your city, in the languages your customers speak." />
+          <div className="mt-10">
+            <LinkList links={CITY_SLUGS.map((city) => ({ page: `/locations/${city}`, label: CITIES[city].name }))} columns={4} />
+          </div>
+        </Section>
+      )}
 
       <CtaBand lang={lang} />
     </SiteShell>

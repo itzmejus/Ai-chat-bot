@@ -7,6 +7,9 @@
  * Gmail, Outlook and Apple Mail.
  */
 
+import { trackedLink, type TrackButton, type TrackTarget } from "@/lib/outreach-links";
+import { INSTAGRAM } from "@/lib/social";
+
 export type OutreachFields = {
   firstName: string;
   businessName: string;
@@ -23,6 +26,11 @@ export type OutreachSettings = {
   siteUrl: string;
   signupUrl: string;
   contactEmail: string;
+  /**
+   * The app's /go address. When set, every link goes through it, so clicks and the sign-ups that
+   * follow are counted per business (Admin -> Outreach) and tagged for web analytics.
+   */
+  trackUrl?: string;
 };
 
 export const SUBJECTS = [
@@ -72,11 +80,17 @@ const point = (text: string) => `
   <td valign="top" style="padding:0 0 10px 0; font-family:${FONT}; font-size:15px; line-height:23px; color:${TEXT};">${escape(text)}</td>
 </tr>`;
 
+/** Where a link in the email points: through /go when tracking is on, else straight to the page. */
+function linkTo(to: TrackTarget, button: TrackButton, fields: OutreachFields, s: OutreachSettings) {
+  if (s.trackUrl) return trackedLink(s.trackUrl, to, fields.businessName, button);
+  return to === "signup" ? s.signupUrl : s.siteUrl;
+}
+
 /** The visible email, from the outer background table down: what gets pasted into Gmail or Outlook. */
 export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
   const app = escape(s.appName);
   const site = escape(s.siteUrl);
-  const signup = escape(s.signupUrl);
+  const link = (to: TrackTarget, button: TrackButton) => escape(linkTo(to, button, fields, s));
   const contact = escape(s.contactEmail);
   const business = escape(audience(fields));
   const note = fields.personalNote.trim() ? `<p style="margin:0 0 16px 0;">${paragraph(fields.personalNote)}</p>` : "";
@@ -86,7 +100,7 @@ export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
 <table role="presentation" class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px; max-width:560px;">
 
 <tr><td style="padding:0 4px 18px 4px;">
-  <a href="${site}" target="_blank" style="text-decoration:none;">
+  <a href="${link("site", "logo")}" target="_blank" style="text-decoration:none;">
     <img src="${site}/images/email/logo.png" width="28" height="28" alt="" style="display:inline-block; vertical-align:middle; border:0;">
     <span style="font-family:${FONT}; font-size:17px; font-weight:700; color:${INK}; vertical-align:middle; padding-left:8px;">${app}</span>
   </a>
@@ -108,7 +122,7 @@ export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
 </td></tr>
 
 <tr><td class="px" style="padding:6px 40px 0 40px;">
-  <a href="${site}" target="_blank"><img src="${site}/images/email/hero.png" width="478" alt="${app} answering a customer on a business website in English and Arabic, and saving a new lead" style="display:block; width:100%; max-width:478px; height:auto; border:0; border-radius:12px;"></a>
+  <a href="${link("site", "image")}" target="_blank"><img src="${site}/images/email/hero.png" width="478" alt="${app} answering a customer on a business website in English and Arabic, and saving a new lead" style="display:block; width:100%; max-width:478px; height:auto; border:0; border-radius:12px;"></a>
 </td></tr>
 
 <tr><td class="px" style="padding:28px 40px 0 40px;">
@@ -118,10 +132,10 @@ export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
   <p style="margin:0 0 18px 0; font-size:14px; line-height:21px; color:${MUTED};">Set up in about 5 minutes. Free plan, no card needed.</p>
   <table role="presentation" class="btn" cellpadding="0" cellspacing="0" border="0"><tr>
     <td align="center" bgcolor="${RED}" style="border-radius:10px;">
-      <a href="${signup}" target="_blank" style="display:inline-block; padding:13px 30px; font-family:${FONT}; font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:10px;">Start for free</a>
+      <a href="${link("signup", "start")}" target="_blank" style="display:inline-block; padding:13px 30px; font-family:${FONT}; font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:10px;">Start for free</a>
     </td>
   </tr></table>
-  <p style="margin:14px 0 0 0; font-size:13px; line-height:19px; color:${MUTED};">or <a href="${site}" target="_blank" style="color:#b91c1c; text-decoration:underline;">ask the assistant on our website</a></p>
+  <p style="margin:14px 0 0 0; font-size:13px; line-height:19px; color:${MUTED};">or <a href="${link("site", "site")}" target="_blank" style="color:#b91c1c; text-decoration:underline;">ask the assistant on our website</a></p>
 </td></tr>
 </table>
 </td></tr>
@@ -130,7 +144,7 @@ export function outreachBody(fields: OutreachFields, s: OutreachSettings) {
   <p style="margin:0 0 16px 0;">${OFFER}</p>
   <p style="margin:0;">Best regards,<br>
     <strong style="color:${INK};">${escape(fields.senderName.trim() || "Your name")}</strong><br>
-    <span style="font-size:14px; color:${MUTED};">${app} &middot; <a href="mailto:${contact}" style="color:${MUTED}; text-decoration:underline;">${contact}</a></span>
+    <span style="font-size:14px; color:${MUTED};">${app} &middot; <a href="mailto:${contact}" style="color:${MUTED}; text-decoration:underline;">${contact}</a> &middot; <a href="${INSTAGRAM.url}" style="color:${MUTED}; text-decoration:underline;">Instagram</a></span>
   </p>
 </td></tr>
 
@@ -185,13 +199,14 @@ ${s.appName} adds an AI assistant to your website that replies in seconds. It:
 ${POINTS.map((p) => `- ${p}`).join("\n")}
 
 Try it free on your website. Set up in about 5 minutes; free plan, no card needed:
-${s.signupUrl}
+${linkTo("signup", "text", fields, s)}
 
 ${OFFER}
 
 Best regards,
 ${fields.senderName.trim() || "Your name"}
 ${s.appName} · ${s.contactEmail}
+Instagram: ${INSTAGRAM.url}
 
 --
 ${s.appName} · ${fields.senderAddress.trim() || "Your business address"}

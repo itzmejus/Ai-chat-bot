@@ -19,6 +19,7 @@ import { getSiteContent, SITE_PLANS } from "@/content/site";
 import { APP_NAME, CONTACT_EMAIL, SITE_URL, SITE_WIDGET_KEY } from "@/lib/config";
 import { sitePath, type SiteLang } from "@/lib/site-routes";
 import { appLink, faqJsonLd, siteMetadata, siteUrl, softwareJsonLd } from "@/lib/site-seo";
+import { SOCIAL_PROFILES } from "@/lib/social";
 
 const asLang = (lang: string): SiteLang => (lang === "ar" ? "ar" : "en");
 
@@ -41,6 +42,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       logo: `${SITE_URL}/apple-icon.png`,
       description: t.footer.tagline,
       areaServed: "Worldwide",
+      sameAs: SOCIAL_PROFILES,
       ...(CONTACT_EMAIL && {
         email: CONTACT_EMAIL,
         contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: CONTACT_EMAIL, availableLanguage: ["English", "Arabic"] },
