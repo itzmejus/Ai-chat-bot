@@ -57,7 +57,12 @@ export async function signupSource(): Promise<string | null> {
   }
 }
 
-export type OutreachRow = { business: string; clicks: number; startClicks: number; lastClick: Date; signups: number };
+/** The latest individual clicks, newest first, to tell a person reading (spread out) from a link checker (all within seconds). */
+export async function recentClicks(limit = 50) {
+  return prisma.outreachClick.findMany({ orderBy: { createdAt: "desc" }, take: limit, select: { id: true, business: true, button: true, target: true, createdAt: true } });
+}
+
+export type OutreachRow ={ business: string; clicks: number; startClicks: number; lastClick: Date; signups: number };
 
 /** Clicks and sign-ups per business over the last `days` days, most recent first. */
 export async function outreachReport(days = 90, now = new Date()) {

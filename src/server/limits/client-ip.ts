@@ -7,14 +7,16 @@
  *
  * In order:
  *  1. CLIENT_IP_HEADER, when set: a header the hosting provider sets and overwrites itself.
- *     Render serves custom domains through Cloudflare, which sets `CF-Connecting-IP` and
- *     replaces any value a visitor sends, so that is the default.
+ *     Without it: Vercel's `X-Real-IP` on Vercel, otherwise Cloudflare's `CF-Connecting-IP`,
+ *     which Cloudflare sets and replaces any value a visitor sends.
  *  2. The last value of `X-Forwarded-For`, which the nearest proxy added. A visitor cannot
  *     forge it; at worst it is the address of a proxy, which makes a limit stricter, not looser.
  *  3. "unknown" (local development without a proxy).
  */
 
-const DEFAULT_HEADER = "cf-connecting-ip";
+// On Vercel, a CF-Connecting-IP header can only have been written by the visitor (there is no
+// Cloudflare in front), so Vercel's own X-Real-IP, which it always overwrites, is the default there.
+const defaultHeader = () => (process.env.VERCEL ? "x-real-ip" : "cf-connecting-ip");
 
 const usable = (value: string | null | undefined) => {
   const ip = value?.trim();
@@ -23,7 +25,7 @@ const usable = (value: string | null | undefined) => {
 };
 
 export function clientIpFrom(headers: Pick<Headers, "get">): string {
-  const header = (process.env.CLIENT_IP_HEADER || DEFAULT_HEADER).toLowerCase();
+  const header = (process.env.CLIENT_IP_HEADER || defaultHeader()).toLowerCase();
   const direct = usable(headers.get(header));
   if (direct) return direct;
   const forwarded = headers.get("x-forwarded-for")?.split(",");

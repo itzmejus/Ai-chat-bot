@@ -50,6 +50,13 @@ describe("visitor address for rate limits", () => {
     expect(clientIpFrom(headers({ "x-real-ip": "198.51.100.8", "cf-connecting-ip": "1.1.1.1" }))).toBe("198.51.100.8");
   });
 
+  it("on Vercel, ignores a CF-Connecting-IP header (only the visitor could have written it) and uses X-Real-IP", () => {
+    vi.stubEnv("CLIENT_IP_HEADER", "");
+    vi.stubEnv("VERCEL", "1");
+    expect(clientIpFrom(headers({ "cf-connecting-ip": "6.6.6.6", "x-real-ip": "198.51.100.9" }))).toBe("198.51.100.9");
+    vi.unstubAllEnvs();
+  });
+
   it("refuses values that are not addresses", () => {
     expect(clientIpFrom(headers({ "cf-connecting-ip": "evil, value", "x-forwarded-for": "not an ip" }))).toBe("unknown");
     expect(clientIpFrom(headers({}))).toBe("unknown");

@@ -103,6 +103,9 @@ export function Pagination({ page, total, pageSize, href }: { page: number; tota
 
 const DATE = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 export const fmtDate = (date: Date | null | undefined) => (date ? DATE.format(date) : "—");
+/** Down to the second, in UAE time: "28 Oct, 14:03:27". */
+const DATE_TIME = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", timeZone: "Asia/Dubai" });
+export const fmtDateTime = (date: Date | null | undefined) => (date ? DATE_TIME.format(date) : "—");
 export const fmtNumber = (n: number) => new Intl.NumberFormat("en").format(n);
 export const fmtEuro = (n: number) => new Intl.NumberFormat("en", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
