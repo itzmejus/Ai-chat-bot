@@ -45,11 +45,42 @@ describe("/go", () => {
   });
 
   it("counts people, not link checkers or signed-in users", () => {
-    expect(isCountable(CHROME, false)).toBe(true);
-    expect(isCountable(CHROME, true)).toBe(false);
-    expect(isCountable("Mozilla/5.0 (compatible; Microsoft Safe Links)", false)).toBe(false);
-    expect(isCountable("python-requests/2.31", false)).toBe(false);
-    expect(isCountable(null, false)).toBe(false);
+    const person = { userAgent: CHROME, signedIn: false };
+    expect(isCountable(person)).toBe(true);
+    expect(isCountable({ ...person, fetchMode: "navigate" })).toBe(true);
+    expect(isCountable({ ...person, signedIn: true })).toBe(false);
+    expect(isCountable({ ...person, userAgent: "Mozilla/5.0 (compatible; Microsoft Safe Links)" })).toBe(false);
+    expect(isCountable({ ...person, userAgent: "python-requests/2.31" })).toBe(false);
+    expect(isCountable({ ...person, userAgent: null })).toBe(false);
+  });
+
+  it("skips Instagram, Facebook and WhatsApp link previews", () => {
+    for (const userAgent of [
+      "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+      "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)",
+      "WhatsApp/2.24.6.77 A",
+    ]) {
+      expect(isCountable({ userAgent, signedIn: false })).toBe(false);
+    }
+    // The Instagram in-app browser is a real person opening the link.
+    const instagramApp = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 350.0.0";
+    expect(isCountable({ userAgent: instagramApp, signedIn: false, fetchMode: "navigate" })).toBe(true);
+  });
+
+  it("only counts real page opens, once per person per business", () => {
+    const person = { userAgent: CHROME, signedIn: false };
+    expect(isCountable({ ...person, method: "HEAD" })).toBe(false);
+    expect(isCountable({ ...person, fetchMode: "no-cors" })).toBe(false);
+    expect(isCountable({ ...person, seen: true })).toBe(false);
+  });
+
+  it("does not count the same browser twice within the window", () => {
+    const first = go("to=site&b=flowers-ae&btn=site");
+    expect(first.cookies.get("selo_seen_flowers-ae")?.value).toBe("1");
+    go("to=site&b=flowers-ae&btn=site", { "user-agent": CHROME, cookie: "selo_seen_flowers-ae=1" });
+    go("to=site&b=veneno&btn=site", { "user-agent": CHROME, cookie: "selo_seen_flowers-ae=1" });
+    expect(create).toHaveBeenCalledTimes(2);
+    expect(create).toHaveBeenLastCalledWith({ data: { target: "site", business: "veneno", button: "site" } });
   });
 
   it("counts the click, remembers the source and forwards with UTM tags", async () => {

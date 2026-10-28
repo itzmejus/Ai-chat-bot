@@ -16,11 +16,17 @@ export const REF_COOKIE = "selo_ref";
 export const REF_MAX_AGE = 30 * 24 * 60 * 60;
 const SOURCE_PATTERN = /^outreach:[a-z0-9-]{1,60}$/;
 
+/** Set after a counted click, so the same person tapping again within the window isn't counted twice (see `seenCookie`). */
+export const SEEN_COOKIE = "selo_seen";
+export const SEEN_MAX_AGE = 30 * 60;
+
 /**
  * Link checkers run by mail servers (Outlook Safe Links, Proofpoint, Mimecast...) and link
- * previews open every link in an email before the person does; they are not counted.
+ * previews (Instagram/Facebook/WhatsApp DMs and bios fetch a link several times to build the
+ * card) open every link before the person does; they are not counted.
  */
-const NOT_A_PERSON = /bot|crawl|spider|preview|scan|safe ?links|proofpoint|mimecast|barracuda|headless|python|curl|wget|go-http|java\/|okhttp|axios|node-fetch/i;
+const NOT_A_PERSON =
+  /bot|crawl|spider|preview|scan|safe ?links|proofpoint|mimecast|barracuda|headless|python|curl|wget|go-http|java\/|okhttp|axios|node-fetch|facebookexternalhit|facebookcatalog|meta-external|whatsapp\/|embedly|iframely|vkshare|bitlybot|snap url/i;
 
 export type TrackRequest = { target: TrackTarget; business: string; button: TrackButton };
 
@@ -36,10 +42,27 @@ export function parseTrackRequest(params: URLSearchParams): TrackRequest | null 
   };
 }
 
-/** Whether a click should be counted: real browsers only, and not people already signed in (e.g. the admin testing the preview). */
-export function isCountable(userAgent: string | null, signedIn: boolean): boolean {
-  return !signedIn && Boolean(userAgent) && !NOT_A_PERSON.test(userAgent!);
+export type ClickContext = {
+  userAgent: string | null;
+  /** Signed-in users (e.g. the admin testing the preview) are not counted. */
+  signedIn: boolean;
+  /** HEAD requests are link checkers; Next.js answers them with the GET handler. */
+  method?: string;
+  /** Sec-Fetch-Mode: modern browsers send "navigate" when a person opens a link; prefetches and fetchers don't. */
+  fetchMode?: string | null;
+  /** This browser already had a click counted for this business in the last SEEN_MAX_AGE. */
+  seen?: boolean;
+};
+
+/** Whether a click should be counted: one per person per business, real page opens in real browsers only. */
+export function isCountable({ userAgent, signedIn, method = "GET", fetchMode, seen = false }: ClickContext): boolean {
+  if (signedIn || seen || method !== "GET" || !userAgent || NOT_A_PERSON.test(userAgent)) return false;
+  // Older browsers don't send the header at all, so only a present, non-navigate value rules a click out.
+  return !fetchMode || fetchMode === "navigate";
 }
+
+/** One short-lived cookie per business: "selo_seen_flowers-ae". */
+export const seenCookie = (business: string) => `${SEEN_COOKIE}_${businessSlug(business)}`;
 
 export async function recordClick({ target, business, button }: TrackRequest) {
   await prisma.outreachClick.create({ data: { target, business, button } });
